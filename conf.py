@@ -38,6 +38,10 @@ _C.VICTIM.PATH = 'ckpts/cifar10-cnn32/ckpt.pt'
 #Path to defender model with inaccuracies
 _C.VICTIM.PATHIN = '/home/harsh_s/scratch/msacopy/ckpts/cifar10-resnet32-inaccurate/checkpoint.pth.tar'
 
+# Image width and height
+_C.VICTIM.WIDTH = 224
+_C.VICTIM.HEIGHT = 224
+
 # ----------------------------- Adaptive Misinformation options ------------------------------- #
 
 _C.AM = CfgNode()
@@ -110,18 +114,14 @@ _C.ACTIVE.METHOD = 'random'
 # Active learning budget
 _C.ACTIVE.BUDGET = 30000
 
-# _C.ACTIVE.STDAUG = False
-
-_C.ACTIVE.AUGMENT = None
-
-_C.ACTIVE.CUTMIX_PROB = 0.
-
-_C.ACTIVE.BETA = 1.0
-
 _C.ACTIVE.VAL = 0
 _C.ACTIVE.INITIAL  = 0
 _C.ACTIVE.CYCLES = 1
 _C.ACTIVE.ADDENDUM = 0
+
+_C.ACTIVE.AUGMENT = None
+_C.ACTIVE.CUTMIX_PROB = 0.
+_C.ACTIVE.BETA = 1.0
 
 _C.ACTIVE.TEMP = 1.
 _C.ACTIVE.ALPHA = 0.
@@ -155,19 +155,6 @@ _C.TRAIN.MILESTONES = [120]
 
 # Factor by which learning rate is reduced at milestones
 _C.TRAIN.GAMMA = 0.1
-
-
-# ----------------------------- Learning Loss Options ------------------------------- #
-_C.LL = CfgNode()
-
-# Margin
-_C.LL.MARGIN = 1.0 # xi
-
-# Weight of learning prediction loss wrt usual training loss
-_C.LL.WEIGHT = 1.0 # lambdas
-
-# What exactly is this?
-_C.LL.EPOCHL = 120
 
 
 # ----------------------------- Miscellaneous Options ------------------------------- #

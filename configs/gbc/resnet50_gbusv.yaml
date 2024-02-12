@@ -1,0 +1,29 @@
+VICTIM:
+  ARCH: 'resnet50'
+  DATASET: 'GBC'
+  DATA_ROOT: '/home/ankita/scratch/Datasets/GBCU-Shared'
+  PATH: 'victim_models/usucl_lincls.pth.tar'
+  WIDTH: 224
+  HEIGHT: 224
+THIEF:
+  ARCH: 'resnet50'
+  DATA_ROOT: '/home/ankita/scratch/Datasets/GBUSV-Shared'
+  DATASET: 'GBUSV'
+  SUBSET: 128116
+ACTIVE:
+  BUDGET: 5000
+  METHOD: 'random'
+  CYCLES: 1
+  USE_PRETRAINED: True
+  PRETRAINED_PATH : '/home/ankita/scratch/MSA_results/ckpts/resnet34-imagenet1k-pretrained.pth'
+RNG_SEED: 1
+METHOD_NAME: 'usucl'
+OUT_DIR: 'results'
+TRAIN:
+  BATCH: 128
+  MOMENTUM: 0.9
+  EPOCH: 50
+  OPTIMIZER: "SGD"
+  LR: 0.02
+  MILESTONES: [60,120,180]
+  WDECAY: 0.

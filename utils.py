@@ -4,7 +4,7 @@ import os
 import torch as torch
 import copy
 # from MSA.config3 import ADDENDUM
-from models import Simodel
+# from models import Simodel
 # import lossnet2
 import gc
 import torch
@@ -20,8 +20,8 @@ from scipy.stats import entropy
 import scipy
 import math
 import sys
-sys.path.append('vaal/')
-from vaal import model,solver
+# sys.path.append('vaal/')
+# from vaal import model,solver
 from tqdm import tqdm
 from collections import Counter, defaultdict
 

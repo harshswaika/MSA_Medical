@@ -1,31 +1,23 @@
 from __future__ import print_function, division
 import os
-import sys
 import random
-import math
-import csv
 import numpy as np
 from tqdm import tqdm
 import torch
 import pandas as pd
-from PIL import Image
 
-
-# os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torch.optim.lr_scheduler as lr_scheduler
-from dataloader import GbDataset, GbRawDataset, GbCropDataset
+from GBCNet.dataloader import GbDataset, GbCropDataset, GbRawDataset
+# from gb_dataloader import GbDataset, GbRawDataset, GbCropDataset
 import torchvision.transforms as T
-import json
-# from models import GbcNet
-from resnet_gc import Resnet50
 
 import utils
 import utilsdfal
-from train_utils_gbc import train_cutmix, train_mixup, train_augmix, testz, train_with_validation, train_with_kd, agree, dist, FocalLoss
+from train_utils_gbc import testz, train_with_validation, train_with_kd, agree, dist
 from conf import cfg, load_cfg_fom_args
 from loader_utils import *
 
@@ -40,57 +32,17 @@ if __name__ == "__main__":
     
     # if (cfg.THIEF.DATASET != 'imagenet32') and (cfg.THIEF.DATASET != 'imagenet32_soft'):
     #     torch.multiprocessing.set_start_method("spawn")
-    width=224
-    height=224
-    set_dir="/home/harsh_s/scratch/datasets/GBCU-Shared"
-    train_set_name="train.txt"
-    test_set_name="test.txt"
-    meta_file="/home/harsh_s/scratch/datasets/GBCU-Shared/roi_pred.json"
-    img_dir="/home/harsh_s/scratch/datasets/GBCU-Shared/imgs"
-
-    with open(meta_file, "r") as f:
-        df = json.load(f)
-    transforms = [T.ToPILImage()]
-    transforms.append(T.Resize((width, height)))
-    #transforms.append(T.RandomHorizontalFlip(0.25))
-    transforms.append(T.ToTensor())
-    img_transforms = T.Compose(transforms)
     
-    val_transforms = T.Compose([T.ToPILImage(), T.Resize((width, height)),\
-                                T.ToTensor()])
-    
-    train_labels = []
-    t_fname = os.path.join(set_dir, train_set_name)
-    with open(t_fname, "r") as f:
-        for line in f.readlines():
-            train_labels.append(line.strip())
-    val_labels = []
-    v_fname = os.path.join(set_dir, test_set_name)
-    with open(v_fname, "r") as f:
-        for line in f.readlines():
-            val_labels.append(line.strip())
-
-    train_dataset = GbRawDataset(img_dir, df, train_labels, img_transforms=img_transforms)
-    train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True, num_workers=5)
-    testset = GbRawDataset(img_dir, df, val_labels, img_transforms=val_transforms)
-    test_loader = DataLoader(testset, batch_size=1, shuffle=True, num_workers=5)
-
-    n_classes=3
     # Load victim dataset (test split only)
-    # testset, victim_normalization_transform, n_classes = load_victim_dataset(cfg, cfg.VICTIM.DATASET, cfg.VICTIM.ARCH)
-    # test_loader = DataLoader(testset, batch_size=128, num_workers=4, shuffle=False, pin_memory=False)  
+    testset, test_loader, n_classes = load_victim_dataset(cfg, cfg.VICTIM.DATASET)
     print(f"Loaded target dataset of size {len(testset)} with {n_classes} classes")
+    
     # Load victim model    
-
-    target_model = Resnet50(num_cls=3, last_layer=False, pretrain=True) 
-
-    target_model.load_state_dict(torch.load(cfg.VICTIM.PATH))
-    target_model.net = target_model.net.float().cuda()
-    # target_model = load_victim_model(cfg.VICTIM.ARCH, cfg.VICTIM.PATH, victim_normalization_transform, n_classes)
+    target_model = load_victim_model(cfg.VICTIM.ARCH, cfg.VICTIM.PATH)
 
     # Evaluate target model on target dataset: sanity check
-    acc, f1, spec, sens = testz(target_model, test_loader)
-    print(f"Target model acc = {acc}")
+    acc, f1, spec, sens = testz(target_model, test_loader, no_roi=False)
+    print(f"\nTarget model acc = {acc}")
     print('Val-Acc: {:.4f} Val-Spec: {:.4f} Val-Sens: {:.4f}'\
             .format(acc, spec, sens))
     
@@ -99,63 +51,14 @@ if __name__ == "__main__":
     results_arr = []
     uncertainty_arr = []
     for trial in range(cfg.RNG_SEED):
-    #for trial in [cfg.RNG_SEED-1]:
 
         # Load thief dataset
-        # Set up thief data with and without augmentation (teacher and student versions)
-        # imagenet_id_labels_file = '/home/ankita/scratch/model_stealing/MSA/datasets/imagenet_birds.csv'
-        # imagenet_id_labels_file = '/home/ankita/model_stealing/MSA/datasets/imagenet_8_random_classes.csv'
-        
-        main_directory = '/home/harsh_s/scratch/datasets/GBUSV-Shared'
-
-# Define a transformation for the images (you can customize this based on your requirements)
-        transforms1 = T.Compose([T.Resize((width, height)),\
-                                T.ToTensor()])
-
-        class CustomDataset(torch.utils.data.Dataset):
-            def __init__(self, main_directory, transform=None):
-                self.main_directory = main_directory
-                self.transform = transform
-
-                # Get the list of subdirectories (each subdirectory represents a class)
-                self.classes = [d.name for d in os.scandir(main_directory) if d.is_dir()]
-
-                # Create a list to store image paths and corresponding labels
-                self.data = []
-                self.samples = []
-
-                # Iterate through subdirectories to collect image paths and labels
-                for i, class_name in enumerate(self.classes):
-                    class_path = os.path.join(main_directory, class_name)
-                    image_paths = [os.path.join(class_path, img) for img in os.listdir(class_path) if img.endswith('.jpg')]
-                    self.data.extend([(img_path, i) for img_path in image_paths])
-                    self.samples.append((img_path, i) for img_path in image_paths)
-                print(len(self.samples))
-
-            def __len__(self):
-                return len(self.data)
-
-            def __getitem__(self, index):
-                # Load and preprocess the image
-                img_path, label = self.samples[index]
-                image = Image.open(img_path)#.convert('RGB')
-
-                if self.transform:
-                    image = self.transform(image)
-
-                return image, label, index
-
-        # Create an instance of the custom dataset
-        thief_data = CustomDataset(main_directory, transforms1)
-        thief_data_aug = CustomDataset(main_directory, transforms1)
-
+        thief_data, thief_data_aug = load_thief_dataset(cfg, cfg.THIEF.DATASET, cfg.THIEF.DATA_ROOT, target_model)
+    
         # Create a data loader for the custom dataset
         batch_size = 16  # You can adjust this based on your needs
         # thief_data = DataLoader(custom_dataset, batch_size=batch_size, shuffle=True)
         # thief_data_aug = DataLoader(custom_dataset, batch_size=batch_size, shuffle=True)
-        
-        # imagenet_id_labels_file = None
-        # thief_data, thief_data_aug = load_thief_dataset(cfg, cfg.THIEF.DATASET, cfg.THIEF.DATA_ROOT, target_model, cfg.VICTIM.DATASET, id_labels_file=imagenet_id_labels_file)
         
         # Setup validation, initial labeled, and unlabeled sets
         indices = list(range(min(cfg.THIEF.NUM_TRAIN, len(thief_data))))
@@ -177,9 +80,7 @@ if __name__ == "__main__":
                                                                     target_model)
 
         dataloaders  = {'train': train_loader, 'test': test_loader, 'val': val_loader, 'unlabeled': unlabeled_loader}
-        
-        # print(list1)
-        
+                
         for cycle in range(cfg.ACTIVE.CYCLES):
             
             print('Validation set distribution: ')
@@ -191,20 +92,20 @@ if __name__ == "__main__":
             print(label_dist)
 
             # Load thief model            
-            # thief_model = load_thief_model(cfg, cfg.THIEF.ARCH, n_classes, cfg.ACTIVE.PRETRAINED_PATH)
-            thief_model = Resnet50().cuda()
+            thief_model = load_thief_model(cfg, cfg.THIEF.ARCH, n_classes, cfg.ACTIVE.PRETRAINED_PATH)
+            # thief_model = Resnet50().cuda()
 
             print("Thief model initialized successfully")
 
             # Compute metrics on target dataset
-            acc, f1, spec, sens = testz(thief_model, test_loader)
+            acc, f1, spec, sens = testz(thief_model, test_loader, no_roi=False)
             agr = agree(target_model, thief_model, test_loader)
-            print(f'Initial model on target dataset: acc = {acc:.4f}, agreement = {agr:.4f}, f1 = {f1:.4f}')
+            print(f'Initial model on target dataset: acc = {acc:.4f}, agreement = {agr:.4f}, f1 = {f1:.4f}, spec = {spec:.4f}, sens = {sens:.4f}')
             
             # Compute metrics on validation dataset
             acc, f1, spec, sens = testz(thief_model, dataloaders['val'])
             agr = agree(target_model, thief_model, dataloaders['val'])
-            print(f'Initial model on validation dataset: acc = {acc:.4f}, agreement = {agr:.4f}, f1 = {f1:.4f}')
+            print(f'Initial model on validation dataset: acc = {acc:.4f}, agreement = {agr:.4f}, f1 = {f1:.4f}, spec = {spec:.4f}, sens = {sens:.4f}')
 
             # Set up thief optimizer, scheduler
             criterion = nn.CrossEntropyLoss(reduction='none')
@@ -237,7 +138,7 @@ if __name__ == "__main__":
 
 
             # Compute accuracy and agreement on target dataset
-            acc,f1, spec, sens = testz(thief_model, test_loader)
+            acc,f1, spec, sens = testz(thief_model, test_loader, no_roi=False)
             agr = agree(target_model, thief_model, test_loader)
             print('Acc, agreement for latest model: ', acc, agr)
 
@@ -248,11 +149,12 @@ if __name__ == "__main__":
             thief_model.load_state_dict(best_state)
 
             # Compute accuracy and agreement on target dataset
-            acc, f1, spec, sens = testz(thief_model, test_loader)
+            acc, f1, spec, sens = testz(thief_model, test_loader, no_roi=False)
             agr = agree(target_model, thief_model, test_loader)
             print('Acc, agreement for best model: ', acc, agr)
             
-            print('Trial {}/{} || Cycle {}/{} || Label set size {} || Test acc {} || Test agreement {}'.format(trial, cfg.RNG_SEED, cycle+1, cfg.ACTIVE.CYCLES, len(labeled_set), acc, agr))
+            print('Trial {}/{} || Cycle {}/{} || Label set size {} || Test acc {:.4f} || Test agreement {:.4f} || Spec {:.4f} || Sens {:.4f}'.format(trial, 
+                                                cfg.RNG_SEED, cycle+1, cfg.ACTIVE.CYCLES, len(labeled_set), acc, agr, spec, sens))
             print("*"*100, "\n")
 
             # Select labeled subset for next cycle            
@@ -288,10 +190,6 @@ if __name__ == "__main__":
                     sele = indexes[arg][0:(cfg.ACTIVE.BUDGET)].numpy().astype('int')
                     sel = list(sele)
                 
-                    #afterdfal=Subset(thief_data, sel)
-
-
-
                     sampler = kCenterGreedy(thief_model, thief_data)
                                         
                     # select unlabeled points farthest from all centers
@@ -307,11 +205,8 @@ if __name__ == "__main__":
                     # select unlabeled points farthest from all centers
                     sele = sampler.select_batch(labeled_set, unlabeled_set, N=cfg.ACTIVE.BUDGET)
                     sel = list(sele)
-
                     afterkc=Subset(thief_data, sel)
-
                     pert, indexes = utilsdfal.dfalv1(thief_model, thief_data, sel)
-
                     arg = np.argsort(pert)
                     selected_index_list = indexes[arg][0:(cfg.ACTIVE.ADDENDUM)].numpy().astype('int')
 
@@ -367,9 +262,12 @@ if __name__ == "__main__":
 
         # Final stats at the end of a trial
         trial_results = {}
+        acc, f1, spec, sens = testz(thief_model, test_loader, no_roi=False)
         f = agree(target_model, thief_model, test_loader)
         trial_results['acc'] = acc
         trial_results['agr'] = f
+        trial_results['spec'] = spec
+        trial_results['sens'] =  sens
         trial_results['label dist'] = dist(labeled_set, dataloaders['train']) #dist(val_set, val_loader) 
         results_arr.append(trial_results)
         li.append(f)
@@ -380,7 +278,7 @@ if __name__ == "__main__":
             np.save(f, val_set) 
             
     # Average agreement at the end of all trials
-    li=np.array(li)
+    li = np.array(li)
     print(np.mean(li),np.std(li))
     
     # Compile results of all trials
@@ -388,10 +286,5 @@ if __name__ == "__main__":
     out_file = f'{cfg.SAVE_DIR}/results.csv'
     df.to_csv(out_file)
     print(df)
-
-    # Compile uncertainty values
-    # dfu = pd.DataFrame.from_dict(uncertainty_arr)
-    # out_file = f'{cfg.SAVE_DIR}/uncertainty.csv'
-    # dfu.to_csv(out_file)
 
     print('Results saved to ', cfg.SAVE_DIR)

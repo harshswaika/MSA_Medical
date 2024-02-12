@@ -1,107 +1,126 @@
-import os
-import sys
-import time
-import random
-import pickle
-import gc
-import glob
-import csv
 import numpy as np
-from sklearn.utils import shuffle
 from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 from tqdm import tqdm
 import torch
-import logging
-import argparse
-#import visdom
 import torch.nn as nn
-import torch.optim as optim
 import torch.utils
 import torch.nn.functional as F
-import torchvision.datasets as dset
-import torch.backends.cudnn as cudnn
-from torchvision import transforms as T
-from torch.utils.data import DataLoader
-from torch.utils.data import Dataset, DataLoader
-import torchvision.transforms as transforms
-from torchvision.utils import save_image
-# from cifar10_models.resnet import resnet18
-from torch.utils.data.sampler import SubsetRandomSampler
-# from config4 import *
-import torch.optim.lr_scheduler as lr_scheduler
 from torch.autograd import Variable
 
-from datasa.sampler import SubsetSequentialSampler
-from models.Simodel import *
-import utils
-import pandas as pd
-import matplotlib as mpt
-import matplotlib.pyplot as plt
-from defenses_grad2 import generate_perturbations, method_gradient_redirection, method_adaptive_misinformation, method_orekondy
+# from datasa.sampler import SubsetSequentialSampler
+# from models.Simodel import *
+# import augmentations
+
+# from defenses_grad2 import generate_perturbations, method_gradient_redirection, method_adaptive_misinformation, method_orekondy
 
 
 from torch.autograd import Variable
 
-class FocalLoss(nn.Module):
-    def __init__(self, gamma=0, size_average=False):
-        super(FocalLoss, self).__init__()
-        self.gamma = gamma
-        self.size_average = size_average
+# class FocalLoss(nn.Module):
+#     def __init__(self, gamma=0, size_average=False):
+#         super(FocalLoss, self).__init__()
+#         self.gamma = gamma
+#         self.size_average = size_average
 
-    def forward(self, input, target):
-        if input.dim()>2:
-            input = input.view(input.size(0),input.size(1),-1)  # N,C,H,W => N,C,H*W
-            input = input.transpose(1,2)    # N,C,H*W => N,H*W,C
-            input = input.contiguous().view(-1,input.size(2))   # N,H*W,C => N*H*W,C
-        target = target.view(-1,1)
+#     def forward(self, input, target):
+#         if input.dim()>2:
+#             input = input.view(input.size(0),input.size(1),-1)  # N,C,H,W => N,C,H*W
+#             input = input.transpose(1,2)    # N,C,H*W => N,H*W,C
+#             input = input.contiguous().view(-1,input.size(2))   # N,H*W,C => N*H*W,C
+#         target = target.view(-1,1)
 
-        logpt = F.log_softmax(input, dim=-1)
-        logpt = logpt.gather(1,target)
-        logpt = logpt.view(-1)
-        pt = logpt.exp()
+#         logpt = F.log_softmax(input, dim=-1)
+#         logpt = logpt.gather(1,target)
+#         logpt = logpt.view(-1)
+#         pt = logpt.exp()
 
-        loss = -1 * (1-pt)**self.gamma * logpt
-        if self.size_average: return loss.mean()
-        # else: return loss.sum()
-        else: return loss
+#         loss = -1 * (1-pt)**self.gamma * logpt
+#         if self.size_average: return loss.mean()
+#         # else: return loss.sum()
+#         else: return loss
         
 
-def testz(model, dataloader):
-    model.eval()
-
-    trues = []
-    preds = []
-    y_true, y_pred = [], []
-    # print("Calculating metrics")
-    # import pdb;pdb.set_trace()
-    with torch.no_grad():
-        for images, targets, fnames in (dataloader):
-            inputs, labels = images.float().cuda(), targets.cuda()
-
-            # outputs = model(inputs)
-            # _, pred = torch.max(scores.data, 1)
-            # # pred_idx = pred.item()
-            # y_true.append(targets.tolist()[0])
-            # y_pred.append(pred.item())
-
-            scores = model(inputs)
-            _, pred = torch.max(scores.data, 1)
-
-            y_pred.append(pred.cpu())
-            y_true.append(labels.cpu())
-
-        y_pred = np.concatenate(y_pred)
-        y_true = np.concatenate(y_true)
-
-    # acc = accuracy_score(y_true, y_pred)
-    # cfm = confusion_matrix(y_true, y_pred)
+# def testz(model, dataloader, no_roi=True):
     
-    # print('max predicted label: ', preds.max())
+#     model.eval()
+#     y_true, y_pred = [], []
+#     with torch.no_grad():
+#         for images, targets, fnames in (dataloader):
+#             images, targets = images.float().cuda(), targets.cuda()
+#             # if not no_roi:
+#             if len(images.shape) == 5:
+#                 images = images.squeeze(0)
+#                 outputs =  model(images)
+#                 _, pred = torch.max(outputs, dim=1)
+#                 pred_label = torch.max(pred)
+#                 pred_idx = pred_label.item()
+#                 pred_label = pred_label.unsqueeze(0)
+#                 idx = torch.argmax(pred)
+                
+#                 y_true.append(targets.tolist()[0][0])
+#                 y_pred.append(pred_label.item())
+#             else:
+#                 outputs = model(images)
+#                 _, pred = torch.max(outputs, dim=1)
+#                 # pred_idx = pred.item()
+#                 y_true.extend(targets.tolist())
+#                 y_pred.extend(pred.tolist())
+#                 # images = images.squeeze(0)
+#                 # inputs, labels = images.float().cuda(), targets.cuda()
+
+#     # print('y_true: ', y_true)
+#     # print('y_pred: ', y_pred)
+#     acc = accuracy_score(y_true, y_pred)
+#     cfm = confusion_matrix(y_true, y_pred)
+#     spec = (cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1])/(np.sum(cfm[0]) + np.sum(cfm[1]))
+#     sens = cfm[2][2]/np.sum(cfm[2])
+#     f1 = f1_score(y_true=y_true, y_pred=y_pred, average='macro')
+    
+#     return acc, f1, spec, sens
+
+
+def testz(model, dataloader, no_roi=True, verbose=True):
+    
+    model.eval()
+    y_true, y_pred = [], []
+    model.eval()
+    y_true, y_pred = [], []
+    for i, (inp, target, fname) in enumerate(dataloader):
+        with torch.no_grad():
+            input_var = torch.autograd.Variable(inp.cuda())
+            target_var = torch.autograd.Variable(target)
+
+            if len(input_var.shape) == 5:
+                images = input_var.squeeze(0)
+                outputs =  model(images)
+                _, pred = torch.max(outputs, dim=1)
+                pred_label = torch.max(pred)
+                pred_label = pred_label.unsqueeze(0)
+                
+                y_true.append([target_var.tolist()[0][0]])
+                y_pred.append([pred_label.tolist()])
+
+            else:
+                outputs = model(input_var)
+                _, pred_label = torch.max(outputs, dim=1)
+                y_pred.append(pred_label.tolist()) 
+                y_true.append(target_var.tolist())
+
+    y_pred = np.concatenate(y_pred, 0)
+    y_true = np.concatenate(y_true, 0)
+
+    # print('y_pred: ', y_pred)
+    # print('y_true: ', y_true)
+
     acc = accuracy_score(y_true, y_pred)
     cfm = confusion_matrix(y_true, y_pred)
     spec = (cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1])/(np.sum(cfm[0]) + np.sum(cfm[1]))
     sens = cfm[2][2]/np.sum(cfm[2])
     f1 = f1_score(y_true=y_true, y_pred=y_pred, average='macro')
+
+    if verbose == True:
+        print('specificity = {}/{}'.format(cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1], np.sum(cfm[0]) + np.sum(cfm[1])))
+        print('sensitivity = {}/{}'.format(cfm[2][2], np.sum(cfm[2])))
     
     return acc, f1, spec, sens
 
@@ -147,19 +166,35 @@ def testz_grad2(model, dataloader,testset,model_sur,epsilon):
     
     return acc, f1
 
+
 def agree(model1, model2, test_loader):
     c=0
     l=0
     model1.eval()
     model2.eval()
     with torch.no_grad():
-        for batch_idx, data in enumerate(test_loader):
-            inputs = data[0].cuda()
-            n=inputs.shape[0]
-            x1=model1(inputs).argmax(axis=-1,keepdims=False)
-            x2=model2(inputs).argmax(axis=-1,keepdims=False)
-            c+=n-int((torch.count_nonzero(x1-x2)).detach().cpu())
-            l+=n
+        for images, targets, _ in test_loader:
+            images, targets = images.float().cuda(), targets.cuda()
+            if len(images.shape) == 5:
+                images = images.squeeze(0)
+                
+                outputs =  model1(images)
+                _, pred = torch.max(outputs, dim=1)
+                x1 = torch.max(pred)
+                
+                outputs =  model2(images)
+                _, pred = torch.max(outputs, dim=1)
+                x2 = torch.max(pred)
+
+                n = images.shape[0]
+                c+=n-int((torch.count_nonzero(x1-x2)).detach().cpu())
+                l+=n
+            else:
+                n=images.shape[0]
+                x1=model1(images).argmax(axis=-1,keepdims=False)
+                x2=model2(images).argmax(axis=-1,keepdims=False)
+                c+=n-int((torch.count_nonzero(x1-x2)).detach().cpu())
+                l+=n
             # print(c, l)
     # print('Agreement between Copy and source model is ', c/l)
     return c / l
@@ -211,41 +246,6 @@ def rand_bbox(size, lam):
     return bbx1, bby1, bbx2, bby2
 
 
-# def train(model, criterion, optimizers, scheduler, dataloaders, num_epochs, vis, plot_data):
-#     print('>> Train a Model.')
-#     # checkpoint_dir = os.path.join('./cifar10', 'train', 'weights')
-#     # if not os.path.exists(checkpoint_dir):
-#     #     os.makedirs(checkpoint_dir)
-#     for epoch in tqdm(range(num_epochs), leave=False):
-#         # schedulers['backbone'].step()
-#         # schedulers['module'].step()
-
-#         train_epoch(model, criterion, optimizers, dataloaders, vis, plot_data)
-#         scheduler.step()
-
-#         if (epoch+1) % 10 == 0:
-#             train_acc = test(model, dataloaders['train'])
-#             test_acc = test(model, dataloaders['test'])
-#             print(f'Train acc = {train_acc}, Test acc = {test_acc}')
-
-#         # Save a checkpoint
-#         if False and epoch % 10 == 0:
-#             acc = test(models, dataloaders, 'test')
-#             acc2= test(models, dataloaders, 'train')
-#             if best_acc < acc:
-#                 best_acc = acc
-#                 torch.save({
-#                     'epoch': epoch + 1,
-#                     'state_dict_backbone': models['backbone'].state_dict(),
-#                     'state_dict_module': models['module'].state_dict()
-#                 },
-#                 '%s/active_resnet18_cifar10.pth' % (checkpoint_dir))
-#             print('Train Acc: {:.3f}'.format(acc2))
-#             agree(model,models['backbone'],dataloaders['test'])
-#             print('Val Acc: {:.3f} \t Best Acc: {:.3f}'.format(acc, best_acc))
-#     print('>> Finished.')
-
-
 def train_with_validation(model, criterion, optimizers, scheduler, dataloaders, num_epochs, trial, cycle, out_dir, display_every = 5, early_stop_tolerance=100, la=None):
     print('>> Train a Model.')
     # checkpoint_dir = os.path.join('./cifar10', 'train', 'weights')
@@ -265,7 +265,7 @@ def train_with_validation(model, criterion, optimizers, scheduler, dataloaders, 
         scheduler.step()
 
         if (epoch+1)%2==0:
-            val_acc, val_f1, spec, sens = testz(model, dataloaders['val'])
+            val_acc, val_f1, spec, sens = testz(model, dataloaders['val'], verbose=False)
             # test_acc, test_f1 = testz(model, dataloaders['test'])
 
             # out_dir_cycle = os.path.join(out_dir, str(trial+1), str(cycle+1))
@@ -296,8 +296,8 @@ def train_with_validation(model, criterion, optimizers, scheduler, dataloaders, 
 
         # Display progress
         if (epoch+1) % display_every == 0:
-            train_acc, train_f1, spec1, sens1 = testz(model, dataloaders['train'])
-            test_acc, test_f1, spec2, sens2 = testz(model, dataloaders['test'])
+            train_acc, train_f1, spec1, sens1 = testz(model, dataloaders['train'], verbose=False)
+            test_acc, test_f1, spec2, sens2 = testz(model, dataloaders['test'], verbose=False)
             print(f"Epoch {epoch+1}: Train acc/f1 = {train_acc:.4f} / {train_f1:.4f} / {spec1:.4f} / {sens1:.4f} \n\
                 Val acc/f1/spec/sens = {val_acc:.4f} / {val_f1:.4f} / {spec:.4f} / {sens:.4f}\n\
                 Test acc/f1/spec/sens = {test_acc:.4f} / {test_f1:.4f} / {spec2:.4f} / {sens2:.4f}")
@@ -510,133 +510,6 @@ def train_epoch_kd(model, criterion, optimizer, dataloaders, temperature, alpha,
 
     mean_loss = total_loss / iters
     return mean_loss
-
-
-def train_ssl(model, criterion, optimizer, scheduler, dataloaders, num_epochs, trial, cycle, out_dir, display_every = 10, early_stop_tolerance=100):
-    print('>> Train a Model.')
-    # checkpoint_dir = os.path.join('./cifar10', 'train', 'weights')
-    # if not os.path.exists(checkpoint_dir):
-    #     os.makedirs(checkpoint_dir)
-    
-    # set some parameters
-    temp = 1
-    threshold = 0.8
-    lambda_u = 1
-
-    exit = False
-    curr_loss = None
-    best_f1 = None
-    no_improvement = 0
-
-    labeled_loader = dataloaders['train']
-    unlabeled_loader = dataloaders['unlabeled']
-    labeled_iter = iter(labeled_loader)
-    unlabeled_iter = iter(unlabeled_loader)
-    eval_step = len(labeled_iter)
-    print("\nLabeled iter length = ", len(labeled_iter))
-    print("Unlabeled iter length = ", len(unlabeled_iter))
-    
-    for epoch in tqdm(range(num_epochs), leave=False):
-        
-        model.train()
-        # iters = 0
-        # total_loss = 0
-
-        # for data in dataloaders['train']:
-        mask_probs_running = []
-        for batch_idx in range(eval_step):
-            try:
-                inputs_x, targets_x, _ = labeled_iter.next()
-            except:
-                # print(f"labeled loader exhausted at epoch {epoch}, batch {batch_idx}, step {epoch*eval_step+batch_idx}")
-                labeled_iter = iter(labeled_loader)
-                inputs_x, targets_x, _ = labeled_iter.next()
-            # targets_x = targets_x.to(args.device)
-            targets_x = targets_x.cuda()
-
-            try:
-                inputs_u, _, _ = unlabeled_iter.next()
-            except:
-                # print(f"unlabeled loader exhausted at epoch {epoch}, batch {batch_idx}, step {epoch*eval_step+batch_idx}")
-                unlabeled_iter = iter(unlabeled_loader)
-                inputs_u, _, _ = unlabeled_iter.next()
-                
-            # optimizer.zero_grad()
-            # compute pseudolabels on unlabeled data
-            logits_x = model(inputs_x.cuda())
-            logits_u = model(inputs_u.cuda())
-
-            Lx = F.cross_entropy(logits_x, targets_x, reduction='mean')
-
-            pseudo_label = torch.softmax(logits_u.detach()/temp, dim=-1)
-            max_probs, targets_u = torch.max(pseudo_label, dim=-1)
-            mask = max_probs.ge(threshold).float()
-            mask_probs_running.append(mask.mean().cpu().numpy())
-
-            Lu = (F.cross_entropy(logits_u, targets_u,
-                                  reduction='none') * mask).mean()
-
-            loss = Lx + lambda_u * Lu
-            # total_loss += torch.sum(target_loss)
-            
-            loss.backward()
-            optimizer.step()
-            scheduler.step()
-            model.zero_grad()
-
-        if epoch%1==0:
-            val_acc, val_f1 = testz(model, dataloaders['val'])
-            # test_acc, test_f1 = testz(model, dataloaders['test'])
-
-            # out_dir_cycle = os.path.join(out_dir, str(trial+1), str(cycle+1))
-            # if not os.path.exists(out_dir_cycle):
-                # os.makedirs(out_dir_cycle)
-
-            if best_f1 is None or val_f1 > best_f1 :
-                best_f1 = val_f1
-                torch.save({
-                    'trial': trial + 1,
-                    'cycle': cycle + 1, 
-                    'epoch': epoch + 1,
-                    'state_dict': model.state_dict(),
-                    },
-                    f'{out_dir}/trial_{trial+1}_best.pth')
-
-                # print(f"Epoch {epoch+1} Model saved in path: {os.path.join(out_dir, f'trial_{trial+1}_best.pth')}")
-                no_improvement = 0
-            else:
-                no_improvement += 1
-                
-                if (no_improvement % early_stop_tolerance) == 0:
-                    # if t_loss > 1.5:
-                    #     no_improvement = 0
-                    #     print('loss = ', t_loss)
-                    # else:
-                    exit = True
-
-        # Display progress
-        if epoch % display_every == 0:
-            train_acc, train_f1 = testz(model, dataloaders['train'])
-            test_acc, test_f1 = testz(model, dataloaders['test'])
-            print(f"Epoch {epoch+1}: Train acc/f1 = {train_acc:.4f} / {train_f1:.4f} \n\
-                Val acc/f1 = {val_acc:.4f} / {val_f1:.4f} \n\
-                Test acc/f1 = {test_acc:.4f} / {test_f1:.4f} \n\
-                Avg Mask prob = {np.asarray(mask_probs_running).mean():.4f}")
-
-        if exit:
-            print(f"Number of epochs processed: {epoch+1} in cycle {cycle+1}") 
-            break
-
-    train_acc, train_f1 = testz(model, dataloaders['train'])
-    val_acc, val_f1 = testz(model, dataloaders['val'])
-    test_acc, test_f1 = testz(model, dataloaders['test'])
-
-    print(f"Trial {trial+1}, Cycle {cycle+1}")
-    print(f"Train acc/f1 = {train_acc:.4f} / {train_f1:.4f}")
-    print(f"Val acc/f1 = {val_acc:.4f} / {val_f1:.4f}")
-    print(f"Test acc/f1 = {test_acc:.4f} / {test_f1:.4f}")
-
-    print('>> Finished.')
 
 
 def train_cutmix(model, criterion, optimizers, scheduler, dataloaders, num_epochs, trial, cycle, out_dir, beta, cutmix_prob, display_every = 10, early_stop_tolerance=100):
@@ -909,9 +782,6 @@ def train_augmix(model, criterion, optimizers, scheduler, dataloaders, num_epoch
 
     print('>> Finished.')
 
-
-
-import augmentations
 
 def train_epoch_augmix(model, criterion, optimizer, dataloaders, preprocess, vis=None, plot_data=None, all_ops=False, mixture_width=3, mixture_depth=1, 
         aug_severity=3):

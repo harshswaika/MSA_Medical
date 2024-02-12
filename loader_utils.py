@@ -1,6 +1,8 @@
 import csv
 from tqdm import tqdm
+import os, sys
 
+from PIL import Image
 import torch.nn as nn
 import torch.optim as optim
 import torch.utils
@@ -8,121 +10,137 @@ from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
 from torchvision.utils import save_image
 import torch.optim.lr_scheduler as lr_scheduler
-from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
-from torchvision.models import resnet34#, ResNet34_Weights
-from datasa.sampler import SubsetSequentialSampler
+from torchvision.models import resnet34, resnet50
 
-from models.victim import Victim
-from models.Simodel import *
-from models.cifar10_models import resnet34 as cifar10_resnet34
-import datasets
+# import datasets
+import json
+
+sys.path.append('GBCNet')
+from GBCNet.dataloader import GbDataset, GbRawDataset, GbCropDataset
+from GBCNet.models import Resnet50 as Resnet50_GC
+from GBCNet.models import GbcNet
+
+sys.path.append('RadFormer')
+from RadFormer.models import RadFormer
+from RadFormer.dataloader import GbUsgDataSet, GbUsgRoiTestDataSet
 
 
-def load_victim_dataset(cfg, dataset_name, model_arch):
-    test_datasets = datasets.__dict__.keys()
-    if dataset_name not in test_datasets:
-        raise ValueError('Dataset not found. Valid arguments = {}'.format(test_datasets))
-    dataset = datasets.__dict__[dataset_name]
-
-    # load model family
-    modelfamily = datasets.dataset_to_modelfamily[dataset_name]
-    print('modelfamily: ', modelfamily)
+def load_victim_dataset(cfg, dataset_name):
     
-    # load victim normalization transform as per victim model family
-    if dataset_name == 'CIFAR10' and model_arch == 'cnn32':
-        print("No normalization in test data")
-        victim_mean_std = {'mean': (0.0,), 'std': (1.0,),}
-    else:
-        victim_mean_std = datasets.modelfamily_to_mean_std[modelfamily]
-    victim_normalization_transform = transforms.Compose([transforms.Normalize(mean=victim_mean_std['mean'],
-                                 std=victim_mean_std['std'])])
-    # load test dataset
-    test_transform = datasets.modelfamily_to_transforms_sans_normalization[modelfamily]['test']    
-    testset = dataset(cfg, train=False, transform=test_transform) 
-    n_classes = len(testset.classes)  
+    if dataset_name == 'GBC':
+        n_classes=3
+        set_dir=cfg.VICTIM.DATA_ROOT
+        meta_file=os.path.join(set_dir, 'roi_pred.json') 
+        img_dir=os.path.join(set_dir, 'imgs') 
+        test_set_name="test.txt"
+
+        with open(meta_file, "r") as f:
+            df = json.load(f)
+        
+        val_transforms = transforms.Compose([
+                                            transforms.ToPILImage(), 
+                                            transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.HEIGHT)),
+                                            transforms.ToTensor()
+                                            ])
+        
+        val_labels = []
+        v_fname = os.path.join(set_dir, test_set_name)
+        with open(v_fname, "r") as f:
+            for line in f.readlines():
+                val_labels.append(line.strip())
+        testset = GbCropDataset(img_dir, df, val_labels, to_blur=False, sigma=0, p=0.15, img_transforms=val_transforms)        
+
+        # val_transforms = transforms.Compose([
+        #                                     transforms.Resize((cfg.VICTIM.WIDTH)),
+        #                                     transforms.CenterCrop(224),
+        #                                     transforms.ToTensor()
+        #                                     ])
+        # testset = GbUsgRoiTestDataSet(data_dir=img_dir, df=df, image_list_file=os.path.join(set_dir, test_set_name), 
+                                    #   to_blur=False, sigma=0, transform=val_transforms)        
+        test_loader = DataLoader(testset, batch_size=1, shuffle=True, num_workers=5)
+
     
-    return testset, victim_normalization_transform, n_classes
+    elif dataset_name == 'gbusg':
+        n_classes = 3
+        set_dir=cfg.VICTIM.DATA_ROOT
+        img_dir=os.path.join(set_dir, 'imgs') 
+        list_file = os.path.join(set_dir, 'test.txt')
+        normalize = transforms.Normalize([0.485, 0.456, 0.406],
+                                     [0.229, 0.224, 0.225])
+
+        testset = GbUsgDataSet(data_dir=img_dir, 
+                                image_list_file=list_file,
+                                transform=transforms.Compose([
+                                    transforms.Resize(224),
+                                    transforms.CenterCrop(224),
+                                    transforms.ToTensor(),
+                                    normalize,
+                                ]))
+
+    test_loader = DataLoader(dataset=testset, batch_size=1, 
+                                shuffle=False, num_workers=0)
+
+    return testset, test_loader, n_classes
 
 
-def load_victim_model(arch, model_path, normalization_transform, n_classes):
+class Victim(nn.Module):
+    """class for victim model
+
+    Args:
+        nn (_type_): _description_
+    """
+    def __init__(self, model, arch):
+        super(Victim, self).__init__()
+        self.model = model
+        self.arch = arch
+        
+    def forward(self, x):
+        # change forward here
+        out = self.model(x)
+        if self.arch == 'radformer':
+            return out[2]
+        return out
+
+
+def load_victim_model(arch, model_path):
     # Define architecture
-    if arch == 'cnn32':
-        target_model = Simodel(channels=1) 
-    elif arch == 'resnet32':
-        target_model = cifar10_resnet34(num_classes=n_classes)
-    elif arch == 'resnet34':
-        target_model = resnet34(num_classes=n_classes)
+    if arch == 'resnet50_usucl':
+        target_model.net = resnet50(num_classes=3) 
+        target_model.net.fc = nn.Sequential(
+                          nn.Linear(num_ftrs, 256), 
+                          nn.ReLU(inplace=True), 
+                          nn.Dropout(0.4),
+                          nn.Linear(256, 3)
+                        )
+    elif arch == 'resnet50_gc':
+        target_model = Resnet50_GC(num_cls=3, last_layer=False, pretrain=True) 
+    elif arch == 'gbcnet':
+        target_model = GbcNet(num_cls=3, pretrain=False)
+    elif arch == 'radformer':
+        target_model = RadFormer(local_net='bagnet33', \
+                        num_cls=3, \
+                        global_weight=0.55, \
+                        local_weight=0.1, \
+                        fusion_weight=0.35, \
+                        use_rgb=True, num_layers=4, pretrain=False)
     
     # Load weights
-    try:
-        state_dict = torch.load(model_path)['state_dict']
-        state_dict = {key.replace("last_linear", "fc"): value for key, value in state_dict.items()}
-        target_model.load_state_dict(state_dict, strict=False)
-    except: 
-        state_dict = torch.load(model_path, map_location=torch.device('cpu'))
-        target_model.load_state_dict(state_dict, strict=False)
-
-    target_model=target_model.cuda()
-    print(f"Loaded target model {model_path}")
+    print('target model keys: ', len(target_model.state_dict().keys()))
+    checkpoint_dict = torch.load(model_path, map_location='cpu')
+    if 'state_dict' in checkpoint_dict:
+        checkpoint_dict = checkpoint_dict['state_dict']
+    print('checkpoint keys: ', len(checkpoint_dict.keys()))
+    target_model.load_state_dict(checkpoint_dict, strict=True)
+    # target_model.net = target_model.net.float().cuda()
+    target_model = Victim(target_model.float().cuda(), arch)
     
-    # Set victim model to use normalization transform internally
-    target_model = Victim(target_model, normalization_transform)
     
     return target_model
     
     
-def load_thief_dataset(cfg, dataset_name, data_root, target_model, victim_dataset_name, id_labels_file=None):
-    
-    if dataset_name == 'imagenet32':
-        dataset = datasets.__dict__["ImageNet32"]
-        if victim_dataset_name == 'MNIST':
-            teacher_transform = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225])
-            student_transform = transforms.Compose([
-                transforms.RandomCrop(32, padding=4),
-                # transforms.RandomHorizontalFlip(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                    std=[0.229, 0.224, 0.225])
-            ])
-
-        # elif victim_dataset_name == 'SVHN':
-        #     teacher_transform = None
-        #     student_transform = transforms.Compose([
-        #         transforms.RandomCrop(32, padding=4),
-        #         # transforms.RandomHorizontalFlip(),
-        #     ])
-        else:            
-            teacher_transform = None
-            student_transform = transforms.Compose([
-                transforms.RandomCrop(32, padding=4),
-                transforms.RandomHorizontalFlip(),
-            ])
-        
-        thief_data = dataset(data_root, transform=teacher_transform)         
-        thief_data_aug = dataset(data_root, transform=student_transform)  
-
-    elif dataset_name == 'imagenet32_soft':
-        dataset = datasets.__dict__["ImageNet32_Soft"]
-        if victim_dataset_name == 'MNIST':
-            teacher_transform = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225])
-            student_transform = transforms.Compose([
-                transforms.RandomCrop(32, padding=4),
-                # transforms.RandomHorizontalFlip(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                    std=[0.229, 0.224, 0.225])
-            ])
-        else:            
-            teacher_transform = None
-            student_transform = transforms.Compose([
-                transforms.RandomCrop(32, padding=4),
-                transforms.RandomHorizontalFlip(),
-            ])
-        
-        thief_data = dataset(data_root, transform=teacher_transform)         
-        thief_data_aug = dataset(data_root, transform=student_transform)  
+def load_thief_dataset(cfg, dataset_name, data_root, target_model):
    
-    elif dataset_name == 'imagenet_full':
+    if dataset_name == 'imagenet_full':
         dataset = datasets.__dict__["ImageNet1k"]
         teacher_transform = transforms.Compose([
                 transforms.Resize((224,224)),
@@ -137,42 +155,33 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model, victim_datase
             ])
         thief_data = dataset(cfg, target_model, transform=teacher_transform)
         thief_data_aug = dataset(cfg, target_model, transform=student_transform)
-        
-    elif cfg.THIEF.DATASET == 'imagenet_subset':
-        dataset = datasets.__dict__["ImageNet_Subset"]
-        if id_labels_file is None:
-            raise(AssertionError)
-        else:
-            with open(id_labels_file) as f:
-                reader = csv.reader(f, delimiter=',')
-                imagenet_id_labels = next(reader)
-        
-        imagenet_id_labels = [a for a in imagenet_id_labels if len(a) != 0]      
-        print('Number of ID classes in imagenet: ', len(imagenet_id_labels))
-        print(imagenet_id_labels)
 
-        teacher_transform = transforms.Compose([
-                transforms.Resize((224,224)),
-                transforms.ToTensor()
-            ])
-        student_transform = transforms.Compose([
-                transforms.Resize((224,224)),
-                # transforms.RandomCrop(224, pad_if_needed=True),
-                # transforms.RandomRotation(5),
-                # transforms.RandomHorizontalFlip(),
-                transforms.ToTensor()
-            ])
+    elif dataset_name == 'GBUSV':
+        from gbusv_dataset import GbVideoDataset
 
-        thief_data = dataset(cfg, target_model, transform=teacher_transform, subset_class_names=imagenet_id_labels)
-        thief_data_aug = dataset(cfg, target_model, transform=student_transform, subset_class_names=imagenet_id_labels)
-    
+        # Create an instance of the custom dataset
+        if cfg.VICTIM.ARCH == 'gbcnet':
+            transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.HEIGHT)),\
+                                transforms.ToTensor()])
+        elif cfg.VICTIM.ARCH == 'radformer':
+            normalize = transforms.Normalize(  
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225]
+                )
+            transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.HEIGHT)),\
+                                    transforms.ToTensor(), 
+                                    normalize])
+        
+        thief_data = GbVideoDataset(data_root, transforms1)
+        thief_data_aug = GbVideoDataset(data_root, transforms1)
+        
     else:
         raise AssertionError('invalid thief dataset')
     
     return thief_data, thief_data_aug
         
     
-def  create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlabeled_set, batch_size, target_model):
+def create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlabeled_set, batch_size, target_model):
     
     print("replacing labeled set labels with victim labels")
     # print(labeled_set)
@@ -278,22 +287,32 @@ def create_thief_loaders_soft_labels(cfg, thief_data, thief_data_aug, labeled_se
         
     
 def load_thief_model(cfg, arch, n_classes, pretrained_path):
-    if arch == 'cnn32':
-        thief_model = Simodel()
-    elif arch == 'resnet32':
-        thief_model = cifar10_resnet34(num_classes=n_classes)
-    elif arch == 'resnet34':
+    if arch == 'resnet34':
         thief_model = resnet34(num_classes=n_classes)
+    elif arch == 'resnet50':
+        thief_model = resnet50(num_classes=n_classes)
+
+    # elif arch == 'resnet50_usucl':
+        # thief_model.net = resnet50(num_classes=3) 
+        # thief_model.net.fc = nn.Sequential(
+        #                   nn.Linear(num_ftrs, 256), 
+        #                   nn.ReLU(inplace=True), 
+        #                   nn.Dropout(0.4),
+        #                   nn.Linear(256, 3)
+        #                 )
 
     if cfg.ACTIVE.USE_PRETRAINED == True:
-        print("Load pretrained model for initializing the thief")
         thief_state = thief_model.state_dict()
-        # weights = ResNet34_Weights.DEFAULT
-        pretrained_state = torch.load(pretrained_path)  #['state_dict']
+        print('thief state: ', print(thief_state.keys()))
+
+        print("Load pretrained model for initializing the thief")
+        pretrained_state = torch.load(pretrained_path) 
+        if 'state_dict' in pretrained_state:
+            pretrained_state = pretrained_state['state_dict']
         pretrained_state = { k:v for k,v in pretrained_state.items() if k in thief_state and v.size() == thief_state[k].size() }
+        print('pretrained state: ', pretrained_state.keys())
         thief_state.update(pretrained_state)
-        thief_model.load_state_dict(thief_state, strict=False)
-        # thief_model = resnet34(weights=weights,num_classes=n_classes)
+        thief_model.load_state_dict(thief_state, strict=True)
     thief_model = thief_model.cuda()
     
     return thief_model
