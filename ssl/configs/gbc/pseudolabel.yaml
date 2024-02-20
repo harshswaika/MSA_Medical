@@ -1,0 +1,77 @@
+victim_dataset: 'gbusg'
+victim_arch: 'radformer'
+victim_model_path: '/home/ankita/scratch/MSA_Medical/victim_models/radformer/radformer.pkl'
+victim_data_root: '/home/ankita/scratch/Datasets/GBCU-Shared'
+num_classes: 3
+img_size: 224
+
+dataset: 'GBUSV'
+subset: 128116
+net: 'resnet50'
+net_from_name: False
+thief_root: '/home/ankita/scratch/Datasets/GBUSV-Shared'
+
+use_pretrain: True
+pretrained_dir: '/home/ankita/scratch/MSA_results/ckpts/resnet50-imagenet1k.pth'
+load_labeled_set: True
+
+warmstart: False
+warmstart_dir: '/home/ankita/scratch/MSA_Medical/results/gbusg_radformer/GBUSV_resnet50/SGD/5000_val500/random_v4/trial_1_cycle_1_best.pth'
+# warmstart_dir: '/home/ankita/scratch/MSA_Medical/results/gbusg_radformer/GBUSV_resnet50/SGD/5000_val500/random_v4/trial_1_cycle_1_temperature.pth'
+# warmstart_dir: '/home/ankita/scratch/MSA_Medical/results/gbusg_radformer/GBUSV_resnet50/SGD/5000_val500/random_v4/trial_1_cycle_1_dirichlet.pth'
+
+labeled_set_path: '/home/ankita/scratch/MSA_Medical/results/gbusg_radformer/GBUSV_resnet50/SGD/5000_val500/random_v4/X_trial_1_cycle_1_labeled_set.npy'
+val_set_path: '/home/ankita/scratch/MSA_Medical/results/gbusg_radformer/GBUSV_resnet50/SGD/5000_val500/random_v4/X_trial_1_cycle_1_val_set.npy'
+save_dir: 'saved_models/radformer'
+
+save_name: 'psuedolabel_v22'
+
+scheduler_type: 'cosine'  #'cosine_fixmatch'
+epoch: 200
+warmup_epoch: 10
+weight_decay: 0.005 #0.0005
+layer_decay: 0.65
+optim: SGD
+p_cutoff: 0.95  #0.95
+
+la: False
+tro: 1
+lr: 0.05  #0.002  
+ulb_loss_ratio: 1.0 #1.0
+expand_labels: True #False #True
+batch_size: 16  #128 #8
+
+algorithm: pseudolabel
+resume: False
+overwrite: True
+use_tensorboard: True
+use_wandb: False
+num_train_iter: 204800
+num_log_iter: 256
+num_eval_iter: 2048
+eval_batch_size: 16
+num_warmup_iter: 5120
+num_labels: 5000
+uratio: 1
+ema_m: 0.0
+unsup_warm_up: 0.4
+crop_ratio: 0.875
+
+momentum: 0.9
+amp: False
+clip: 0.0
+use_cat: True
+train_sampler: RandomSampler
+num_workers: 4
+seed: 0
+world_size: 1
+rank: 0
+multiprocessing_distributed: False
+dist_url: tcp://127.0.0.1:10018
+dist_backend: nccl
+gpu: None
+no_progress: True
+
+eval_step: 234
+local_rank: -1
+warmup: 0

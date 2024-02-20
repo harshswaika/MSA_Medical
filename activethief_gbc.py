@@ -16,7 +16,7 @@ from GBCNet.dataloader import GbDataset, GbCropDataset, GbRawDataset
 import torchvision.transforms as T
 
 import utils
-import utilsdfal
+# import utilsdfal
 from train_utils_gbc import testz, train_with_validation, train_with_kd, agree, dist
 from conf import cfg, load_cfg_fom_args
 from loader_utils import *
@@ -71,11 +71,11 @@ if __name__ == "__main__":
         
         # Create train, val and unlabeled dataloaders
         if cfg.THIEF.HARD_LABELS is True:
-            train_loader, val_loader, unlabeled_loader,list1 = create_thief_loaders(thief_data, thief_data_aug, labeled_set, 
+            train_loader, val_loader, unlabeled_loader, list1 = create_thief_loaders(thief_data, thief_data_aug, labeled_set, 
                                                                               val_set, unlabeled_set, cfg.TRAIN.BATCH, 
                                                                               target_model)
         else:
-            train_loader, val_loader, unlabeled_loader = create_thief_loaders_soft_labels(cfg, thief_data, thief_data_aug, 
+            train_loader, val_loader, unlabeled_loader = create_thief_loaders_soft_labels(thief_data, thief_data_aug, 
                                                                     labeled_set, val_set, unlabeled_set, cfg.TRAIN.BATCH, 
                                                                     target_model)
 
@@ -130,11 +130,11 @@ if __name__ == "__main__":
             if cfg.THIEF.HARD_LABELS is True:
                 train_with_validation(thief_model, criterion, optimizer, scheduler, dataloaders, 
                                   cfg.TRAIN.EPOCH, trial, cycle, cfg.SAVE_DIR,
-                                  la=logit_adjustments)
+                                  la=logit_adjustments, display_every=5)
             else:
                 train_with_kd(thief_model, criterion, optimizer, scheduler, dataloaders, 
                           cfg.TRAIN.EPOCH, trial, cycle, cfg.SAVE_DIR, 
-                          temp=cfg.ACTIVE.TEMP, alpha=cfg.ACTIVE.ALPHA)
+                          temp=cfg.ACTIVE.TEMP, alpha=cfg.ACTIVE.ALPHA, display_every=5)
 
 
             # Compute accuracy and agreement on target dataset

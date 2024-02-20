@@ -59,6 +59,14 @@ class GbVideoDataset(torch.utils.data.Dataset):
     def get_image_paths(self):
         print('path ############', self.data_basepath)
         return sorted(list(tqdm.tqdm(glob.iglob(os.path.join(self.data_basepath, "*/*.jpg")))))
+    
+    def get_image_paths_benign(self):
+        print('path ############', self.data_basepath)
+        return sorted(list(tqdm.tqdm(glob.iglob(os.path.join(self.data_basepath, "benign*/*.jpg")))))
+
+    def get_image_paths_malignant(self):
+        print('path ############', self.data_basepath)
+        return sorted(list(tqdm.tqdm(glob.iglob(os.path.join(self.data_basepath, "malignant*/*.jpg")))))
 
     def get_image_name(self, key: str, ind: int):
         return os.path.join(self.data_split_path, key,  "%05d.jpg" % ind)
@@ -74,10 +82,17 @@ class GbVideoDataset(torch.utils.data.Dataset):
         self.data_split_path = os.path.join(self.data_basepath)
 
         # create a flattened list of all image paths
-        pickle_path = os.path.join(self.data_basepath, "all_paths.pkl")
+        # pickle_path = os.path.join(self.data_basepath, "all_paths.pkl")
+        pickle_path = os.path.join(self.data_basepath, self.data_split+ "_names.pkl")
+        print(pickle_path)
         if not os.path.exists(pickle_path):
-            print('creat new cache')
-            images = self.get_image_paths()
+            print('create new cache')
+            if self.data_split == 'all':
+                images = self.get_image_paths()
+            elif self.data_split == 'benign':
+                images = self.get_image_paths_benign()
+            elif self.data_split == 'malignant':
+                images = self.get_image_paths_malignant()
             samples = []
             video_names = []
             video_count = 0

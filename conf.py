@@ -42,6 +42,8 @@ _C.VICTIM.PATHIN = '/home/harsh_s/scratch/msacopy/ckpts/cifar10-resnet32-inaccur
 _C.VICTIM.WIDTH = 224
 _C.VICTIM.HEIGHT = 224
 
+_C.VICTIM.NUM_CLASSES = 10
+
 # ----------------------------- Adaptive Misinformation options ------------------------------- #
 
 _C.AM = CfgNode()
@@ -182,6 +184,21 @@ _C.LOG_TIME = ''
 
 # Benchmark to select fastest CUDNN algorithms (best for fixed input sizes)
 _C.CUDNN_BENCHMARK = True
+
+
+# ----------------------------- Pseudolabeling Options ------------------------------- #
+_C.PL = CfgNode()
+
+_C.PL.ITERATIONS = 20
+_C.PL.NO_PROGRESS = False
+_C.PL.CLASS_BLNC = 10
+_C.PL.TAU_P = 0.70 #confidece threshold for positive pseudo-labels
+_C.PL.TAU_N = 0.05 #confidece threshold for negative pseudo-labels
+_C.PL.KAPPA_P = 0.05 #uncertainty threshold for positive pseudo-labels
+_C.PL.KAPPA_N = 0.005 #uncertainty threshold for negative pseudo-labels
+_C.PL.TEMP_NL = 2.0 #temperature for generating negative pseduo-labels
+_C.PL.NO_UNCERTAINTY = False  #use uncertainty in the pesudo-label selection
+
 
 
 

@@ -7,82 +7,12 @@ import torch.utils
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-# from datasa.sampler import SubsetSequentialSampler
-# from models.Simodel import *
-# import augmentations
-
-# from defenses_grad2 import generate_perturbations, method_gradient_redirection, method_adaptive_misinformation, method_orekondy
-
 
 from torch.autograd import Variable
-
-# class FocalLoss(nn.Module):
-#     def __init__(self, gamma=0, size_average=False):
-#         super(FocalLoss, self).__init__()
-#         self.gamma = gamma
-#         self.size_average = size_average
-
-#     def forward(self, input, target):
-#         if input.dim()>2:
-#             input = input.view(input.size(0),input.size(1),-1)  # N,C,H,W => N,C,H*W
-#             input = input.transpose(1,2)    # N,C,H*W => N,H*W,C
-#             input = input.contiguous().view(-1,input.size(2))   # N,H*W,C => N*H*W,C
-#         target = target.view(-1,1)
-
-#         logpt = F.log_softmax(input, dim=-1)
-#         logpt = logpt.gather(1,target)
-#         logpt = logpt.view(-1)
-#         pt = logpt.exp()
-
-#         loss = -1 * (1-pt)**self.gamma * logpt
-#         if self.size_average: return loss.mean()
-#         # else: return loss.sum()
-#         else: return loss
-        
-
-# def testz(model, dataloader, no_roi=True):
-    
-#     model.eval()
-#     y_true, y_pred = [], []
-#     with torch.no_grad():
-#         for images, targets, fnames in (dataloader):
-#             images, targets = images.float().cuda(), targets.cuda()
-#             # if not no_roi:
-#             if len(images.shape) == 5:
-#                 images = images.squeeze(0)
-#                 outputs =  model(images)
-#                 _, pred = torch.max(outputs, dim=1)
-#                 pred_label = torch.max(pred)
-#                 pred_idx = pred_label.item()
-#                 pred_label = pred_label.unsqueeze(0)
-#                 idx = torch.argmax(pred)
-                
-#                 y_true.append(targets.tolist()[0][0])
-#                 y_pred.append(pred_label.item())
-#             else:
-#                 outputs = model(images)
-#                 _, pred = torch.max(outputs, dim=1)
-#                 # pred_idx = pred.item()
-#                 y_true.extend(targets.tolist())
-#                 y_pred.extend(pred.tolist())
-#                 # images = images.squeeze(0)
-#                 # inputs, labels = images.float().cuda(), targets.cuda()
-
-#     # print('y_true: ', y_true)
-#     # print('y_pred: ', y_pred)
-#     acc = accuracy_score(y_true, y_pred)
-#     cfm = confusion_matrix(y_true, y_pred)
-#     spec = (cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1])/(np.sum(cfm[0]) + np.sum(cfm[1]))
-#     sens = cfm[2][2]/np.sum(cfm[2])
-#     f1 = f1_score(y_true=y_true, y_pred=y_pred, average='macro')
-    
-#     return acc, f1, spec, sens
 
 
 def testz(model, dataloader, no_roi=True, verbose=True):
     
-    model.eval()
-    y_true, y_pred = [], []
     model.eval()
     y_true, y_pred = [], []
     for i, (inp, target, fname) in enumerate(dataloader):
@@ -96,14 +26,16 @@ def testz(model, dataloader, no_roi=True, verbose=True):
                 _, pred = torch.max(outputs, dim=1)
                 pred_label = torch.max(pred)
                 pred_label = pred_label.unsqueeze(0)
-                
-                y_true.append([target_var.tolist()[0][0]])
+                y_true.append([target_var.tolist()][0][0])
                 y_pred.append([pred_label.tolist()])
 
             else:
                 outputs = model(input_var)
                 _, pred_label = torch.max(outputs, dim=1)
                 y_pred.append(pred_label.tolist()) 
+                # if soft labels, extract hard label from it
+                if len(target_var.shape) > 1:
+                    target_var = target_var.argmax(axis=1)
                 y_true.append(target_var.tolist())
 
     y_pred = np.concatenate(y_pred, 0)
@@ -123,48 +55,6 @@ def testz(model, dataloader, no_roi=True, verbose=True):
         print('sensitivity = {}/{}'.format(cfm[2][2], np.sum(cfm[2])))
     
     return acc, f1, spec, sens
-
-
-def testz_grad2(model, dataloader,testset,model_sur,epsilon):
-    model.eval()
-
-    trues = []
-    preds = []
-    # print("Calculating metrics")
-    # import pdb;pdb.set_trace()
-    with torch.no_grad():
-        for data in (dataloader):
-            inputs = data[0].cuda()
-            labels = data[1].cuda()
-
-            scores = model(inputs)
-            _, pred = torch.max(scores.data, 1)
-
-            preds.append(pred.cpu())
-            trues.append(labels.cpu())
-
-        preds = np.concatenate(preds)
-        trues = np.concatenate(trues)
-
-    num_params = 0
-    for p in model.parameters():  # used for override_grad; assuming teacher and student have same architecture
-        num_params += p.numel()
-    override_grad = -1 * torch.ones(num_params).cuda()
-
-    #predtest = generate_perturbations(testset, model, [model_sur], method_gradient_redirection, epsilons=[epsilon], avg_posteriors=False, sample_surrogates=False,batch_size=128, num_workers=4, override_grad=override_grad)
-    predtest = generate_perturbations(testset, model, model_sur, method_orekondy, epsilons=[epsilon], avg_posteriors=False, sample_surrogates=False,batch_size=128, num_workers=4)
-    #predtest = generate_perturbations(testset, model, None, method_adaptive_misinformation, epsilons=[epsilon], avg_posteriors=False, sample_surrogates=False,batch_size=128, num_workers=4, misinformation_model=target_model2)
-    predtest = torch.squeeze(predtest)
-    ltest = predtest.argmax(axis=1, keepdim=False)
-    preds = ltest.detach().cpu().tolist()
-
-    preds = np.array(preds)
-    
-    # print('max predicted label: ', preds.max())
-    acc = accuracy_score(y_true=trues, y_pred=preds)
-    f1 = f1_score(y_true=trues, y_pred=preds, average='macro')
-    
-    return acc, f1
 
 
 def agree(model1, model2, test_loader):
@@ -207,17 +97,14 @@ def dist(indices, dataloader):
     dl = dataloader
     d = {}
     print('Number of samples ', len(indices))
-    # iterator = iter(dl)
     labels = []
-    # if target_model is not None:
-    #     target_model.eval()
     with torch.no_grad():
         for data in (dl):
             label = data[1]
-            # if target_model is not None:
-            #     label = target_model(img.cuda()).argmax(axis=1,keepdim=False)
-            #     labels.append(label.cpu().detach().numpy())
-            # else: 
+            # print(data[1].shape)
+            # if soft label, extract hard label using argmax
+            if len(label.shape) > 1:
+                label = label.argmax(axis=1)
             labels.extend(label.cpu().detach().numpy())
     unique_labels = np.unique(labels)
     for lbl in unique_labels:
@@ -248,9 +135,6 @@ def rand_bbox(size, lam):
 
 def train_with_validation(model, criterion, optimizers, scheduler, dataloaders, num_epochs, trial, cycle, out_dir, display_every = 5, early_stop_tolerance=100, la=None):
     print('>> Train a Model.')
-    # checkpoint_dir = os.path.join('./cifar10', 'train', 'weights')
-    # if not os.path.exists(checkpoint_dir):
-    #     os.makedirs(checkpoint_dir)
 
     exit = False
     curr_loss = None
@@ -258,19 +142,14 @@ def train_with_validation(model, criterion, optimizers, scheduler, dataloaders, 
     no_improvement = 0
 
     for epoch in tqdm(range(num_epochs), leave=False):
-        # schedulers['backbone'].step()
-        # schedulers['module'].step()
 
         t_loss = train_epoch(model, criterion, optimizers, dataloaders, la=la)
         scheduler.step()
+        # print(f'epoch {epoch}, loss = {t_loss}')
 
         if (epoch+1)%2==0:
             val_acc, val_f1, spec, sens = testz(model, dataloaders['val'], verbose=False)
             # test_acc, test_f1 = testz(model, dataloaders['test'])
-
-            # out_dir_cycle = os.path.join(out_dir, str(trial+1), str(cycle+1))
-            # if not os.path.exists(out_dir_cycle):
-                # os.makedirs(out_dir_cycle)
 
             if best_f1 is None or val_f1 > best_f1 :
                 best_f1 = val_f1
@@ -328,11 +207,9 @@ def train_with_validation(model, criterion, optimizers, scheduler, dataloaders, 
 
 def train_epoch(model, criterion, optimizer, dataloaders, vis=None, plot_data=None, la=None):
     model.train()
-    # global iters
     iters = 0
     total_loss = 0
 
-    # for data in tqdm(dataloaders['train'], leave=False, total=len(dataloaders['train'])):
     for data in dataloaders['train']:
         input = data[0].cuda()
         target = data[1].cuda()
@@ -378,9 +255,6 @@ def train_epoch(model, criterion, optimizer, dataloaders, vis=None, plot_data=No
 
 def train_with_kd(model, criterion, optimizers, scheduler, dataloaders, num_epochs, trial, cycle, out_dir, display_every = 10, early_stop_tolerance=100, temp=1, alpha=1):
     print('>> Train a Model.')
-    # checkpoint_dir = os.path.join('./cifar10', 'train', 'weights')
-    # if not os.path.exists(checkpoint_dir):
-    #     os.makedirs(checkpoint_dir)
 
     exit = False
     curr_loss = None
@@ -394,13 +268,9 @@ def train_with_kd(model, criterion, optimizers, scheduler, dataloaders, num_epoc
         t_loss = train_epoch_kd(model, criterion, optimizers, dataloaders, temp, alpha)
         scheduler.step()
 
-        if epoch%2==0:
-            val_acc, val_f1 = testz(model, dataloaders['val'])
+        if (epoch+1)%2==0:
+            val_acc, val_f1, spec, sens = testz(model, dataloaders['val'], verbose=False)
             # test_acc, test_f1 = testz(model, dataloaders['test'])
-
-            # out_dir_cycle = os.path.join(out_dir, str(trial+1), str(cycle+1))
-            # if not os.path.exists(out_dir_cycle):
-                # os.makedirs(out_dir_cycle)
 
             if best_f1 is None or val_f1 > best_f1 :
                 best_f1 = val_f1
@@ -425,9 +295,9 @@ def train_with_kd(model, criterion, optimizers, scheduler, dataloaders, num_epoc
                     exit = True
 
         # Display progress
-        if epoch % display_every == 0:
-            train_acc, train_f1 = testz(model, dataloaders['train'])
-            test_acc, test_f1 = testz(model, dataloaders['test'])
+        if (epoch+1) % display_every == 0:
+            train_acc, train_f1, spec1, sens1 = testz(model, dataloaders['train'], verbose=False)
+            test_acc, test_f1, spec2, sens2 = testz(model, dataloaders['test'], verbose=False)
             print(f"Epoch {epoch+1}: Train acc/f1 = {train_acc:.4f} / {train_f1:.4f} \n\
                 Val acc/f1 = {val_acc:.4f} / {val_f1:.4f} \n\
                 Test acc/f1 = {test_acc:.4f} / {test_f1:.4f}")
@@ -436,14 +306,14 @@ def train_with_kd(model, criterion, optimizers, scheduler, dataloaders, num_epoc
             print(f"Number of epochs processed: {epoch+1} in cycle {cycle+1}") 
             break
 
-    train_acc, train_f1 = testz(model, dataloaders['train'])
-    val_acc, val_f1 = testz(model, dataloaders['val'])
-    test_acc, test_f1 = testz(model, dataloaders['test'])
+    train_acc, train_f1, spec1, sens1 = testz(model, dataloaders['train'])
+    val_acc, val_f1, spec2, sens2 = testz(model, dataloaders['val'])
+    test_acc, test_f1, spec3, sens3 = testz(model, dataloaders['test'])
 
     print(f"Trial {trial+1}, Cycle {cycle+1}")
-    print(f"Train acc/f1 = {train_acc:.4f} / {train_f1:.4f}")
-    print(f"Val acc/f1 = {val_acc:.4f} / {val_f1:.4f}")
-    print(f"Test acc/f1 = {test_acc:.4f} / {test_f1:.4f}")
+    print(f"Train acc/f1/spec/sens = {train_acc:.4f} / {train_f1:.4f} / {spec1:.4f} / {sens1:.4f}")
+    print(f"Val acc/f1/spec/sens = {val_acc:.4f} / {val_f1:.4f} / {spec2:.4f} / {sens2:.4f}")
+    print(f"Test acc/f1/spec/sens = {test_acc:.4f} / {test_f1:.4f} / {spec3:.4f} / {sens3:.4f}")
 
     # Save the last model
     torch.save({'trial': trial + 1,
@@ -458,17 +328,15 @@ def train_with_kd(model, criterion, optimizers, scheduler, dataloaders, num_epoc
     
 def train_epoch_kd(model, criterion, optimizer, dataloaders, temperature, alpha, vis=None, plot_data=None):
     model.train()
-    # global iters
     iters = 0
     total_loss = 0
 
-    # for data in tqdm(dataloaders['train'], leave=False, total=len(dataloaders['train'])):
     for data in dataloaders['train']:
         input = data[0].cuda()
-        # target_soft = data[1].cuda().float()
-        # target_hard = target_soft.argmax(axis=1)
-        target_hard = data[1].cuda()
-        target_soft = data[2].cuda().float()
+        target_soft = data[1].cuda().float()
+        target_hard = target_soft.argmax(axis=1)
+        # target_hard = data[1].cuda()
+        # target_soft = data[2].cuda().float()
         iters += 1
 
         optimizer.zero_grad()
@@ -480,10 +348,14 @@ def train_epoch_kd(model, criterion, optimizer, dataloaders, temperature, alpha,
         # target_loss = loss_ce + loss_kd
         
         loss_ce = torch.nn.CrossEntropyLoss()(output, target_hard)
-        loss_kd = torch.nn.KLDivLoss(reduction='batchmean')(F.log_softmax(output / temperature, dim=1), F.softmax(target_soft / temperature, dim=1))
-        target_loss = loss_kd * (alpha * temperature * temperature) + loss_ce * (1. - alpha)
+        # loss_kd = torch.nn.KLDivLoss(reduction='batchmean')(F.log_softmax(output / temperature, dim=1), # output
+        #                                                     F.softmax(target_soft / temperature, dim=1)) # target
+        # target_loss = loss_kd * alpha * temperature * temperature + loss_ce * (1. - alpha)
+        
+        loss_kd = torch.nn.KLDivLoss(reduction='batchmean')(F.log_softmax(output, dim=1), # output
+                                                            target_soft) # target
+        target_loss = loss_kd * alpha + loss_ce * (1. - alpha)
 
-        # loss = torch.sum(target_loss) / target_loss.size(0)
         loss = target_loss
         total_loss += torch.sum(target_loss)
 

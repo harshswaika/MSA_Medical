@@ -229,7 +229,8 @@ class RadFormer(nn.Module):
             attn_data = {"g_attn": g_attn, "g_pool": g_pool,\
                          "l_attn": l_attn, "l_pool": l_pool,\
                          "attn_reg": local_im, "box": box, "attns": attns}
-            return g_out, l_out, f_out, attn_data
+            # return g_out, l_out, f_out, attn_data
+            return f_out
 
     def get_cam_imgs(self, attn_fm):
         # Get cam (depth wise summation)

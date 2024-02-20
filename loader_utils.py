@@ -1,19 +1,14 @@
 import csv
 from tqdm import tqdm
 import os, sys
+import json
 
 from PIL import Image
 import torch.nn as nn
-import torch.optim as optim
 import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
-from torchvision.utils import save_image
-import torch.optim.lr_scheduler as lr_scheduler
 from torchvision.models import resnet34, resnet50
-
-# import datasets
-import json
 
 sys.path.append('GBCNet')
 from GBCNet.dataloader import GbDataset, GbRawDataset, GbCropDataset
@@ -23,6 +18,101 @@ from GBCNet.models import GbcNet
 sys.path.append('RadFormer')
 from RadFormer.models import RadFormer
 from RadFormer.dataloader import GbUsgDataSet, GbUsgRoiTestDataSet
+
+
+class Victim(nn.Module):
+    """class for victim model
+
+    Args:
+        nn (_type_): _description_
+    """
+    def __init__(self, model, arch):
+        super(Victim, self).__init__()
+        self.model = model
+        self.arch = arch
+        
+    def forward(self, x):
+        # change forward here
+        out = self.model(x)
+        # if self.arch == 'radformer':
+        #     return out[2]
+        return out
+
+
+def load_victim_model(arch, model_path):
+    # Define architecture
+    if arch == 'resnet50_usucl':
+        target_model.net = resnet50(num_classes=3) 
+        target_model.net.fc = nn.Sequential(
+                          nn.Linear(num_ftrs, 256), 
+                          nn.ReLU(inplace=True), 
+                          nn.Dropout(0.4),
+                          nn.Linear(256, 3)
+                        )
+    elif arch == 'resnet50_gc':
+        target_model = Resnet50_GC(num_cls=3, last_layer=False, pretrain=True) 
+    elif arch == 'gbcnet':
+        target_model = GbcNet(num_cls=3, pretrain=False)
+    elif arch == 'radformer':
+        target_model = RadFormer(local_net='bagnet33', \
+                        num_cls=3, \
+                        global_weight=0.55, \
+                        local_weight=0.1, \
+                        fusion_weight=0.35, \
+                        use_rgb=True, num_layers=4, pretrain=False)
+    
+    # Load weights
+    print('target model keys: ', len(target_model.state_dict().keys()))
+    checkpoint_dict = torch.load(model_path, map_location='cpu')
+    if 'state_dict' in checkpoint_dict:
+        checkpoint_dict = checkpoint_dict['state_dict']
+    print('checkpoint keys: ', len(checkpoint_dict.keys()))
+    target_model.load_state_dict(checkpoint_dict, strict=True)
+    # target_model.net = target_model.net.float().cuda()
+    target_model = Victim(target_model.float().cuda(), arch)
+    
+    
+    return target_model
+
+
+def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True):
+    if arch == 'resnet34':
+        thief_model = resnet34(num_classes=n_classes)
+    elif arch == 'resnet50':
+        thief_model = resnet50(num_classes=n_classes)
+    elif arch == 'radformer':
+        thief_model = RadFormer(local_net='bagnet33', \
+                        num_cls=3, \
+                        global_weight=0.55, \
+                        local_weight=0.1, \
+                        fusion_weight=0.35, \
+                        use_rgb=True, num_layers=4, pretrain=True,
+                        load_local=True)
+
+    # elif arch == 'resnet50_usucl':
+        # thief_model.net = resnet50(num_classes=3) 
+        # thief_model.net.fc = nn.Sequential(
+        #                   nn.Linear(num_ftrs, 256), 
+        #                   nn.ReLU(inplace=True), 
+        #                   nn.Dropout(0.4),
+        #                   nn.Linear(256, 3)
+        #                 )
+
+    if load_pretrained == True:
+        thief_state = thief_model.state_dict()
+        print('thief state: ', print(thief_state.keys()))
+
+        print("Load pretrained model for initializing the thief")
+        pretrained_state = torch.load(pretrained_path) 
+        if 'state_dict' in pretrained_state:
+            pretrained_state = pretrained_state['state_dict']
+        pretrained_state = { k:v for k,v in pretrained_state.items() if k in thief_state and v.size() == thief_state[k].size() }
+        print('pretrained state: ', pretrained_state.keys())
+        thief_state.update(pretrained_state)
+        thief_model.load_state_dict(thief_state, strict=True)
+    thief_model = thief_model.cuda()
+    
+    return thief_model
 
 
 def load_victim_dataset(cfg, dataset_name):
@@ -82,62 +172,7 @@ def load_victim_dataset(cfg, dataset_name):
 
     return testset, test_loader, n_classes
 
-
-class Victim(nn.Module):
-    """class for victim model
-
-    Args:
-        nn (_type_): _description_
-    """
-    def __init__(self, model, arch):
-        super(Victim, self).__init__()
-        self.model = model
-        self.arch = arch
-        
-    def forward(self, x):
-        # change forward here
-        out = self.model(x)
-        if self.arch == 'radformer':
-            return out[2]
-        return out
-
-
-def load_victim_model(arch, model_path):
-    # Define architecture
-    if arch == 'resnet50_usucl':
-        target_model.net = resnet50(num_classes=3) 
-        target_model.net.fc = nn.Sequential(
-                          nn.Linear(num_ftrs, 256), 
-                          nn.ReLU(inplace=True), 
-                          nn.Dropout(0.4),
-                          nn.Linear(256, 3)
-                        )
-    elif arch == 'resnet50_gc':
-        target_model = Resnet50_GC(num_cls=3, last_layer=False, pretrain=True) 
-    elif arch == 'gbcnet':
-        target_model = GbcNet(num_cls=3, pretrain=False)
-    elif arch == 'radformer':
-        target_model = RadFormer(local_net='bagnet33', \
-                        num_cls=3, \
-                        global_weight=0.55, \
-                        local_weight=0.1, \
-                        fusion_weight=0.35, \
-                        use_rgb=True, num_layers=4, pretrain=False)
-    
-    # Load weights
-    print('target model keys: ', len(target_model.state_dict().keys()))
-    checkpoint_dict = torch.load(model_path, map_location='cpu')
-    if 'state_dict' in checkpoint_dict:
-        checkpoint_dict = checkpoint_dict['state_dict']
-    print('checkpoint keys: ', len(checkpoint_dict.keys()))
-    target_model.load_state_dict(checkpoint_dict, strict=True)
-    # target_model.net = target_model.net.float().cuda()
-    target_model = Victim(target_model.float().cuda(), arch)
-    
-    
-    return target_model
-    
-    
+   
 def load_thief_dataset(cfg, dataset_name, data_root, target_model):
    
     if dataset_name == 'imagenet_full':
@@ -156,7 +191,7 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
         thief_data = dataset(cfg, target_model, transform=teacher_transform)
         thief_data_aug = dataset(cfg, target_model, transform=student_transform)
 
-    elif dataset_name == 'GBUSV':
+    elif 'GBUSV' in dataset_name:
         from gbusv_dataset import GbVideoDataset
 
         # Create an instance of the custom dataset
@@ -168,12 +203,23 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
                 mean=[0.485, 0.456, 0.406],
                 std=[0.229, 0.224, 0.225]
                 )
-            transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.HEIGHT)),\
-                                    transforms.ToTensor(), 
-                                    normalize])
+            # transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH)),
+            #                                 transforms.CenterCrop(224),
+            #                                 transforms.ToTensor(), 
+            #                                 normalize])
+            transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                            transforms.ToTensor(), 
+                                            normalize])
         
-        thief_data = GbVideoDataset(data_root, transforms1)
-        thief_data_aug = GbVideoDataset(data_root, transforms1)
+        if dataset_name == 'GBUSV':
+            thief_data = GbVideoDataset(data_root, transforms1)
+            thief_data_aug = GbVideoDataset(data_root, transforms1)
+        elif dataset_name == 'GBUSV_benign':
+            thief_data = GbVideoDataset(data_root, transforms1, data_split='benign')
+            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='benign')
+        elif dataset_name == 'GBUSV_malignant':
+            thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant')
+            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant')
         
     else:
         raise AssertionError('invalid thief dataset')
@@ -201,8 +247,9 @@ def create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlab
         
     train_loader = DataLoader(Subset(thief_data_aug, labeled_set), batch_size=batch_size,
                             pin_memory=False, num_workers=4, shuffle=True)
-    unlabeled_loader = DataLoader(Subset(thief_data_aug, unlabeled_set), batch_size=batch_size, 
-                                        pin_memory=False, num_workers=4, shuffle=True)
+    # unlabeled_loader = DataLoader(Subset(thief_data_aug, unlabeled_set), batch_size=batch_size, 
+    #                                     pin_memory=False, num_workers=4, shuffle=True)
+    unlabeled_loader = None
     
     print("replacing val labels with victim labels")
     val_loader = DataLoader(Subset(thief_data, val_set), batch_size=batch_size, 
@@ -221,34 +268,24 @@ def create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlab
     return train_loader, val_loader, unlabeled_loader, list1
         
 
-def create_thief_loaders_soft_labels(cfg, thief_data, thief_data_aug, labeled_set, val_set, unlabeled_set, batch_size, target_model):
+def create_thief_loaders_soft_labels(thief_data, thief_data_aug, labeled_set, val_set, unlabeled_set, batch_size, target_model):
     
     print("replacing labeled set labels with victim labels")
-    train_loader = DataLoader(Subset(thief_data, labeled_set), batch_size=batch_size,
-                            pin_memory=False, num_workers=4, shuffle=True)
+    thiefdataset = Subset(thief_data, labeled_set)
+    train_loader = DataLoader(thiefdataset, batch_size=batch_size,
+                            pin_memory=False, num_workers=4, shuffle=False)
+    
     target_model.eval()
     with torch.no_grad():
-        for data in tqdm(train_loader):
-            d = data[0].cuda()
-            ind0 = data[-1]
-
-            # query hard labels
-            if cfg.THIEF.HARD_LABELS is True:
-                l = target_model(d).argmax(axis=1, keepdim=False)
-                l = l.detach().cpu().tolist() 
-
-                for ii, jj in enumerate(ind0):
-                    thief_data_aug.samples[jj] = (thief_data_aug.samples[jj][0], l[ii], thief_data_aug.samples[jj][2])
-
-            # query soft labels
-            else:
-                l_soft = target_model(d)
-                l_soft = l_soft.detach().cpu()
-                l = l_soft.argmax(axis=1, keepdim=False)
-                l = l.detach().cpu().tolist()
-
-                for ii, jj in enumerate(ind0):
-                    thief_data_aug.samples[jj] = (thief_data_aug.samples[jj][0], l[ii], l_soft[ii])
+        for d, l0, ind0 in tqdm(train_loader):
+            d = d.cuda()
+            l_soft = target_model(d)
+            l_soft = l_soft.detach().cpu()
+            # print(l_soft)
+            l_hard = l_soft.argmax(axis=1, keepdim=False)
+            l_hard = l_hard.detach().cpu().tolist()
+            for ii, jj in enumerate(ind0):
+                thief_data_aug.samples[jj] = (thief_data_aug.samples[jj][0], l_soft[ii])
 
         
     train_loader = DataLoader(Subset(thief_data_aug, labeled_set), batch_size=batch_size,
@@ -261,60 +298,18 @@ def create_thief_loaders_soft_labels(cfg, thief_data, thief_data_aug, labeled_se
                             pin_memory=False, num_workers=4, shuffle=True)
     target_model.eval()
     with torch.no_grad():
-        for data in tqdm(val_loader):
-            d = data[0].cuda()
-            ind0 = data[-1]
-
-            # query hard labels
-            if cfg.THIEF.HARD_LABELS is True:
-                l = target_model(d).argmax(axis=1, keepdim=False)
-                l = l.detach().cpu().tolist() 
-
-                for ii, jj in enumerate(ind0):
-                    thief_data.samples[jj] = (thief_data.samples[jj][0], l[ii], thief_data.samples[jj][2])
-
-            # query soft labels
-            else:
-                l_soft = target_model(d)
-                l_soft = l_soft.detach().cpu()
-                l = l_soft.argmax(axis=1, keepdim=False)
-                l = l.detach().cpu().tolist()
-
-                for ii, jj in enumerate(ind0):
-                    thief_data.samples[jj] = (thief_data.samples[jj][0], l[ii], l_soft[ii])
-
+        for d, l0, ind0 in tqdm(val_loader):
+            d = d.cuda()
+            l_soft = target_model(d)
+            l_soft = l_soft.detach().cpu()
+            l_hard = l_soft.argmax(axis=1, keepdim=False)
+            l_hard = l_hard.detach().cpu().tolist()
+            for ii, jj in enumerate(ind0):
+                thief_data.samples[jj] = (thief_data.samples[jj][0], l_soft[ii])
+           
     return train_loader, val_loader, unlabeled_loader
         
     
-def load_thief_model(cfg, arch, n_classes, pretrained_path):
-    if arch == 'resnet34':
-        thief_model = resnet34(num_classes=n_classes)
-    elif arch == 'resnet50':
-        thief_model = resnet50(num_classes=n_classes)
 
-    # elif arch == 'resnet50_usucl':
-        # thief_model.net = resnet50(num_classes=3) 
-        # thief_model.net.fc = nn.Sequential(
-        #                   nn.Linear(num_ftrs, 256), 
-        #                   nn.ReLU(inplace=True), 
-        #                   nn.Dropout(0.4),
-        #                   nn.Linear(256, 3)
-        #                 )
-
-    if cfg.ACTIVE.USE_PRETRAINED == True:
-        thief_state = thief_model.state_dict()
-        print('thief state: ', print(thief_state.keys()))
-
-        print("Load pretrained model for initializing the thief")
-        pretrained_state = torch.load(pretrained_path) 
-        if 'state_dict' in pretrained_state:
-            pretrained_state = pretrained_state['state_dict']
-        pretrained_state = { k:v for k,v in pretrained_state.items() if k in thief_state and v.size() == thief_state[k].size() }
-        print('pretrained state: ', pretrained_state.keys())
-        thief_state.update(pretrained_state)
-        thief_model.load_state_dict(thief_state, strict=True)
-    thief_model = thief_model.cuda()
-    
-    return thief_model
     
     
