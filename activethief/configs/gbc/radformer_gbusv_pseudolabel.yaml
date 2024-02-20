@@ -1,42 +1,42 @@
-VICTIM:
-  ARCH: 'radformer'
-  DATASET: 'gbusg'
-  DATA_ROOT: '/home/ankita/scratch/Datasets/GBCU-Shared'
-  PATH: 'victim_models/radformer/radformer.pkl'
-  WIDTH: 224
-  HEIGHT: 224
-THIEF:
-  ARCH: 'resnet50'
-  DATA_ROOT: '/home/ankita/scratch/Datasets/GBUSV-Shared'
-  DATASET: 'GBUSV'
-  SUBSET: 128116
-  HARD_LABELS: True
-ACTIVE:
-  BUDGET: 5000
-  METHOD: 'random'
-  CYCLES: 1
-  USE_PRETRAINED: True
-  PRETRAINED_PATH : '/home/ankita/scratch/MSA_results/ckpts/resnet50-imagenet1k.pth'
-  ALPHA: 0.2  # only used when hard_labels is False
-  TEMP: 1.0   # only used when hard_labels is False
-RNG_SEED: 1
-METHOD_NAME: 'pseudolabel'
-OUT_DIR: 'results'
-TRAIN:
-  BATCH: 128
-  MOMENTUM: 0.9
-  EPOCH: 50
-  OPTIMIZER: "SGD"
-  LR: 0.02 # 0.02
-  MILESTONES: [60,120,180]
-  WDECAY: 0.0005
-PL:
-  ITERATIONS: 20
-  NO_PROGRESS: False
-  CLASS_BLNC: 10
-  TAU_P: 0.70 #confidece threshold for positive pseudo-labels
-  TAU_N: 0.05 #confidece threshold for negative pseudo-labels
-  KAPPA_P: 0.05 #uncertainty threshold for positive pseudo-labels
-  KAPPA_N: 0.005 #uncertainty threshold for negative pseudo-labels
-  TEMP_NL: 2.0 #temperature for generating negative pseduo-labels
-  NO_UNCERTAINTY: False
+# VICTIM:
+#   ARCH: 'radformer'
+#   DATASET: 'gbusg'
+#   DATA_ROOT: '/home/ankita/scratch/Datasets/GBCU-Shared'
+#   PATH: 'victim_models/radformer/radformer.pkl'
+#   WIDTH: 224
+#   HEIGHT: 224
+# THIEF:
+#   ARCH: 'resnet50'
+#   DATA_ROOT: '/home/ankita/scratch/Datasets/GBUSV-Shared'
+#   DATASET: 'GBUSV'
+#   SUBSET: 128116
+#   HARD_LABELS: True
+# ACTIVE:
+#   BUDGET: 5000
+#   METHOD: 'random'
+#   CYCLES: 1
+#   USE_PRETRAINED: True
+#   PRETRAINED_PATH : '/home/ankita/scratch/MSA_results/ckpts/resnet50-imagenet1k.pth'
+#   ALPHA: 0.2  # only used when hard_labels is False
+#   TEMP: 1.0   # only used when hard_labels is False
+# RNG_SEED: 1
+# METHOD_NAME: 'pseudolabel'
+# OUT_DIR: 'results'
+# TRAIN:
+#   BATCH: 128
+#   MOMENTUM: 0.9
+#   EPOCH: 50
+#   OPTIMIZER: "SGD"
+#   LR: 0.02 # 0.02
+#   MILESTONES: [60,120,180]
+#   WDECAY: 0.0005
+# PL:
+#   ITERATIONS: 20
+#   NO_PROGRESS: False
+#   CLASS_BLNC: 10
+#   TAU_P: 0.70 #confidece threshold for positive pseudo-labels
+#   TAU_N: 0.05 #confidece threshold for negative pseudo-labels
+#   KAPPA_P: 0.05 #uncertainty threshold for positive pseudo-labels
+#   KAPPA_N: 0.005 #uncertainty threshold for negative pseudo-labels
+#   TEMP_NL: 2.0 #temperature for generating negative pseduo-labels
+#   NO_UNCERTAINTY: False

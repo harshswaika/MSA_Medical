@@ -17,10 +17,11 @@ import torchvision.transforms as transforms
 from torchvision.utils import save_image
 import torch.optim.lr_scheduler as lr_scheduler
 from torch.utils.data.sampler import SubsetRandomSampler, SequentialSampler
-from torchvision.models import resnet34#, ResNet34_Weights
+from torchvision.models import resnet34, resnet50
 
 from conf import cfg, load_cfg_fom_args
 
+sys.path.append('/home/ankita/scratch/MSA_Medical')
 import utils
 from train_utils_gbc import agree
 from conf import cfg, load_cfg_fom_args
@@ -44,18 +45,6 @@ def testz(model, dataloader, no_roi=True, verbose=True, logits=False, criterion=
         with torch.no_grad():
             input_var = torch.autograd.Variable(inp.cuda())
             target_var = torch.autograd.Variable(target)
-
-            # if len(input_var.shape) == 5:
-            #     images = input_var.squeeze(0)
-            #     outputs =  model(images)
-            #     _, pred = torch.max(outputs, dim=1)
-            #     pred_label = torch.max(pred)
-            #     pred_label = pred_label.unsqueeze(0)
-            #     y_true.append([target_var.tolist()][0][0])
-            #     y_pred.append([pred_label.tolist()])
-            #     softmaxes.append(np.asarray(outputs.cpu()))
-
-            # else:
             outputs = model(input_var)
 
             # if soft labels, extract hard label from it
@@ -95,11 +84,46 @@ def testz(model, dataloader, no_roi=True, verbose=True, logits=False, criterion=
     return acc, f1, spec, sens, eces, cces, losses.avg
 
 
+def compute_pseudolabel_acc(target_model, thief_model, thief_dataset, p_cutoff):
+    
+    dataloader = DataLoader(thief_dataset, batch_size=256,
+                        pin_memory=False, num_workers=4, shuffle=False)
+    target_model.eval()
+    thief_model.eval()
+    y_true, y_pred = [], []
+    for (inp, target, fname) in tqdm(dataloader):
+        with torch.no_grad():
+            input_var = torch.autograd.Variable(inp.cuda())
+            target_var = torch.autograd.Variable(target)
+
+            outputs_thief = thief_model(input_var)
+            _, pred_thief = torch.max(outputs_thief, dim=1)
+            probs_thief = torch.softmax(outputs_thief, dim=-1)
+            conf_thief, _ = torch.max(probs_thief.detach(), dim=-1)
+            # y_pred.append(pred_thief.tolist()) 
+
+            outputs_target = target_model(input_var)
+            _, pred_target = torch.max(outputs_target, dim=1)
+            # y_true.append(pred_target.tolist()) 
+
+            for a, b, c in zip(conf_thief, pred_thief.tolist(), pred_target.tolist()):
+                if a > p_cutoff:
+                    y_pred.append(b)
+                    y_true.append(c)
+
+    # y_pred = np.concatenate(y_pred, 0)
+    # y_true = np.concatenate(y_true, 0)
+
+    acc = accuracy_score(y_true, y_pred)
+    
+    return acc
+
+
 if __name__ == "__main__":
 
     load_cfg_fom_args(description='Model Stealing')
-    thief_model_dir = 'results/gbusg_radformer/GBUSV_resnet50/SGD/5000_val500/random_/'
-    thief_model_dir = 'results/gbusg_radformer/GBUSV_resnet50/SGD/15800_val1580/random_v3/'
+    thief_model_dir = '/home/ankita/mnt/data_msa_medical/results_ankita/gbusg_radformer/GBUSV_resnet50/SGD/5000_val500/random_v8/'
+    # thief_model_dir = 'results/gbusg_radformer/GBUSV_resnet50/SGD/15800_val1580/random_v3/'
 
     trial = 1
     cycle = 1
@@ -119,12 +143,37 @@ if __name__ == "__main__":
 
     
     # Load trained thief model
-    thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_best.pth')
-    # thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_last.pth')
-    thief_model = load_thief_model(cfg, cfg.THIEF.ARCH, n_classes, cfg.ACTIVE.PRETRAINED_PATH)
-    thief_model.load_state_dict(torch.load(thief_model_path)['state_dict'])
+    # thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_best.pth')
+    thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_last.pth')
+    # thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_temperature.pth')
+
+
+    thief_model = load_thief_model(cfg, cfg.THIEF.ARCH, n_classes, cfg.ACTIVE.PRETRAINED_PATH, load_pretrained=False)
+    thief_state = thief_model.state_dict()
+    print("Load thief model weights")
+    pretrained_state = torch.load(thief_model_path) 
+    if 'state_dict' in pretrained_state:
+        pretrained_state = pretrained_state['state_dict']
+    pretrained_state_common = {}
+    for k, v in pretrained_state.items():
+        if k in thief_state and v.size() == thief_state[k].size():
+            pretrained_state_common[k] = v
+        elif 'backbone.'+k in thief_state and v.size() == thief_state['backbone.'+k].size():
+            pretrained_state_common['backbone.'+k] = v
+        # remove 'module.' from pretrained state dict
+        elif k[7:] in thief_state and v.size() == thief_state[k[7:]].size():
+            pretrained_state_common[k[7:]] = v
+        # remove 'base_model.' from pretrained state dict
+        elif k[11:] in thief_state and v.size() == thief_state[k[11:]].size():
+            pretrained_state_common[k[11:]] = v
+        else:
+            print('key not found', k)
+
+    # print('pretrained state: ', pretrained_state_common.keys())
+    assert(len(thief_state.keys()) == len(pretrained_state_common.keys()))
+    thief_state.update(pretrained_state_common)
+    thief_model.load_state_dict(thief_state, strict=True)
     thief_model = thief_model.cuda()
-    print(f"Loaded thief model {thief_model_path}")
 
     # Compute accuracy and agreement on test dataset
     print('Thief model')
@@ -146,89 +195,8 @@ if __name__ == "__main__":
     labeled_set = indices[cfg.ACTIVE.VAL:cfg.ACTIVE.VAL+cfg.ACTIVE.INITIAL]
     unlabeled_set = indices[cfg.ACTIVE.VAL+cfg.ACTIVE.INITIAL:]
     
-    # Create train, val and unlabeled dataloaders
-    if cfg.THIEF.HARD_LABELS is True:
-        train_loader, val_loader, unlabeled_loader, list1 = create_thief_loaders(thief_data, thief_data_aug, labeled_set, 
-                                                                            val_set, unlabeled_set, cfg.TRAIN.BATCH, 
-                                                                            target_model)
-    else:
-        train_loader, val_loader, unlabeled_loader = create_thief_loaders_soft_labels(thief_data, thief_data_aug, 
-                                                                labeled_set, val_set, unlabeled_set, cfg.TRAIN.BATCH, 
-                                                                    target_model)
-        
-    # Set up temperature scaling
-    temperature_model = TemperatureScaling(base_model=thief_model)
-    temperature_model.cuda()
-
-    print("\nRunning temp scaling:")
-    temperature_model.calibrate(val_loader)
-    
-    # test_loss, top1, top3, top5, cce_score, ece_score = test(testloader, temperature_model, criterion)
-    acc, f1, spec, sens, ece, cce, _ = testz(temperature_model, test_loader, logits=True)
-    print(["{:.2f}".format(temperature_model.T), cce, ece])
-    print(f'Temperature model: acc = {acc:.4f}, agreement = {agr:.4f}, \
-          f1 = {f1:.4f}, spec = {spec:.4f}, sens = {sens:.4f}, ECE {ece:.4f}, SCE {cce:.4f}')
-    torch.save({'state_dict': temperature_model.state_dict()},
-                f'{cfg.SAVE_DIR}/trial_{trial}_cycle_{cycle}_temperature.pth')
-
-
-    # Set up dirichlet scaling
-    print("\nRunning dirichlet scaling:")
-    lambdas = [0, 0.01, 0.1, 1, 10, 0.005, 0.05, 0.5, 5, 0.0025, 0.025, 0.25, 2.5]
-    mus = [0, 0.01, 0.1, 1, 10]
-
-    # lambdas = [0.01, 0.1]
-    # mus = [0.01, 0.1]
-
-    min_stats = {}
-    min_error = float('inf')
-    criterion = torch.nn.CrossEntropyLoss()
-    optimizer = optim.SGD(thief_model.parameters(), lr=cfg.TRAIN.LR, 
-                                        momentum=cfg.TRAIN.MOMENTUM,weight_decay=cfg.TRAIN.WDECAY)
-
-    for l in lambdas:
-        for m in mus:
-            # Set up dirichlet model
-            dir_model = DirichletScaling(base_model=thief_model, num_classes=n_classes, optim=optimizer, Lambda=l, Mu=m)
-            dir_model.cuda()
-
-            # calibrate
-            dir_model.calibrate(val_loader, lr=cfg.TRAIN.LR, epochs=cfg.TRAIN.EPOCH, patience=5)
-            _, _, _, _, _, _, val_nll = testz(dir_model, val_loader, logits=True, criterion=criterion)
-            acc, f1, spec, sens, ece, cce, test_nll = testz(dir_model, test_loader, logits=True, criterion=criterion)
+    # Compute pseudolabel accuracy
+    placc_thief = compute_pseudolabel_acc(target_model, thief_model, thief_data, p_cutoff=0.98)
+    print('Thief model pseudlabel acc = ', placc_thief)
             
-            if val_nll < min_error:
-                min_error = val_nll
-                min_stats = {
-                    "test_loss" : test_nll,
-                    "top1" : acc,
-                    "spec" : spec,
-                    "sens" : sens,
-                    "ece_score" : ece,
-                    "sce_score" : cce,
-                    "pair" : (l, m)
-                }    
-
-            print(["Dir=({:.2f},{:.2f})".format(l, m), test_nll, acc, spec, sens, cce, ece])
     
-    print(["Best_Dir={}".format(min_stats["pair"]), 
-                                            min_stats["test_loss"], 
-                                            min_stats["top1"], 
-                                            min_stats["spec"], 
-                                            min_stats["sens"], 
-                                            min_stats["sce_score"], 
-                                            min_stats["ece_score"]])
-    
-    # train the model again for the best pair
-    l, m = min_stats["pair"]
-    dir_model = DirichletScaling(base_model=thief_model, num_classes=n_classes, optim=optimizer, Lambda=l, Mu=m)
-    dir_model.cuda()
-    # calibrate
-    dir_model.calibrate(val_loader, lr=cfg.TRAIN.LR, epochs=cfg.TRAIN.EPOCH, patience=5)
-    acc, f1, spec, sens, ece, cce, test_nll = testz(dir_model, test_loader, logits=True, criterion=criterion)
-    print(f'\nDirichlet model: acc = {acc:.4f}, agreement = {agr:.4f}, \
-          f1 = {f1:.4f}, spec = {spec:.4f}, sens = {sens:.4f}, ECE {ece:.4f}, SCE {cce:.4f}')
-    torch.save({'state_dict': dir_model.state_dict(),
-                'l': l,
-                'm': m},
-                f'{cfg.SAVE_DIR}/trial_{trial}_cycle_{cycle}_dirichlet.pth')

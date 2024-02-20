@@ -38,6 +38,7 @@ class TemperatureScaling(nn.Module):
 
         for T in tqdm(self.temp_list, desc="Running temp scaling"):
             error = 0.
+            print('temp = ', T)
             for data in train_loader:
                 images, targets = data[0], data[1]
                 images, targets = images.cuda(), targets.cuda()

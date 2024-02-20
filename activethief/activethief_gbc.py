@@ -1,5 +1,5 @@
 from __future__ import print_function, division
-import os
+import os, sys
 import random
 import numpy as np
 from tqdm import tqdm
@@ -11,6 +11,8 @@ import torch.optim as optim
 import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torch.optim.lr_scheduler as lr_scheduler
+
+sys.path.append('/home/ankita/scratch/MSA_Medical')
 from GBCNet.dataloader import GbDataset, GbCropDataset, GbRawDataset
 # from gb_dataloader import GbDataset, GbRawDataset, GbCropDataset
 import torchvision.transforms as T
