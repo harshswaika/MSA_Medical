@@ -15,6 +15,7 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+import torch.nn as nn
 
 
 from semilearn.algorithms import get_algorithm, name2alg
@@ -23,6 +24,19 @@ from semilearn.core.utils import get_net_builder, get_logger, get_port, send_mod
 
 from utils_train import create_model, test, test_thief, dist, load_victim_dataset, agree
 import torch.multiprocessing
+
+
+class TempModel(nn.Module):
+    def __init__(self, base_model, temp):
+        super().__init__()
+        self.base_model = base_model
+        self.T = temp
+
+    def forward(self, x):
+        x = self.base_model(x)
+        x /= self.T
+        return x
+
 
 def get_config():
     from semilearn.algorithms.utils import str2bool
@@ -352,82 +366,4 @@ def main_worker(gpu, ngpus_per_node, args):
             # elif k.split('.')[0] == 'fc':
             #     print(k)
             #     # assert('backbone.' + 'classifier.' + k.split('.')[1] in thief_state.keys())
-            #     # pretrained_state_common['backbone.' + 'classifier.' + k.split('.')[1]] = v
-
-            #     assert('classifier.' + k.split('.')[1] in thief_state.keys())
-            #     pretrained_state_common['classifier.' + k.split('.')[1]] = v
-
-
-        assert(len(thief_state.keys()) == len(pretrained_state_common.keys()))
-        thief_state.update(pretrained_state_common)
-        model.model.load_state_dict(thief_state, strict=True)
-        model.ema_model.load_state_dict(thief_state, strict=True)
-
-    if args.algorithm in ['comatchkd', 'fixmatchkd', 'selfkd']:
-        model.anchor_init()
-    
-    # SET Devices for (Distributed) DataParallel
-    model.model = send_model_cuda(args, model.model)
-    model.ema_model = send_model_cuda(args, model.ema_model, clip_batch=False)
-    print(f"Arguments: {model.args}")
-    
-    # _, acc = test2(args, model.loader_dict['train_lb'], victim_model, 0)
-    # print("Checking label data accuracy: ", acc)
-
-    logger.info('Validation set distribution: ')
-    print('loader dict: ', model.loader_dict)
-    val_dist = dist(val_set, model.loader_dict['eval'])
-    logger.info(val_dist)
-
-    logger.info('Labeled set distribution: ')
-    label_dist = dist(labeled_set, model.loader_dict['train_lb'])
-    logger.info(label_dist)
-
-    # Calculate initial accuracy and agreement
-    acc, agr, spec, sens = test_thief(model, model.model, victim_model, test_loader, ema=False)
-    logger.info(f'Initial model on target dataset (without EMA): acc = {acc:.4f}, agreement = {agr:.4f}, spec = {spec:.2f}, sens = {sens:.2f}')
-
-    if args.algorithm in ['comatchkd', 'fixmatchkd', 'selfkd']:
-        init_acc, spec, sens = test(args, test_loader, model.anchor_model, 0)
-        init_agr = agree(victim_model, model.anchor_model, test_loader)
-        logger.info(f'Anchor model on target dataset: acc = {init_acc:.4f}, agreement = {init_agr:.4f}, spec = {spec:.2f}, sens = {sens:.2f}')
-
-    # If args.resume, load checkpoints from args.load_path
-    if args.resume and os.path.exists(args.load_path):
-        try:
-            model.load_model(args.load_path)
-        except:
-            logger.info("Fail to resume load path {}".format(args.load_path))    
-            args.resume = False
-    else:
-        logger.info("Resume load path {} does not exist".format(args.load_path))
-
-    if hasattr(model, 'warmup'):
-        logger.info(("Warmup stage"))
-        model.warmup()
-
-    # START TRAINING of FixMatch
-    logger.info("\nModel training")
-    model.train()
-
-    # print validation (and test results)
-    for key, item in model.results_dict.items():
-        logger.info(f"Model result - {key} : {item}")
-
-    if hasattr(model, 'finetune'):
-        logger.info("Finetune stage")
-        model.finetune()
-    
-    acc, agr, spec, sens = test_thief(model, model.model, victim_model, test_loader, ema=False)
-    logger.info(f'Best model on target dataset (without EMA): acc = {acc:.4f}, agreement = {agr:.4f}, spec = {spec:.2f}, sens = {sens:.2f}')
-    acc, agr, spec, sens = test_thief(model, model.model, victim_model, test_loader, ema=True)
-    logger.info(f'Best model on target dataset (with EMA): acc = {acc:.4f}, agreement = {agr:.4f}, spec = {spec:.2f}, sens = {sens:.2f}')
-
-    logging.warning(f"GPU {args.rank} training is FINISHED")
-
-
-if __name__ == "__main__":
-    args = get_config()
-    port = get_port()
-    args.dist_url = "tcp://127.0.0.1:" + str(port)
-    main(args)
+            #     # pretrained_s

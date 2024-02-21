@@ -35,6 +35,18 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
+class TempModel(nn.Module):
+    def __init__(self, base_model, temp):
+        super().__init__()
+        self.base_model = base_model
+        self.T = temp
+
+    def forward(self, x):
+        x = self.base_model(x)
+        x /= self.T
+        return x
+
+
 def testz(model, dataloader, no_roi=True, verbose=True, logits=False, criterion=torch.nn.CrossEntropyLoss()):
     
     model.eval()
@@ -144,8 +156,7 @@ if __name__ == "__main__":
     
     # Load trained thief model
     # thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_best.pth')
-    thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_last.pth')
-    # thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_temperature.pth')
+    thief_model_path = os.path.join(thief_model_dir, f'trial_{trial}_cycle_{cycle}_temperature.pth')
 
 
     thief_model = load_thief_model(cfg, cfg.THIEF.ARCH, n_classes, cfg.ACTIVE.PRETRAINED_PATH, load_pretrained=False)
@@ -175,6 +186,14 @@ if __name__ == "__main__":
     thief_model.load_state_dict(thief_state, strict=True)
     thief_model = thief_model.cuda()
 
+    pretrained_state = torch.load(thief_model_path) 
+    if 'temp' in pretrained_state:
+        T = pretrained_state['temp']
+    else:
+        T = 1.0
+    print('thief model temp = ', T)
+    thief_model = TempModel(thief_model, temp=T)
+
     # Compute accuracy and agreement on test dataset
     print('Thief model')
     thief_model.eval()
@@ -196,7 +215,8 @@ if __name__ == "__main__":
     unlabeled_set = indices[cfg.ACTIVE.VAL+cfg.ACTIVE.INITIAL:]
     
     # Compute pseudolabel accuracy
-    placc_thief = compute_pseudolabel_acc(target_model, thief_model, thief_data, p_cutoff=0.98)
-    print('Thief model pseudlabel acc = ', placc_thief)
+    for p_cutoff in [0., 0.95, 0.98]:
+        placc_thief = compute_pseudolabel_acc(target_model, thief_model, thief_data, p_cutoff=p_cutoff)
+        print(f'p_cutoff = {p_cutoff}, Thief model pseudlabel acc = {placc_thief}')
             
     

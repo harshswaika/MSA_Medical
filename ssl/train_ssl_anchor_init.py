@@ -15,7 +15,7 @@ import torch.backends.cudnn as cudnn
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
-
+import torch.nn as nn
 
 from semilearn.algorithms import get_algorithm, name2alg
 from semilearn.imb_algorithms import get_imb_algorithm, name2imbalg
@@ -23,6 +23,20 @@ from semilearn.core.utils import get_net_builder, get_logger, get_port, send_mod
 
 from utils_train import create_model, test, test_thief, dist, load_victim_dataset, agree
 import torch.multiprocessing
+
+
+class TempModel(nn.Module):
+    def __init__(self, base_model, temp):
+        super().__init__()
+        self.base_model = base_model
+        self.T = temp
+
+    def forward(self, x):
+        logits, feat = self.base_model(x)
+        logits /=  self.T
+        result_dict = {'logits':logits, 'feat':feat}
+        return result_dict  
+
 
 def get_config():
     from semilearn.algorithms.utils import str2bool
@@ -169,8 +183,7 @@ def main(args):
     main(args) spawn each process (main_worker) to each GPU.
     '''
 
-    assert args.num_train_iter % args.epoch == 0, \
-        f"# total training iter. {args.num_train_iter} is not divisible by # epochs {args.epoch}"
+    assert args.num_train_iter % args.epoch == 0, f"# total training iter. {args.num_train_iter} is not divisible by # epochs {args.epoch}"
 
     os.makedirs(args.save_dir, exist_ok=True)
     save_path = os.path.join(args.save_dir, args.save_name)
@@ -183,8 +196,7 @@ def main(args):
         if args.load_path is None:
             raise Exception('Resume of training requires --load_path in the args')
         if os.path.abspath(save_path) == os.path.abspath(args.load_path) and not args.overwrite:
-            raise Exception('Saving & Loading paths are same. \
-                            If you want over-write, give --overwrite in the argument.')
+            raise Exception('Saving & Loading paths are same. If you want over-write, give --overwrite in the argument.')
 
     if args.seed is not None:
         warnings.warn('You have chosen to seed training. '
@@ -368,6 +380,16 @@ def main_worker(gpu, ngpus_per_node, args):
         thief_state.update(pretrained_state_common)
         model.model.load_state_dict(thief_state, strict=True)
         model.ema_model.load_state_dict(thief_state, strict=True)
+
+        # temperature scaled model
+        pretrained_state = torch.load(args.warmstart_dir) 
+        if 'temp' in pretrained_state:
+            T = pretrained_state['temp']
+        else:
+            T = 1.0
+        print('thief model temp = ', T)
+        model.model = TempModel(model.model, temp=T)
+        model.ema_model = TempModel(model.ema_model, temp=T)
 
     if args.algorithm in ['comatchkd', 'fixmatchkd', 'selfkd']:
         model.anchor_init()

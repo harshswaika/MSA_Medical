@@ -174,7 +174,7 @@ class GbVideoDataset_Base(torch.utils.data.Dataset):
 
     def get_image_paths(self):
         print('path ############', self.data_basepath)
-        return sorted(list(tqdm.tqdm(glob.iglob(os.path.join(self.data_basepath, "*/*.jpg")))))
+        return sorted(list(tqdm(glob.iglob(os.path.join(self.data_basepath, "*/*.jpg")))))
 
     def get_image_name(self, key: str, ind: int):
         return os.path.join(self.data_split_path, key,  "%05d.jpg" % ind)
