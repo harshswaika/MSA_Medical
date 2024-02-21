@@ -35,13 +35,14 @@ def default_loader(path):
     
 
 class GbVideoDataset(torch.utils.data.Dataset):
-    def __init__(self, root, transform=None, return_all_video_frames=True, data_split='all'):
+    def __init__(self, root, transform=None, return_all_video_frames=True, data_split='all', pickle_root=None):
         self.transform = transform
 
         self.root = root
         self.transform = transform
         self.return_all_video_frames = return_all_video_frames ## True
         self.data_split = data_split
+        self.pickle_root = pickle_root
         # self.num_of_sampled_frames = num_of_sampled_frames ##1
 
         self._get_annotations()
@@ -83,7 +84,10 @@ class GbVideoDataset(torch.utils.data.Dataset):
 
         # create a flattened list of all image paths
         # pickle_path = os.path.join(self.data_basepath, "all_paths.pkl")
-        pickle_path = os.path.join(self.data_basepath, self.data_split+ "_names.pkl")
+        if self.pickle_root is not None:
+            pickle_path = os.path.join(self.pickle_root, self.data_split+ "_names.pkl")
+        else:
+            pickle_path = os.path.join(self.data_basepath, self.data_split+ "_names.pkl")
         print(pickle_path)
         if not os.path.exists(pickle_path):
             print('create new cache')
