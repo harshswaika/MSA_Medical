@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
-from torchvision.models import resnet34, resnet50
+from torchvision.models import resnet34, resnet50, resnet152, resnet18, resnet101
 
 sys.path.append('GBCNet')
 from GBCNet.dataloader import GbDataset, GbRawDataset, GbCropDataset
@@ -19,6 +19,10 @@ sys.path.append('RadFormer')
 from RadFormer.models import RadFormer
 from RadFormer.dataloader import GbUsgDataSet, GbUsgRoiTestDataSet
 
+from types import SimpleNamespace
+sys.path.append('/home/deepankar/scratch/model_stealing_encoders_copy/wise-ft')
+from src.models.modeling import ClassificationHead, ImageEncoder, ImageClassifier
+from src.models.zeroshot import get_zeroshot_classifier
 
 class Victim(nn.Module):
     """class for victim model
@@ -78,8 +82,39 @@ def load_victim_model(arch, model_path):
 def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True):
     if arch == 'resnet34':
         thief_model = resnet34(num_classes=n_classes)
+    elif arch == 'vit_b_16_1k':
+        # use this model definition for imagenet1k trained weights
+        from torchvision.models import vit_b_16
+        thief_model = vit_b_16(num_classes=n_classes)
+    elif arch == 'vit_b_16_21k_CLIP':
+        args = SimpleNamespace(model= 'ViT-B/16', device= 'cuda',cache_dir= 'cache',classnames='openai',template='simple_template',train_dataset='CIFAR10',data_location='data',batch_size=128)
+        image_encoder = ImageEncoder(args, keep_lang=True)
+        classification_head = get_zeroshot_classifier(args, image_encoder.model)
+        delattr(image_encoder.model, 'transformer')
+        classifier = ImageClassifier(image_encoder, classification_head, process_images=False)
+        classifier.save('zeroshotthief.pt')
+        thief_model=ImageClassifier.load('zeroshotthief.pt')
+        # print("Preprocess_fn",thief_model.train_preprocess)
+        thief_model.process_images=True
+        thief_model = thief_model.cuda()
+        # print(thief_model)
+        return thief_model
+    elif arch == 'vit_b_16_21k':
+        # use this model definition for imagenet21k trained weights
+        from vit import vit_base_patch16_224
+        thief_model = vit_base_patch16_224(num_classes=n_classes)
+    elif arch == 'vit_l_32_21k':
+        # use this model definition for imagenet21k trained weights
+        from pytorch_pretrained_vit import ViT
+        thief_model = ViT('L_32',pretrained=False,num_classes=n_classes)
+    elif arch == 'resnet18':
+        thief_model = resnet18(num_classes=n_classes)
     elif arch == 'resnet50':
         thief_model = resnet50(num_classes=n_classes)
+    elif arch == 'resnet152':
+        thief_model = resnet152(num_classes=n_classes)
+    elif arch == 'resnet101':
+        thief_model = resnet101(num_classes=n_classes)
     elif arch == 'radformer':
         thief_model = RadFormer(local_net='bagnet33', \
                         num_cls=3, \
@@ -98,7 +133,7 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
         #                   nn.Linear(256, 3)
         #                 )
 
-    if load_pretrained == True:
+    if load_pretrained == True :
         thief_state = thief_model.state_dict()
         print('thief state: ', print(thief_state.keys()))
 
@@ -212,14 +247,14 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
                                             normalize])
         
         if dataset_name == 'GBUSV':
-            thief_data = GbVideoDataset(data_root, transforms1)
-            thief_data_aug = GbVideoDataset(data_root, transforms1)
+            thief_data = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
         elif dataset_name == 'GBUSV_benign':
-            thief_data = GbVideoDataset(data_root, transforms1, data_split='benign')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='benign')
+            thief_data = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
         elif dataset_name == 'GBUSV_malignant':
-            thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant')
+            thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
         
     else:
         raise AssertionError('invalid thief dataset')
