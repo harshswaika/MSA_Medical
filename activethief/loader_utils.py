@@ -245,22 +245,25 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
             transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
                                             transforms.ToTensor(), 
                                             normalize])
+            transforms2= transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                             transforms.RandomCrop(224, pad_if_needed=True),
+                                             transforms.RandomRotation(5),
+                                            transforms.RandomHorizontalFlip(),
+                                            transforms.ToTensor(), 
+                                            normalize])
         
         if dataset_name == 'GBUSV':
             thief_data = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data_aug = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data_aug = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms2,pickle_root='/home/deepankar/scratch/MSA_Medical/')
+           
         elif dataset_name == 'GBUSV_benign':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
             thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+           
         elif dataset_name == 'GBUSV_malignant':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
             thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+           
         
     else:
         raise AssertionError('invalid thief dataset')
