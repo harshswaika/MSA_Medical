@@ -6,7 +6,7 @@ VICTIM:
   WIDTH: 224
   HEIGHT: 224
 THIEF:
-  ARCH: 'resnet101'
+  ARCH: 'medclip_vit'
   DATA_ROOT: '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared'
   DATASET: 'GBUSV'
   SUBSET: 128116
@@ -16,16 +16,16 @@ ACTIVE:
   METHOD: 'random'
   CYCLES: 1
   USE_PRETRAINED: True
-  PRETRAINED_PATH : '/home/deepankar/scratch/MSA_Medical/pretrained_resnet_models/resnet101-63fe2227.pth'
+  PRETRAINED_PATH : '/home/deepankar/scratch/medclip_vit.bin'
   ALPHA: 0.2  # only used when hard_labels is False
   TEMP: 1.0   # only used when hard_labels is False
 RNG_SEED: 1
-METHOD_NAME: 'v8_resnet101_transforms_without_normalize'
+METHOD_NAME: 'v1_medclip_vit'
 OUT_DIR: '/home/deepankar/scratch/MSA_Medical/results_deepankar'
 TRAIN:
   BATCH: 16
   MOMENTUM: 0.9
-  EPOCH: 100
+  EPOCH: 40
   OPTIMIZER: "SGD"
   LR: 0.005 
   MILESTONES: [20,40,60,80]

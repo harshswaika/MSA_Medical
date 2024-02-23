@@ -24,6 +24,9 @@ sys.path.append('/home/deepankar/scratch/model_stealing_encoders_copy/wise-ft')
 from src.models.modeling import ClassificationHead, ImageEncoder, ImageClassifier
 from src.models.zeroshot import get_zeroshot_classifier
 
+from medclip import MedCLIPModel, MedCLIPVisionModelViT
+from medclip import MedCLIPProcessor
+
 class Victim(nn.Module):
     """class for victim model
 
@@ -80,8 +83,13 @@ def load_victim_model(arch, model_path):
 
 
 def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True):
+    
     if arch == 'resnet34':
         thief_model = resnet34(num_classes=n_classes)
+    elif arch =='medclip_vit':
+        thief_model=MedCLIPModel(vision_cls=MedCLIPVisionModelViT,checkpoint='/home/deepankar/scratch/MSA_Medical/').cuda()
+        print(thief_model)
+        return thief_model
     elif arch == 'vit_b_16_1k':
         # use this model definition for imagenet1k trained weights
         from torchvision.models import vit_b_16
@@ -248,9 +256,11 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
             transforms2= transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
                                              transforms.RandomCrop(224, pad_if_needed=True),
                                              transforms.RandomRotation(5),
+                                             transforms.ColorJitter(0.1, 0.1, 0.1, 0), 
                                             transforms.RandomHorizontalFlip(),
-                                            transforms.ToTensor(), 
-                                            normalize])
+                                            transforms.ToTensor(),
+                                            normalize
+                                            ])
         
         if dataset_name == 'GBUSV':
             thief_data = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
@@ -258,11 +268,11 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
            
         elif dataset_name == 'GBUSV_benign':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms2, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
            
         elif dataset_name == 'GBUSV_malignant':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms2, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
            
         
     else:
