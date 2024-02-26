@@ -11,9 +11,8 @@ from medclip import MedCLIPProcessor
 from PIL import Image
 from torch.autograd import Variable
 
+
 def testz(model, dataloader, no_roi=True, verbose=True):
-    
-    model.eval()
     y_true, y_pred = [], []
     for i, (inp, target, fname) in enumerate(dataloader):
         with torch.no_grad():
@@ -23,15 +22,25 @@ def testz(model, dataloader, no_roi=True, verbose=True):
             if len(input_var.shape) == 5:
                 images = input_var.squeeze(0)
                 outputs =  model(images)
-                _, pred = torch.max(outputs, dim=1)
-                pred_label = torch.max(pred)
+                pred_label = torch.max(outputs['logits'], dim=1)[1]
                 pred_label = pred_label.unsqueeze(0)
                 y_true.append([target_var.tolist()][0][0])
                 y_pred.append([pred_label.tolist()])
 
             else:
-                outputs = model(input_var)
-                _, pred_label = torch.max(outputs, dim=1)
+                processor = MedCLIPProcessor()
+                image = Image.open('/home/deepankar/scratch/MSA_Medical/view1_frontal.jpg')
+                inputs = processor(
+                    text=["lungs remain severely hyperinflated with upper lobe emphysema", 
+                        "opacity left costophrenic angle is new since prior exam ___ represent some loculated fluid cavitation unlikely"], 
+                    images=image, 
+                    return_tensors="pt", 
+                    padding=True
+                    )
+                outputs = model(**inputs)
+                # print(outputs)
+                pred_label = torch.max(outputs['logits'], dim=1)[1]
+                
                 y_pred.append(pred_label.tolist()) 
                 # if soft labels, extract hard label from it
                 if len(target_var.shape) > 1:
@@ -41,16 +50,13 @@ def testz(model, dataloader, no_roi=True, verbose=True):
     y_pred = np.concatenate(y_pred, 0)
     y_true = np.concatenate(y_true, 0)
 
-    # print('y_pred: ', y_pred)
-    # print('y_true: ', y_true)
-
     acc = accuracy_score(y_true, y_pred)
     cfm = confusion_matrix(y_true, y_pred)
     spec = (cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1])/(np.sum(cfm[0]) + np.sum(cfm[1]))
     sens = cfm[2][2]/np.sum(cfm[2])
     f1 = f1_score(y_true=y_true, y_pred=y_pred, average='macro')
 
-    if verbose == True:
+    if verbose:
         print('specificity = {}/{}'.format(cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1], np.sum(cfm[0]) + np.sum(cfm[1])))
         print('sensitivity = {}/{}'.format(cfm[2][2], np.sum(cfm[2])))
     
@@ -72,7 +78,16 @@ def agree(model1, model2, test_loader):
                 _, pred = torch.max(outputs, dim=1)
                 x1 = torch.max(pred)
                 
-                outputs =  model2(images)
+                processor = MedCLIPProcessor()
+                image = Image.open('/home/deepankar/scratch/MSA_Medical/view1_frontal.jpg')
+                inputs = processor(
+                    text=["lungs remain severely hyperinflated with upper lobe emphysema", 
+                        "opacity left costophrenic angle is new since prior exam ___ represent some loculated fluid cavitation unlikely"], 
+                    images=image, 
+                    return_tensors="pt", 
+                    padding=True
+                    )
+                outputs = model2(**inputs)
                 _, pred = torch.max(outputs, dim=1)
                 x2 = torch.max(pred)
 
