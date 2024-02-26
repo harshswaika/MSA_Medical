@@ -95,7 +95,6 @@ if __name__ == "__main__":
 
             # Load thief model            
             thief_model = load_thief_model(cfg, cfg.THIEF.ARCH, n_classes, cfg.ACTIVE.PRETRAINED_PATH)
-            # thief_model = Resnet50().cuda()
 
             print("Thief model initialized successfully")
 
