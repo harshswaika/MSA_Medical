@@ -256,14 +256,12 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
             transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
                                             transforms.ToTensor(), 
                                             normalize])
-            # transforms2= transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
-                                            #  transforms.RandomCrop(224, pad_if_needed=True),
-                                            #  transforms.RandomRotation(5),
-                                            #  transforms.ColorJitter(0.1, 0.1, 0.1, 0), 
-                                            # transforms.RandomHorizontalFlip(),
-                                            # transforms.ToTensor(),
-                                            # normalize
-                                            # ])
+            transforms2= transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                            transforms.RandomHorizontalFlip(),
+                                            transforms.RandAugment(),
+                                            transforms.ToTensor(),
+                                            normalize
+                                            ])
         
         if dataset_name == 'GBUSV':
             thief_data = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
