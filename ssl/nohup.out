@@ -1,0 +1,91 @@
+[2024-02-21 15:30:22,274 INFO] Use GPU: None for training
+[2024-02-21 15:30:22,274 INFO] 
+
+[2024-02-21 15:30:23,283 INFO] Total params: 109.04M
+[2024-02-21 15:30:31,388 INFO] acc: 0.90
+[2024-02-21 15:30:31,389 INFO] Victim model accuracy = 0.9016, spec = 0.90, sens = 0.93
+[2024-02-21 15:30:31,389 INFO] Loading thief dataset ...
+[2024-02-21 15:30:31,393 INFO] 
+Initializing thief model ...
+
+
+Loaded supervised labeled set of length  4500
+dataset root /home/ankita/mnt/data_msa_medical/GBUSV-Shared
+Num of videos 64 frames 15800
+15800
+15800
+Num of videos 64 frames 15800
+  0%|          | 0/36 [00:00<?, ?it/s]  3%|▎         | 1/36 [00:06<03:37,  6.22s/it]  6%|▌         | 2/36 [00:08<02:08,  3.77s/it]  8%|▊         | 3/36 [00:10<01:36,  2.91s/it] 11%|█         | 4/36 [00:11<01:15,  2.37s/it] 14%|█▍        | 5/36 [00:13<01:09,  2.24s/it] 17%|█▋        | 6/36 [00:15<01:00,  2.01s/it] 19%|█▉        | 7/36 [00:16<00:53,  1.84s/it] 22%|██▏       | 8/36 [00:18<00:48,  1.74s/it] 25%|██▌       | 9/36 [00:20<00:47,  1.74s/it] 28%|██▊       | 10/36 [00:21<00:44,  1.73s/it] 31%|███       | 11/36 [00:23<00:41,  1.67s/it] 33%|███▎      | 12/36 [00:24<00:39,  1.66s/it] 36%|███▌      | 13/36 [00:26<00:40,  1.75s/it] 39%|███▉      | 14/36 [00:28<00:37,  1.69s/it] 42%|████▏     | 15/36 [00:29<00:34,  1.62s/it] 44%|████▍     | 16/36 [00:31<00:34,  1.73s/it] 47%|████▋     | 17/36 [00:33<00:33,  1.78s/it] 50%|█████     | 18/36 [00:35<00:31,  1.73s/it] 53%|█████▎    | 19/36 [00:36<00:28,  1.66s/it] 56%|█████▌    | 20/36 [00:38<00:26,  1.63s/it] 58%|█████▊    | 21/36 [00:40<00:24,  1.61s/it] 61%|██████    | 22/36 [00:41<00:22,  1.58s/it] 64%|██████▍   | 23/36 [00:43<00:20,  1.55s/it] 67%|██████▋   | 24/36 [00:44<00:18,  1.53s/it] 69%|██████▉   | 25/36 [00:46<00:16,  1.52s/it] 72%|███████▏  | 26/36 [00:47<00:16,  1.61s/it] 75%|███████▌  | 27/36 [00:49<00:14,  1.59s/it] 78%|███████▊  | 28/36 [00:50<00:12,  1.57s/it] 81%|████████  | 29/36 [00:52<00:11,  1.61s/it] 83%|████████▎ | 30/36 [00:54<00:10,  1.76s/it] 86%|████████▌ | 31/36 [00:56<00:08,  1.70s/it] 89%|████████▉ | 32/36 [00:57<00:06,  1.64s/it] 92%|█████████▏| 33/36 [00:59<00:04,  1.61s/it] 94%|█████████▍| 34/36 [01:00<00:03,  1.60s/it] 97%|█████████▋| 35/36 [01:02<00:01,  1.56s/it]100%|██████████| 36/36 [01:04<00:00,  1.61s/it]100%|██████████| 36/36 [01:04<00:00,  1.78s/it]
+Num of videos 64 frames 15800
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:03<00:09,  3.06s/it] 50%|█████     | 2/4 [00:04<00:04,  2.30s/it] 75%|███████▌  | 3/4 [00:06<00:02,  2.16s/it] 75%|███████▌  | 3/4 [00:09<00:03,  3.33s/it]
+Traceback (most recent call last):
+  File "train_ssl_anchor_init.py", line 463, in <module>
+    main(args)
+  File "train_ssl_anchor_init.py", line 232, in main
+    main_worker(args.gpu, ngpus_per_node, args)
+  File "train_ssl_anchor_init.py", line 328, in main_worker
+    model = get_algorithm(args, _net_builder, tb_log, logger,  
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/algorithms/__init__.py", line 9, in get_algorithm
+    alg = ALGORITHMS[args.algorithm]( # name2alg[args.algorithm](
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/algorithms/pseudolabel/pseudolabel.py", line 33, in __init__
+    super().__init__(args, net_builder, tb_log, logger, **kwargs)
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/core/algorithmbase.py", line 93, in __init__
+    self.dataset_dict = self.set_dataset()
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/core/algorithmbase.py", line 132, in set_dataset
+    dataset_dict = get_dataset(self.args, self.algorithm, self.args.dataset, self.args.num_labels, self.args.num_classes, 
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/core/utils/build.py", line 122, in get_dataset
+    lb_dset, ulb_dset, eval_dset = get_gbvideodataset(args, algorithm, victim_model, num_labels, num_classes, 
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/datasets/medical_datasets/gbusv.py", line 96, in get_gbvideodataset
+    thief_data_val = GBVideoDataset(alg, dataset_root, val_set, target_model,  
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/datasets/medical_datasets/gbusv.py", line 132, in __init__
+    l = victim_model(d).argmax(axis=1, keepdim=False)
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/ankita/scratch/MSA_Medical/RadFormer/models/radformer.py", line 218, in forward
+    l_out, l_attn, l_pool = self.local_branch(local_inp)
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/ankita/scratch/MSA_Medical/RadFormer/models/bagnet.py", line 129, in forward
+    x = self.layer1(x)
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/torch/nn/modules/container.py", line 141, in forward
+    input = module(input)
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/ankita/scratch/MSA_Medical/RadFormer/models/bagnet.py", line 54, in forward
+    out = self.conv2(out)
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 447, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 443, in _conv_forward
+    return F.conv2d(input, weight, bias, self.stride,
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "train_proposed.py", line 20, in <module>
+    from semilearn.algorithms import get_algorithm, name2alg
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/__init__.py", line 4, in <module>
+    from .core.utils import get_dataset, get_data_loader, get_net_builder
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/core/__init__.py", line 5, in <module>
+    from .algorithmbase import AlgorithmBase, ImbAlgorithmBase
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/core/algorithmbase.py", line 17, in <module>
+    from semilearn.core.hooks import Hook, get_priority, CheckpointHook, TimerHook, LoggingHook, DistSamplerSeedHook, ParamUpdateHook, EvaluationHook, EMAHook, WANDBHook, AimHook
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/core/hooks/__init__.py", line 14, in <module>
+    from .aim import AimHook
+  File "/nvme/scratch/ankita/MSA_Medical/ssl/semilearn/core/hooks/aim.py", line 5, in <module>
+    import aim
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/aim/__init__.py", line 2, in <module>
+    from aim.sdk import *
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/aim/sdk/__init__.py", line 2, in <module>
+    from aim.sdk.legacy.session import Session
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/aim/sdk/legacy/session/__init__.py", line 1, in <module>
+    from aim.sdk.legacy.session.session import Session, DefaultSession
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/aim/sdk/legacy/session/session.py", line 12, in <module>
+    from aim.sdk.repo import Repo
+  File "/home/ankita/miniconda3/envs/msa/lib/python3.8/site-packages/aim/sdk/repo.py", line 30, in <module>
+    from aim.storage.rockscontainer import RocksContainer
+  File "aim/storage/rockscontainer.pyx", line 14, in init aim.storage.rockscontainer
+  File "aim/storage/prefixview.py", line 1, in init aim.storage.prefixview
+  File "<frozen importlib._bootstrap>", line 194, in _lock_unlock_module
+KeyboardInterrupt

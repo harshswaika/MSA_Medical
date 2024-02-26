@@ -42,7 +42,7 @@ _C.VICTIM.PATHIN = '/home/harsh_s/scratch/msacopy/ckpts/cifar10-resnet32-inaccur
 _C.VICTIM.WIDTH = 224
 _C.VICTIM.HEIGHT = 224
 
-_C.VICTIM.NUM_CLASSES = 10
+# _C.VICTIM.NUM_CLASSES = 10
 
 # ----------------------------- Adaptive Misinformation options ------------------------------- #
 

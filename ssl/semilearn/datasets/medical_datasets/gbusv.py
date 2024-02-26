@@ -52,22 +52,28 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225]
             )
-        # transforms1 = transforms.Compose([transforms.Resize((img_size)),
-        #                                 transforms.CenterCrop(224),
-        #                                 transforms.ToTensor(), 
-        #                                 normalize])
         transforms1 = transforms.Compose([transforms.Resize((img_size, img_size)),
                                         transforms.ToTensor(), 
                                         normalize])
+        weak_transform = transforms.Compose([
+                                transforms.Resize((int(math.floor(img_size / crop_ratio)), int(math.floor(img_size / crop_ratio)))),
+                                transforms.RandomCrop((img_size, img_size)),
+                                transforms.ColorJitter(0.1, 0.1, 0.1, 0),                                
+                                transforms.RandomHorizontalFlip(),
+                                transforms.ToTensor(),
+                                normalize
+                            ])
     
-    weak_transform = transforms1
+    # weak_transform = transforms1
     val_transform = transforms1
 
     strong_transform = transforms.Compose([
         transforms.Resize((int(math.floor(img_size / crop_ratio)), int(math.floor(img_size / crop_ratio))), antialias=True),
-        RandomResizedCropAndInterpolation((img_size, img_size)),
+        # RandomResizedCropAndInterpolation((img_size, img_size)),
+        transforms.RandomCrop((img_size, img_size)),
+        transforms.ColorJitter(0.1, 0.1, 0.1, 0),
         transforms.RandomHorizontalFlip(),
-        RandAugment(3, 10),
+        # RandAugment(3, 10),
         # transforms.AugMix(),
         transforms.ToTensor(),
         normalize
@@ -92,14 +98,17 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
         val_set = indices[num_train:args.num_labels]
 
     thief_data_lb = GBVideoDataset(alg, dataset_root, labeled_set, target_model,  
-                                  weak_transform=weak_transform)
+                                  weak_transform=weak_transform, 
+                                  val_transform=val_transform)
     thief_data_val = GBVideoDataset(alg, dataset_root, val_set, target_model,  
-                                  weak_transform=val_transform)
+                                  weak_transform=weak_transform, 
+                                  val_transform=val_transform)
     thief_data_ulb = GBVideoDataset(alg, dataset_root, unlabeled_set, target_model, 
                                    is_ulb=True,
                                    weak_transform=weak_transform,
                                    strong_transform=strong_transform, 
-                                   strong_transform2=strong_transform)
+                                   strong_transform2=strong_transform, 
+                                   val_transform=val_transform)
 
     return thief_data_lb, thief_data_ulb, thief_data_val
 
@@ -108,7 +117,7 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
 class GBVideoDataset(BasicDataset):
     def __init__(self, alg, dataset_root, indexs, victim_model, 
                 #  labeled=False, 
-                 is_ulb=False,
+                 is_ulb=False, val_transform=None,
                  weak_transform = None, strong_transform = None, 
                  strong_transform2 = None):
         
@@ -118,7 +127,7 @@ class GBVideoDataset(BasicDataset):
         self.strong_transform = strong_transform
         self.strong_transform2 = strong_transform2
 
-        self.base_dataset = GbVideoDataset_Base(dataset_root, transform=weak_transform)
+        self.base_dataset = GbVideoDataset_Base(dataset_root, transform=val_transform)
         subset_ds = Subset(self.base_dataset, indexs)
         subset_loader = DataLoader(subset_ds, batch_size=128, num_workers=4, shuffle=False, drop_last=False, pin_memory=False)
 

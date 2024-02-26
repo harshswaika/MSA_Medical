@@ -384,14 +384,14 @@ def main_worker(gpu, ngpus_per_node, args):
         model.ema_model.load_state_dict(thief_state, strict=True)
 
         # temperature scaled model
-        pretrained_state = torch.load(args.warmstart_dir) 
-        if 'temp' in pretrained_state:
-            T = pretrained_state['temp']
-        else:
-            T = 1.0
-        print('thief model temp = ', T)
-        model.model = TempModel(model.model, temp=T)
-        model.ema_model = TempModel(model.ema_model, temp=T)
+        # pretrained_state = torch.load(args.warmstart_dir) 
+        # if 'temp' in pretrained_state:
+        #     T = pretrained_state['temp']
+        # else:
+        #     T = 1.0
+        # print('thief model temp = ', T)
+        # model.model = TempModel(model.model, temp=T)
+        # model.ema_model = TempModel(model.ema_model, temp=T)
 
     if args.algorithm in ['comatchkd', 'fixmatchkd', 'selfkd']:
         model.anchor_init()

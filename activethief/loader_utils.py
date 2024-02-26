@@ -8,7 +8,8 @@ import torch.nn as nn
 import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
-from torchvision.models import resnet34, resnet50
+from torchvision.models import resnet34, resnet50, vit_b_16
+from timm.models.vision_transformer import VisionTransformer
 
 sys.path.append('GBCNet')
 from GBCNet.dataloader import GbDataset, GbRawDataset, GbCropDataset
@@ -76,18 +77,28 @@ def load_victim_model(arch, model_path):
 
 
 def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True):
+
+    pretrained_state = torch.load(pretrained_path) 
+    
     if arch == 'resnet34':
         thief_model = resnet34(num_classes=n_classes)
     elif arch == 'resnet50':
         thief_model = resnet50(num_classes=n_classes)
     elif arch == 'radformer':
         thief_model = RadFormer(local_net='bagnet33', \
-                        num_cls=3, \
+                        num_cls=n_classes, \
                         global_weight=0.55, \
                         local_weight=0.1, \
                         fusion_weight=0.35, \
                         use_rgb=True, num_layers=4, pretrain=True,
                         load_local=True)
+    elif arch == 'deit':
+        thief_model = torch.hub.load('facebookresearch/deit:main', 'deit_base_patch16_224', 
+                                     pretrained=False, num_classes=n_classes)
+        pretrained_state = pretrained_state['model']
+
+    elif arch == 'vit':
+        thief_model = vit_b_16(num_classes=n_classes)
 
     # elif arch == 'resnet50_usucl':
         # thief_model.net = resnet50(num_classes=3) 
@@ -102,8 +113,7 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
         thief_state = thief_model.state_dict()
         print('thief state: ', print(thief_state.keys()))
 
-        print("Load pretrained model for initializing the thief")
-        pretrained_state = torch.load(pretrained_path) 
+        
         if 'state_dict' in pretrained_state:
             pretrained_state = pretrained_state['state_dict']
         pretrained_state = { k:v for k,v in pretrained_state.items() if k in thief_state and v.size() == thief_state[k].size() }
@@ -203,23 +213,25 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
                 mean=[0.485, 0.456, 0.406],
                 std=[0.229, 0.224, 0.225]
                 )
-            # transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH)),
-            #                                 transforms.CenterCrop(224),
-            #                                 transforms.ToTensor(), 
-            #                                 normalize])
+
             transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                            transforms.ToTensor(), 
+                                            normalize])
+            transforms2 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                            transforms.RandomHorizontalFlip(),
+                                            transforms.RandAugment(),
                                             transforms.ToTensor(), 
                                             normalize])
         
         if dataset_name == 'GBUSV':
             thief_data = GbVideoDataset(data_root, transforms1)
-            thief_data_aug = GbVideoDataset(data_root, transforms1)
+            thief_data_aug = GbVideoDataset(data_root, transforms2)
         elif dataset_name == 'GBUSV_benign':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='benign')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='benign')
+            thief_data_aug = GbVideoDataset(data_root, transforms2, data_split='benign')
         elif dataset_name == 'GBUSV_malignant':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant')
+            thief_data_aug = GbVideoDataset(data_root, transforms2, data_split='malignant')
         
     else:
         raise AssertionError('invalid thief dataset')
