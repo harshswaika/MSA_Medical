@@ -9,6 +9,7 @@ import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
 from torchvision.models import resnet34, resnet50, resnet152, resnet18, resnet101
+from timm.models.vision_transformer import VisionTransformer
 
 sys.path.append('GBCNet')
 from GBCNet.dataloader import GbDataset, GbRawDataset, GbCropDataset
@@ -83,6 +84,7 @@ def load_victim_model(arch, model_path):
 
 
 def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True):
+
     
     if arch == 'resnet34':
         thief_model = resnet34(num_classes=n_classes)
@@ -128,12 +130,19 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
         thief_model = resnet101(num_classes=n_classes)
     elif arch == 'radformer':
         thief_model = RadFormer(local_net='bagnet33', \
-                        num_cls=3, \
+                        num_cls=n_classes, \
                         global_weight=0.55, \
                         local_weight=0.1, \
                         fusion_weight=0.35, \
                         use_rgb=True, num_layers=4, pretrain=True,
                         load_local=True)
+    elif arch == 'deit':
+        thief_model = torch.hub.load('facebookresearch/deit:main', 'deit_base_patch16_224', 
+                                     pretrained=False, num_classes=n_classes)
+        pretrained_state = pretrained_state['model']
+
+    elif arch == 'vit':
+        thief_model = vit_b_16(num_classes=n_classes)
 
     # elif arch == 'resnet50_usucl':
         # thief_model.net = resnet50(num_classes=3) 
@@ -148,8 +157,7 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
         thief_state = thief_model.state_dict()
         print('thief state: ', print(thief_state.keys()))
 
-        print("Load pretrained model for initializing the thief")
-        pretrained_state = torch.load(pretrained_path) 
+        
         if 'state_dict' in pretrained_state:
             pretrained_state = pretrained_state['state_dict']
         pretrained_state = { k:v for k,v in pretrained_state.items() if k in thief_state and v.size() == thief_state[k].size() }
@@ -277,6 +285,7 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
             thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
             thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
            
+
         
     else:
         raise AssertionError('invalid thief dataset')

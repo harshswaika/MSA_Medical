@@ -168,7 +168,11 @@ def test_thief(model, net, victim_model, test_loader, ema=False,  out_key='logit
                 y_true.append([target_var.tolist()[0][0]])
 
             else:
+                # try:
                 logits = net(input_var)['logits']
+                # except:
+                    # logits = net(input_var)
+
                 _, pred_label = torch.max(logits, dim=1)
                 logits_victim = victim_model(input_var)
                 y_pred.extend(pred_label.tolist()) 
