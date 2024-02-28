@@ -1,29 +1,29 @@
 VICTIM:
   ARCH: 'radformer'
   DATASET: 'gbusg'
-  DATA_ROOT: '/home/ankita/scratch/Datasets/GBCU-Shared'
-  PATH: 'victim_models/radformer/radformer.pkl'
+  DATA_ROOT: '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBCU-Shared'
+  PATH: '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/radformer/radformer.pkl'
   WIDTH: 224
   HEIGHT: 224
 THIEF:
   ARCH: 'radformer'
-  DATA_ROOT: '/home/ankita/scratch/Datasets/GBUSV-Shared'
+  DATA_ROOT: '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared'
   DATASET: 'GBUSV'
   SUBSET: 128116
 ACTIVE:
-  BUDGET: 5000
+  BUDGET: 2000
   METHOD: 'random'
   CYCLES: 1
   USE_PRETRAINED: False
-  PRETRAINED_PATH : '/home/ankita/scratch/MSA_results/ckpts/resnet50-imagenet1k.pth'
-RNG_SEED: 1
-METHOD_NAME: 'v3'
-OUT_DIR: 'results'
+  PRETRAINED_PATH : '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/ckpts/resnet50-imagenet1k.pth'
+RNG_SEED: 5
+METHOD_NAME: 'v1_0.005'
+OUT_DIR: '/home/deepankar/scratch/MSA_Medical/results_1k'
 TRAIN:
-  BATCH: 32
+  BATCH: 16
   MOMENTUM: 0.9
-  EPOCH: 50
+  EPOCH: 100
   OPTIMIZER: "SGD"
-  LR: 0.003  # 0.005
-  MILESTONES: [10,20,30,40]
+  LR: 0.005  # 0.005
+  MILESTONES: [20,40,60,80]
   WDECAY: 0.0005
