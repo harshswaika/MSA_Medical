@@ -1,33 +1,35 @@
 VICTIM:
   ARCH: 'radformer'
   DATASET: 'gbusg'
-  DATA_ROOT: '/home/ankita/mnt/data_msa_medical/GBCU-Shared'
-  PATH: '/home/ankita/mnt/data_msa_medical/victim_models/radformer/radformer.pkl'
+  DATA_ROOT: '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBCU-Shared'
+  PATH: '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/radformer/radformer.pkl'
   WIDTH: 224
   HEIGHT: 224
 THIEF:
   ARCH: 'vit'
-  DATA_ROOT: '/home/ankita/mnt/data_msa_medical/GBUSV-Shared'
+  DATA_ROOT: '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared'
   DATASET: 'GBUSV'
   SUBSET: 128116
   HARD_LABELS: True
 ACTIVE:
-  BUDGET: 5000
+  BUDGET: 1000
   METHOD: 'random'
   CYCLES: 1
   USE_PRETRAINED: True
-  PRETRAINED_PATH : '/home/ankita/mnt/data_msa_medical/ckpts/vit_b_16-imagenet1k.pth'
+  PRETRAINED_PATH : '/home/deepankar/mnt/vision3_ckpts/vit_b_16-imagenet1k.pth'
   ALPHA: 0.2  # only used when hard_labels is False
   TEMP: 1.0   # only used when hard_labels is False
-RNG_SEED: 1
-METHOD_NAME: 'v3'
-OUT_DIR: '/home/ankita/mnt/data_msa_medical/results_ankita'
+
+RNG_SEED: 5
+METHOD_NAME: 'v1'
+OUT_DIR: '/home/deepankar/scratch/MSA_Medical/results_1k'
+
 TRAIN:
   BATCH: 16
   MOMENTUM: 0.9
   EPOCH: 100
   OPTIMIZER: "SGD"
-  LR: 0.001 
+  LR: 0.005 
   MILESTONES: [20,40,60,80]
   WDECAY: 0.0005
   # BATCH: 128

@@ -7,9 +7,9 @@ import torch.utils
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-
+# from medclip import MedCLIPProcessor
+from PIL import Image
 from torch.autograd import Variable
-
 
 def testz(model, dataloader, no_roi=True, verbose=True):
     

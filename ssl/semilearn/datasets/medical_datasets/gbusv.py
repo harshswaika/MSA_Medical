@@ -55,6 +55,9 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
         transforms1 = transforms.Compose([transforms.Resize((img_size, img_size)),
                                         transforms.ToTensor(), 
                                         normalize])
+        # weak_transform = transforms.Compose([transforms.Resize((img_size, img_size)),
+        #                                 transforms.ToTensor(), 
+        #                                 normalize])
         weak_transform = transforms.Compose([
                                 transforms.Resize((int(math.floor(img_size / crop_ratio)), int(math.floor(img_size / crop_ratio)))),
                                 transforms.RandomCrop((img_size, img_size)),
@@ -99,16 +102,16 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
 
     thief_data_lb = GBVideoDataset(alg, dataset_root, labeled_set, target_model,  
                                   weak_transform=weak_transform, 
-                                  val_transform=val_transform)
+                                  val_transform=val_transform,pickle_root='/home/deepankar/scratch/MSA_Medical/')
     thief_data_val = GBVideoDataset(alg, dataset_root, val_set, target_model,  
                                   weak_transform=weak_transform, 
-                                  val_transform=val_transform)
+                                  val_transform=val_transform,pickle_root='/home/deepankar/scratch/MSA_Medical/')
     thief_data_ulb = GBVideoDataset(alg, dataset_root, unlabeled_set, target_model, 
                                    is_ulb=True,
                                    weak_transform=weak_transform,
                                    strong_transform=strong_transform, 
                                    strong_transform2=strong_transform, 
-                                   val_transform=val_transform)
+                                   val_transform=val_transform,pickle_root='/home/deepankar/scratch/MSA_Medical/')
 
     return thief_data_lb, thief_data_ulb, thief_data_val
 
@@ -119,15 +122,16 @@ class GBVideoDataset(BasicDataset):
                 #  labeled=False, 
                  is_ulb=False, val_transform=None,
                  weak_transform = None, strong_transform = None, 
-                 strong_transform2 = None):
+                 strong_transform2 = None,pickle_root=None):
         
         self.alg = alg
         self.is_ulb = is_ulb
         self.transform = weak_transform
         self.strong_transform = strong_transform
         self.strong_transform2 = strong_transform2
+        self.pickle_root=pickle_root
 
-        self.base_dataset = GbVideoDataset_Base(dataset_root, transform=val_transform)
+        self.base_dataset = GbVideoDataset_Base(dataset_root,pickle_root, transform=val_transform)
         subset_ds = Subset(self.base_dataset, indexs)
         subset_loader = DataLoader(subset_ds, batch_size=128, num_workers=4, shuffle=False, drop_last=False, pin_memory=False)
 
@@ -162,13 +166,13 @@ class GBVideoDataset(BasicDataset):
 
 
 class GbVideoDataset_Base(torch.utils.data.Dataset):
-    def __init__(self, root, transform=None, return_all_video_frames=True, data_split='all'):
+    def __init__(self, root, pickle_root=None, transform=None, return_all_video_frames=True, data_split='all'):
         self.transform = transform
         self.root = root
         self.transform = transform
         self.return_all_video_frames = return_all_video_frames ## True
         self.data_split = data_split
-
+        self.pickle_root = pickle_root
         self._get_annotations()
 
         self.loader = pil_loader
@@ -199,7 +203,10 @@ class GbVideoDataset_Base(torch.utils.data.Dataset):
         self.data_split_path = os.path.join(self.data_basepath)
 
         # create a flattened list of all image paths
-        pickle_path = os.path.join(self.data_basepath, "all_paths.pkl")
+        if self.pickle_root is not None:
+            pickle_path = os.path.join(self.pickle_root, self.data_split+ "_names.pkl")
+        else:
+            pickle_path = os.path.join(self.data_basepath, self.data_split+ "_names.pkl")
         if not os.path.exists(pickle_path):
             print('creat new cache')
             images = self.get_image_paths()
