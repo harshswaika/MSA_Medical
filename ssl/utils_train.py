@@ -159,7 +159,8 @@ def test_thief(model, net, victim_model, test_loader, ema=False,  out_key='logit
             
             if len(input_var.shape) == 5:
                 images = input_var.squeeze(0)
-                logits =  net(images)['logits']
+                # logits =  net(images)['logits']
+                logits =  net(images)
                 _, pred = torch.max(logits, dim=1)
                 pred_label = torch.max(pred)
                 pred_label = pred_label.unsqueeze(0)
@@ -168,10 +169,8 @@ def test_thief(model, net, victim_model, test_loader, ema=False,  out_key='logit
                 y_true.append([target_var.tolist()[0][0]])
 
             else:
-                # try:
-                logits = net(input_var)['logits']
-                # except:
-                    # logits = net(input_var)
+                # logits = net(input_var)['logits']
+                logits = net(input_var)
 
                 _, pred_label = torch.max(logits, dim=1)
                 logits_victim = victim_model(input_var)
@@ -214,8 +213,8 @@ def agree(model1, model2, test_loader):
             try:
                 x2=model2(inputs).argmax(axis=-1,keepdims=False)
             except:
-                # x1=model1(inputs).argmax(axis=-1,keepdims=False)
-                x2=model2(inputs)['logits'].argmax(axis=-1,keepdims=False)
+                x1=model1(inputs).argmax(axis=-1,keepdims=False)
+                # x2=model2(inputs)['logits'].argmax(axis=-1,keepdims=False)
             c+=n-int((torch.count_nonzero(x1-x2)).detach().cpu())
             l+=n
             # print(c, l)

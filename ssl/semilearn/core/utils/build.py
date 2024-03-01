@@ -45,6 +45,7 @@ def get_net_builder(net_name, from_name: bool):
         import semilearn.nets as nets
         builder = getattr(nets, net_name)
         return builder
+    
 
 
 

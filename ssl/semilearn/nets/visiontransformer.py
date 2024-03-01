@@ -270,10 +270,10 @@ class VisionTransformer(nn.Module):
         x = x[:, 0]
 
         x = self.heads(x)
-        # return x
+        return x
 
-        result_dict = {'logits':x, 'feat':feats}
-        return result_dict
+        # result_dict = {'logits':x, 'feat':feats}
+        # return result_dict
 
 
 
