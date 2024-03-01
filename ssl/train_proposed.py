@@ -32,12 +32,13 @@ class TempModel(nn.Module):
         self.T = temp
 
     def forward(self, x):
-        dict = self.base_model(x)
-        logits = dict['logits']
-        feat = dict['feat']
+        logits = self.base_model(x)
+        # logits = dict['logits']
+        # feat = dict['feat']
         logits /=  self.T
-        result_dict = {'logits':logits, 'feat':feat}
-        return result_dict  
+        return logits
+        # result_dict = {'logits':logits, 'feat':feat}
+        # return result_dict  
 
 
 def get_config():
