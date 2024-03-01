@@ -116,22 +116,22 @@ class SelfKD(AlgorithmBase):
             if self.use_cat:
                 inputs = torch.cat((x_lb, x_ulb_w, x_ulb_s))
                 outputs = self.model(inputs)
-                logits_x_lb = outputs['logits'][:num_lb]
-                logits_x_ulb_w, logits_x_ulb_s = outputs['logits'][num_lb:].chunk(2)
-                feats_x_lb = outputs['feat'][:num_lb]
-                feats_x_ulb_w, feats_x_ulb_s = outputs['feat'][num_lb:].chunk(2)
+                logits_x_lb = outputs[:num_lb]
+                logits_x_ulb_w, logits_x_ulb_s = outputs[num_lb:].chunk(2)
+                # feats_x_lb = outputs['feat'][:num_lb]
+                # feats_x_ulb_w, feats_x_ulb_s = outputs['feat'][num_lb:].chunk(2)
             else:
                 outs_x_lb = self.model(x_lb) 
-                logits_x_lb = outs_x_lb['logits']
-                feats_x_lb = outs_x_lb['feat']
+                logits_x_lb = outs_x_ulb_w
+                # feats_x_lb = outs_x_lb['feat']
                 outs_x_ulb_s = self.model(x_ulb_s)
-                logits_x_ulb_s = outs_x_ulb_s['logits']
-                feats_x_ulb_s = outs_x_ulb_s['feat']
+                logits_x_ulb_s = outs_x_ulb_s
+                # feats_x_ulb_s = outs_x_ulb_s['feat']
                 # with torch.no_grad():
                 outs_x_ulb_w = self.model(x_ulb_w)
-                logits_x_ulb_w = outs_x_ulb_w['logits']
-                feats_x_ulb_w = outs_x_ulb_w['feat']
-            feat_dict = {'x_lb':feats_x_lb, 'x_ulb_w':feats_x_ulb_w, 'x_ulb_s':feats_x_ulb_s}
+                logits_x_ulb_w = outs_x_ulb_w
+                # feats_x_ulb_w = outs_x_ulb_w['feat']
+            # feat_dict = {'x_lb':feats_x_lb, 'x_ulb_w':feats_x_ulb_w, 'x_ulb_s':feats_x_ulb_s}
 
             if self.la is True:
                 logits_x_lb = logits_x_lb + self.adjustments
@@ -142,7 +142,7 @@ class SelfKD(AlgorithmBase):
             # obtain soft labels from anchor model
             self.anchor_model.eval()
             with torch.no_grad():
-                y_lb_soft = self.anchor_model(x_lb)['logits']
+                y_lb_soft = self.anchor_model(x_lb)
             
             # knowledge distillation loss
             loss_ce =  self.ce_loss(logits_x_lb, y_lb, reduction='mean')
@@ -156,13 +156,13 @@ class SelfKD(AlgorithmBase):
             # compute pseudolabels using teacher model
             self.ema.apply_shadow()
             with torch.no_grad():
-                logits_x_ulb_w_teacher = self.model(x_ulb_w)['logits']
+                logits_x_ulb_w_teacher = self.model(x_ulb_w)
             self.ema.restore()
 
             # compute pseudolabels using anchor model
             self.anchor_model.eval()
             with torch.no_grad():
-                logits_x_ulb_w_anchor = self.anchor_model(x_ulb_w)['logits']
+                logits_x_ulb_w_anchor = self.anchor_model(x_ulb_w)
 
             # probs_x_ulb_w = torch.softmax(logits_x_ulb_w, dim=-1)
             probs_x_ulb_w = self.compute_prob(logits_x_ulb_w.detach())
@@ -203,7 +203,7 @@ class SelfKD(AlgorithmBase):
 
             total_loss = sup_loss + self.lambda_u * unsup_loss
 
-        out_dict = self.process_out_dict(loss=total_loss, feat=feat_dict)
+        out_dict = self.process_out_dict(loss=total_loss)
         log_dict = self.process_log_dict(sup_loss=sup_loss.item(), 
                                          unsup_loss=unsup_loss.item(), 
                                          total_loss=total_loss.item(), 
