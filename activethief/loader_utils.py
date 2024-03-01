@@ -185,6 +185,20 @@ def load_victim_dataset(cfg, dataset_name):
                                     normalize,
                                 ]))
 
+
+    elif dataset_name == 'pocus':
+        from covid_dataset import COVIDDataset
+
+        img_dir = os.path.join(cfg.VICTIM.DATA_ROOT, 'covid_data1.pkl')
+        testset = COVIDDataset(data_dir=img_dir, 
+                               train=False, 
+                               transform=transforms.Compose([
+                                    transforms.Resize(224),
+                                    transforms.CenterCrop(224),
+                                    transforms.ToTensor(),
+                                    normalize,
+                                ]))
+
     test_loader = DataLoader(dataset=testset, batch_size=1, 
                                 shuffle=False, num_workers=0)
 
