@@ -356,10 +356,10 @@ def main_worker(gpu, ngpus_per_node, args):
             else:
                 print('key not found', k)
     
-    print('Common keys pretrained model: ', len(imagenet_pretrained_state_common.keys()))
-    thief_state.update(imagenet_pretrained_state_common)
-    model.model.load_state_dict(thief_state, strict=True)
-    model.ema_model.load_state_dict(thief_state, strict=True)
+        print('Common keys pretrained model: ', len(imagenet_pretrained_state_common.keys()))
+        thief_state.update(imagenet_pretrained_state_common)
+        model.model.load_state_dict(thief_state, strict=True)
+        model.ema_model.load_state_dict(thief_state, strict=True)
 
     # Load anchor model
     print('Load anchor model', args.warmstart_dir)

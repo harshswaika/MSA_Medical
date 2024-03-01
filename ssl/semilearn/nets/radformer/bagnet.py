@@ -15,16 +15,10 @@ model_urls = {
             'BagNet33': 'https://bitbucket.org/wielandbrendel/bag-of-feature-pretrained-models/raw/249e8fa82c0913623a807d9d35eeab9da7dcc2a8/bagnet32-2ddd53ed.pth.tar',
     }
 
-# model_local_paths = {
-#         "BagNet33": "./model_weights/init_bagnet/bagnet33.pth",
-#         "BagNet17": "./model_weights/init_bagnet/bagnet17.pth",
-#         "BagNet9": "./model_weights/init_bagnet/bagnet9.pth",
-#     }
-
 model_local_paths = {
-        "BagNet33": "./victim_models/init_bagnet/bagnet33.pth",
-        "BagNet17": "./victim_models/init_bagnet/bagnet17.pth",
-        "BagNet9": "./victim_models/init_bagnet/bagnet9.pth",
+        "BagNet33": "/home/ankita/mnt/data_msa_medical/victim_models/init_bagnet/bagnet33.pth",
+        "BagNet17": "/home/ankita/mnt/data_msa_medical/victim_models/init_bagnet/bagnet17.pth",
+        "BagNet9": "/home/ankita/mnt/data_msa_medical/victim_models/init_bagnet/bagnet9.pth",
     }
 
 class Bottleneck(nn.Module):

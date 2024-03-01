@@ -12,7 +12,6 @@ from .mobilenetv2 import mobilenet_v2
 from .vit_pytorch import vit_b_16
 from .resnet_big import SupConResNet34 as supconresnet34
 from .gbcnet import GbcNet
-from .radformer.radformer import RadFormer
+from .radformer.radformer import radformer
 from .deit import deit_base_patch16_224
 from .visiontransformer import vit_b_16
-# from torchvision.models import resnet34 as resnet34_cubs
