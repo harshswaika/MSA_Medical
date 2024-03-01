@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
-from torchvision.models import resnet34, resnet50, resnet152, resnet18, resnet101
+from torchvision.models import resnet34, resnet50, resnet152, resnet18, resnet101,vit_b_16
 from timm.models.vision_transformer import VisionTransformer
 
 sys.path.append('GBCNet')
@@ -16,17 +16,17 @@ from GBCNet.dataloader import GbDataset, GbRawDataset, GbCropDataset
 from GBCNet.models import Resnet50 as Resnet50_GC
 from GBCNet.models import GbcNet
 
-sys.path.append('RadFormer')
+sys.path.append('Radformer')
 from RadFormer.models import RadFormer
 from RadFormer.dataloader import GbUsgDataSet, GbUsgRoiTestDataSet
 
 from types import SimpleNamespace
-sys.path.append('/home/deepankar/scratch/model_stealing_encoders_copy/wise-ft')
-from src.models.modeling import ClassificationHead, ImageEncoder, ImageClassifier
-from src.models.zeroshot import get_zeroshot_classifier
+# sys.path.append('/home/deepankar/scratch/model_stealing_encoders_copy/wise-ft')
+# from src.models.modeling import ClassificationHead, ImageEncoder, ImageClassifier
+# from src.models.zeroshot import get_zeroshot_classifier
 
-from medclip import MedCLIPModel, MedCLIPVisionModelViT
-from medclip import MedCLIPProcessor
+# from medclip import MedCLIPModel, MedCLIPVisionModelViT
+# from medclip import MedCLIPProcessor
 
 class Victim(nn.Module):
     """class for victim model
@@ -84,50 +84,13 @@ def load_victim_model(arch, model_path):
 
 
 def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True):
-    pretrained_state=torch.load(pretrained_path)
+
+    pretrained_state = torch.load(pretrained_path) 
     
     if arch == 'resnet34':
         thief_model = resnet34(num_classes=n_classes)
-    elif arch =='medclip_vit':
-        # thief_model=MedCLIPModel(vision_cls=MedCLIPVisionModelViT,checkpoint='/home/deepankar/scratch/MSA_Medical/').cuda()
-        thief_model=MedCLIPModel(vision_cls=MedCLIPVisionModelViT)
-        thief_model.from_pretrained()
-        thief_model.cuda()
-        print(thief_model)
-        return thief_model
-    elif arch == 'vit_b_16_1k':
-        # use this model definition for imagenet1k trained weights
-        from torchvision.models import vit_b_16
-        thief_model = vit_b_16(num_classes=n_classes)
-    elif arch == 'vit_b_16_21k_CLIP':
-        args = SimpleNamespace(model= 'ViT-B/16', device= 'cuda',cache_dir= 'cache',classnames='openai',template='simple_template',train_dataset='CIFAR10',data_location='data',batch_size=128)
-        image_encoder = ImageEncoder(args, keep_lang=True)
-        classification_head = get_zeroshot_classifier(args, image_encoder.model)
-        delattr(image_encoder.model, 'transformer')
-        classifier = ImageClassifier(image_encoder, classification_head, process_images=False)
-        classifier.save('zeroshotthief.pt')
-        thief_model=ImageClassifier.load('zeroshotthief.pt')
-        # print("Preprocess_fn",thief_model.train_preprocess)
-        thief_model.process_images=True
-        thief_model = thief_model.cuda()
-        # print(thief_model)
-        return thief_model
-    elif arch == 'vit_b_16_21k':
-        # use this model definition for imagenet21k trained weights
-        from vit import vit_base_patch16_224
-        thief_model = vit_base_patch16_224(num_classes=n_classes)
-    elif arch == 'vit_l_32_21k':
-        # use this model definition for imagenet21k trained weights
-        from pytorch_pretrained_vit import ViT
-        thief_model = ViT('L_32',pretrained=False,num_classes=n_classes)
-    elif arch == 'resnet18':
-        thief_model = resnet18(num_classes=n_classes)
     elif arch == 'resnet50':
         thief_model = resnet50(num_classes=n_classes)
-    elif arch == 'resnet152':
-        thief_model = resnet152(num_classes=n_classes)
-    elif arch == 'resnet101':
-        thief_model = resnet101(num_classes=n_classes)
     elif arch == 'radformer':
         thief_model = RadFormer(local_net='bagnet33', \
                         num_cls=n_classes, \
@@ -153,7 +116,7 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
         #                   nn.Linear(256, 3)
         #                 )
 
-    if load_pretrained == True :
+    if load_pretrained == True:
         thief_state = thief_model.state_dict()
         print('thief state: ', print(thief_state.keys()))
 
@@ -167,6 +130,7 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
     thief_model = thief_model.cuda()
     
     return thief_model
+
 
 
 def load_victim_dataset(cfg, dataset_name):
