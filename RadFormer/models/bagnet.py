@@ -22,9 +22,9 @@ model_urls = {
 #     }
 
 model_local_paths = {
-        "BagNet33": "./victim_models/init_bagnet/bagnet33.pth",
-        "BagNet17": "./victim_models/init_bagnet/bagnet17.pth",
-        "BagNet9": "./victim_models/init_bagnet/bagnet9.pth",
+        "BagNet33": "/home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/init_bagnet/bagnet33.pth",
+        "BagNet17": "/home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/init_bagnet/bagnet17.pth",
+        "BagNet9": "/home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/init_bagnet/bagnet9.pth",
     }
 
 class Bottleneck(nn.Module):

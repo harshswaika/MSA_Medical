@@ -12,7 +12,11 @@ import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torch.optim.lr_scheduler as lr_scheduler
 
+<<<<<<< HEAD
 sys.path.append('/home/ankita/scratch/MSA_Medical')
+=======
+sys.path.append('/home/deepankar/scratch/MSA_Medical')
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 from GBCNet.dataloader import GbDataset, GbCropDataset, GbRawDataset
 # from gb_dataloader import GbDataset, GbRawDataset, GbCropDataset
 import torchvision.transforms as T

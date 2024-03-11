@@ -9,7 +9,10 @@ import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
 from torchvision.models import resnet34, resnet50, resnet152, resnet18, resnet101,vit_b_16
+<<<<<<< HEAD
 from inception import inception_v3
+=======
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 from timm.models.vision_transformer import VisionTransformer
 
 sys.path.append('GBCNet')
@@ -106,9 +109,12 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
 
     elif arch == 'vit':
         thief_model = vit_b_16(num_classes=n_classes)
+<<<<<<< HEAD
     
     elif arch == 'inception_v3':
         thief_model = inception_v3(num_classes=n_classes)
+=======
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 
     # elif arch == 'resnet50_usucl':
         # thief_model.net = resnet50(num_classes=3) 
@@ -253,10 +259,15 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
                                             ])
         
         if dataset_name == 'GBUSV':
+<<<<<<< HEAD
             thief_data = GbVideoDataset(data_root, transforms1)
                                         # pickle_root='/home/deepankar/scratch/MSA_Medical/')
             thief_data_aug = GbVideoDataset(data_root, transforms2)
                                             # pickle_root='/home/deepankar/scratch/MSA_Medical/')
+=======
+            thief_data = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms2,pickle_root='/home/deepankar/scratch/MSA_Medical/')
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
            
         elif dataset_name == 'GBUSV_benign':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')

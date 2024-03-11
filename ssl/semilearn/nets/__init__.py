@@ -16,7 +16,11 @@ from .resnet_big import SupConResNet34 as supconresnet34
 from .gbcnet import GbcNet
 from .radformer.radformer import radformer
 from .deit import deit_base_patch16_224
+<<<<<<< HEAD
 
 sys.path.append('/home/ankita/scratch/MSA_Medical')
 from activethief.inception import inception_v3
 # from .visiontransformer import vit_b_16
+=======
+from .visiontransformer import vit_b_16
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d

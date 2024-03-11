@@ -9,8 +9,12 @@ import numpy as np
 import torchvision.models as models
 
 # LOCAL_WEIGHT_PATH = "./model_weights/init_resnet/resnet50.pth"
+<<<<<<< HEAD
 LOCAL_WEIGHT_PATH = "./victim_models/init_resnet/resnet50.pth"
 # LOCAL_WEIGHT_PATH = "/home/ankita/scratch/data_msa_medical/results_ankita/gbusg_radformer/GBUSV_resnet50/SGD/5000_val500/random_v8/ trial_1_cycle_1_best.pth"
+=======
+LOCAL_WEIGHT_PATH = "/home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/init_resnet/resnet50.pth"
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 
 class Resnet50(nn.Module):
     def __init__(self, num_cls=3, in_channels=3, \

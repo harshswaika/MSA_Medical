@@ -66,6 +66,7 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
                                 transforms.ToTensor(),
                                 normalize
                             ])
+<<<<<<< HEAD
         # weak_transform = transforms.Compose([transforms.Resize((img_size,img_size)),
         #                                     transforms.RandomHorizontalFlip(),
         #                                     transforms.RandAugment(),
@@ -73,6 +74,11 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
         #                                     normalize
         #                                     ])
         print('weak transform', weak_transform)
+=======
+    
+    # weak_transform = transforms1
+    val_transform = transforms1
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 
     val_transform = transforms1
     strong_transform = transforms.Compose([
@@ -107,6 +113,7 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
 
     thief_data_lb = GBVideoDataset(alg, dataset_root, labeled_set, target_model,  
                                   weak_transform=weak_transform, 
+<<<<<<< HEAD
                                   val_transform=val_transform,
                                 #   pickle_root='/home/deepankar/scratch/MSA_Medical/'
                                   )
@@ -115,14 +122,24 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
                                   val_transform=val_transform,
                                 #   pickle_root='/home/deepankar/scratch/MSA_Medical/'
                                   )
+=======
+                                  val_transform=val_transform,pickle_root='/home/deepankar/scratch/MSA_Medical/')
+    thief_data_val = GBVideoDataset(alg, dataset_root, val_set, target_model,  
+                                  weak_transform=weak_transform, 
+                                  val_transform=val_transform,pickle_root='/home/deepankar/scratch/MSA_Medical/')
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
     thief_data_ulb = GBVideoDataset(alg, dataset_root, unlabeled_set, target_model, 
                                    is_ulb=True,
                                    weak_transform=weak_transform,
                                    strong_transform=strong_transform, 
                                    strong_transform2=strong_transform, 
+<<<<<<< HEAD
                                    val_transform=val_transform,
                                 #    pickle_root='/home/deepankar/scratch/MSA_Medical/'
                                    )
+=======
+                                   val_transform=val_transform,pickle_root='/home/deepankar/scratch/MSA_Medical/')
+>>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 
     return thief_data_lb, thief_data_ulb, thief_data_val
 
