@@ -214,7 +214,7 @@ class RadFormer(nn.Module):
     def forward(self, x, target=None, vis=False):
         g_out, g_attn, g_pool = self.global_branch(x)
         local_inp, local_im, box = self.attention(x, g_attn)
-        #l_out, l_attn, l_pool = self.local_branch(x)
+        # l_out, l_attn, l_pool = self.local_branch(x)
         l_out, l_attn, l_pool = self.local_branch(local_inp)
         f_out, attns = self.fusion_branch(g_pool, l_pool)
         if target != None:

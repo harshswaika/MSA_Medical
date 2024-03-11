@@ -272,8 +272,9 @@ class VisionTransformer(nn.Module):
             return x
 
         out = self.heads(x)
-        results_dict = {'logits':out, 'feat':x}
-        return results_dict
+        return out
+        # results_dict = {'logits':out, 'feat':x}
+        # return results_dict
 
 
 def _vision_transformer(

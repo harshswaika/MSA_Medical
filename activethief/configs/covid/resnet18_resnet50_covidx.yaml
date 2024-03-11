@@ -1,0 +1,35 @@
+VICTIM:
+  ARCH: 'resnet18'
+  DATASET: 'pocus'
+  DATA_ROOT: '/home/ankita/mnt/data_msa_medical/covid_5_fold'
+  PATH: '/home/ankita/mnt/data_msa_medical/victim_models/pocus_resnet18.pth.tar'
+  WIDTH: 224
+  HEIGHT: 224
+THIEF:
+  ARCH: 'resnet50'
+  # DATA_ROOT: '/home/ankita/mnt/data_msa_medical/Butte'
+  DATA_ROOT: '/home/ankita/mnt/data_msa_medical/covidx_us/images_cropped'
+  DATASET: 'covidx'
+  SUBSET: 128116
+  HARD_LABELS: True
+ACTIVE:
+  BUDGET: 5000
+  METHOD: 'kcenter'
+  CYCLES: 5
+  USE_PRETRAINED: True
+  PRETRAINED_PATH : '/home/ankita/mnt/data_msa_medical/ckpts/resnet50-imagenet1k.pth'
+  ALPHA: 0.2  # only used when hard_labels is False
+  TEMP: 1.0   # only used when hard_labels is False
+  LA: False
+RNG_SEED: 1
+TRIALS: 1
+METHOD_NAME: 'v1'
+OUT_DIR: '/home/ankita/mnt/data_msa_medical/results_ankita/'
+TRAIN:
+  BATCH: 128
+  MOMENTUM: 0.9
+  EPOCH: 100
+  OPTIMIZER: "SGD"
+  LR: 0.01  #0.01
+  MILESTONES: [20,40,60,80]
+  WDECAY: 0.0005

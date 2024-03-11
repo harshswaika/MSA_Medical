@@ -42,7 +42,7 @@ _C.VICTIM.PATHIN = '/home/harsh_s/scratch/msacopy/ckpts/cifar10-resnet32-inaccur
 _C.VICTIM.WIDTH = 224
 _C.VICTIM.HEIGHT = 224
 
-_C.VICTIM.NUM_CLASSES = 10
+# _C.VICTIM.NUM_CLASSES = 10
 
 # ----------------------------- Adaptive Misinformation options ------------------------------- #
 
@@ -162,7 +162,7 @@ _C.TRAIN.GAMMA = 0.1
 # ----------------------------- Miscellaneous Options ------------------------------- #
 
 # Experiment trials to be conducted
-# _C.TRIALS = 5
+_C.TRIALS = 5
 
 # Experiment name
 _C.METHOD_NAME = 'None'

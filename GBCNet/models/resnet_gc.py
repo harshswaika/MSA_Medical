@@ -6,10 +6,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
-import transforms as T
+# import transforms as T
 import utils
 import torchvision.models as models
-from dataloader import GbDataset
+# from dataloader import GbDataset
 
 class Resnet(nn.Module):
     def __init__(self, num_cls=3, pretrain=True):

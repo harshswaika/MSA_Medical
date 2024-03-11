@@ -26,6 +26,26 @@ from tqdm import tqdm
 from collections import Counter, defaultdict
 
 
+def compute_data_stats(loader):
+    mean = 0.0
+    for data in loader:
+        images = data[0]
+        batch_samples = images.size(0) 
+        images = images.view(batch_samples, images.size(1), -1)
+        mean += images.mean(2).sum(0)
+    mean = mean / len(loader.dataset)
+
+    var = 0.0
+    for data in loader:
+        images = data[0]
+        batch_samples = images.size(0)
+        images = images.view(batch_samples, images.size(1), -1)
+        var += ((images - mean.unsqueeze(1))**2).sum([0,2])
+    std = torch.sqrt(var / (len(loader.dataset)*224*224))
+    
+    return mean, std
+
+
 def compute_adjustment(train_loader, tro, num_classes):
     """compute the base probabilities"""
 

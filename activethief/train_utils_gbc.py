@@ -7,9 +7,9 @@ import torch.utils
 import torch.nn.functional as F
 from torch.autograd import Variable
 
-
+# from medclip import MedCLIPProcessor
+from PIL import Image
 from torch.autograd import Variable
-
 
 def testz(model, dataloader, no_roi=True, verbose=True):
     
@@ -21,6 +21,7 @@ def testz(model, dataloader, no_roi=True, verbose=True):
             target_var = torch.autograd.Variable(target)
 
             if len(input_var.shape) == 5:
+                # input_var = torch.nn.functional.interpolate(input_var, size=224)
                 images = input_var.squeeze(0)
                 outputs =  model(images)
                 _, pred = torch.max(outputs, dim=1)
@@ -30,6 +31,7 @@ def testz(model, dataloader, no_roi=True, verbose=True):
                 y_pred.append([pred_label.tolist()])
 
             else:
+                # input_var = torch.nn.functional.interpolate(input_var, size=224)
                 outputs = model(input_var)
                 _, pred_label = torch.max(outputs, dim=1)
                 y_pred.append(pred_label.tolist()) 

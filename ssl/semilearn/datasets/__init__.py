@@ -7,4 +7,4 @@ from semilearn.datasets.nlp_datasets import get_json_dset
 from semilearn.datasets.audio_datasets import get_pkl_dset
 from semilearn.datasets.samplers import name2sampler, DistributedSampler, WeightedDistributedSampler, ImageNetDistributedSampler
 from semilearn.datasets.thief_datasets import get_imagenet32, get_imagenet_full
-from semilearn.datasets.medical_datasets import get_gbvideodataset, GBVideoDataset
+from semilearn.datasets.medical_datasets import get_gbvideodataset, GBVideoDataset, get_butterfly, ButterflyDataset, get_covidx, COVIDxDataset

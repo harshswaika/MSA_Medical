@@ -8,17 +8,26 @@ import torch.nn as nn
 import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
-from torchvision.models import resnet34, resnet50
+from torchvision.models import resnet34, resnet50, resnet152, resnet18, resnet101,vit_b_16
+from inception import inception_v3
+from timm.models.vision_transformer import VisionTransformer
 
 sys.path.append('GBCNet')
 from GBCNet.dataloader import GbDataset, GbRawDataset, GbCropDataset
 from GBCNet.models import Resnet50 as Resnet50_GC
 from GBCNet.models import GbcNet
 
-sys.path.append('RadFormer')
+sys.path.append('Radformer')
 from RadFormer.models import RadFormer
 from RadFormer.dataloader import GbUsgDataSet, GbUsgRoiTestDataSet
 
+from types import SimpleNamespace
+# sys.path.append('/home/deepankar/scratch/model_stealing_encoders_copy/wise-ft')
+# from src.models.modeling import ClassificationHead, ImageEncoder, ImageClassifier
+# from src.models.zeroshot import get_zeroshot_classifier
+
+# from medclip import MedCLIPModel, MedCLIPVisionModelViT
+# from medclip import MedCLIPProcessor
 
 class Victim(nn.Module):
     """class for victim model
@@ -33,9 +42,8 @@ class Victim(nn.Module):
         
     def forward(self, x):
         # change forward here
+        x = torch.nn.functional.interpolate(x, size=224)
         out = self.model(x)
-        # if self.arch == 'radformer':
-        #     return out[2]
         return out
 
 
@@ -76,18 +84,31 @@ def load_victim_model(arch, model_path):
 
 
 def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True):
+
+    pretrained_state = torch.load(pretrained_path) 
+    
     if arch == 'resnet34':
         thief_model = resnet34(num_classes=n_classes)
     elif arch == 'resnet50':
         thief_model = resnet50(num_classes=n_classes)
     elif arch == 'radformer':
         thief_model = RadFormer(local_net='bagnet33', \
-                        num_cls=3, \
+                        num_cls=n_classes, \
                         global_weight=0.55, \
                         local_weight=0.1, \
                         fusion_weight=0.35, \
                         use_rgb=True, num_layers=4, pretrain=True,
                         load_local=True)
+    elif arch == 'deit':
+        thief_model = torch.hub.load('facebookresearch/deit:main', 'deit_base_patch16_224', 
+                                     pretrained=False, num_classes=n_classes)
+        pretrained_state = pretrained_state['model']
+
+    elif arch == 'vit':
+        thief_model = vit_b_16(num_classes=n_classes)
+    
+    elif arch == 'inception_v3':
+        thief_model = inception_v3(num_classes=n_classes)
 
     # elif arch == 'resnet50_usucl':
         # thief_model.net = resnet50(num_classes=3) 
@@ -102,8 +123,7 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
         thief_state = thief_model.state_dict()
         print('thief state: ', print(thief_state.keys()))
 
-        print("Load pretrained model for initializing the thief")
-        pretrained_state = torch.load(pretrained_path) 
+        
         if 'state_dict' in pretrained_state:
             pretrained_state = pretrained_state['state_dict']
         pretrained_state = { k:v for k,v in pretrained_state.items() if k in thief_state and v.size() == thief_state[k].size() }
@@ -113,6 +133,7 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
     thief_model = thief_model.cuda()
     
     return thief_model
+
 
 
 def load_victim_dataset(cfg, dataset_name):
@@ -167,6 +188,20 @@ def load_victim_dataset(cfg, dataset_name):
                                     normalize,
                                 ]))
 
+
+    elif dataset_name == 'pocus':
+        from covid_dataset import COVIDDataset
+
+        img_dir = os.path.join(cfg.VICTIM.DATA_ROOT, 'covid_data1.pkl')
+        testset = COVIDDataset(data_dir=img_dir, 
+                               train=False, 
+                               transform=transforms.Compose([
+                                    transforms.Resize(224),
+                                    transforms.CenterCrop(224),
+                                    transforms.ToTensor(),
+                                    normalize,
+                                ]))
+
     test_loader = DataLoader(dataset=testset, batch_size=1, 
                                 shuffle=False, num_workers=0)
 
@@ -204,22 +239,34 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
                 std=[0.229, 0.224, 0.225]
                 )
             # transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH)),
-            #                                 transforms.CenterCrop(224),
-            #                                 transforms.ToTensor(), 
-            #                                 normalize])
+                                            # transforms.CenterCrop(224),
+                                            # transforms.ToTensor(), 
+                                            # normalize])
             transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
                                             transforms.ToTensor(), 
                                             normalize])
+            transforms2= transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                            transforms.RandomHorizontalFlip(),
+                                            transforms.RandAugment(),
+                                            transforms.ToTensor(),
+                                            normalize
+                                            ])
         
         if dataset_name == 'GBUSV':
             thief_data = GbVideoDataset(data_root, transforms1)
-            thief_data_aug = GbVideoDataset(data_root, transforms1)
+                                        # pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms2)
+                                            # pickle_root='/home/deepankar/scratch/MSA_Medical/')
+           
         elif dataset_name == 'GBUSV_benign':
-            thief_data = GbVideoDataset(data_root, transforms1, data_split='benign')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='benign')
+            thief_data = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms2, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+           
         elif dataset_name == 'GBUSV_malignant':
-            thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant')
-            thief_data_aug = GbVideoDataset(data_root, transforms1, data_split='malignant')
+            thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+            thief_data_aug = GbVideoDataset(data_root, transforms2, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
+           
+
         
     else:
         raise AssertionError('invalid thief dataset')
@@ -239,6 +286,7 @@ def create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlab
     with torch.no_grad():
         for d, l0, ind0 in tqdm(train_loader):
             d = d.cuda()
+            # d = torch.nn.functional.interpolate(d, size=224)
             l = target_model(d).argmax(axis=1, keepdim=False)
             l = l.detach().cpu().tolist()
             for ii, jj in enumerate(ind0):
@@ -258,6 +306,7 @@ def create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlab
     with torch.no_grad():
         for d,l,ind0 in tqdm(val_loader):
             d = d.cuda()
+            # d = torch.nn.functional.interpolate(d, size=224)
             l = target_model(d).argmax(axis=1, keepdim=False)
             l = l.detach().cpu().tolist()
             # print(l)

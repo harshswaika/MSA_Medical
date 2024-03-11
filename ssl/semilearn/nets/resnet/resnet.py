@@ -233,8 +233,9 @@ class ResNet50(nn.Module):
             return x
 
         out = self.fc(x)
-        result_dict = {'logits':out, 'feat':x}
-        return result_dict
+        return out
+        # result_dict = {'logits':out, 'feat':x}
+        # return result_dict
 
     
     def extract(self, x):

@@ -313,3 +313,8 @@ class RadFormer(nn.Module):
 
     def load_model(self, weight_file):
         self.net.load_state_dict(torch.load(weight_file))
+
+
+def radformer(num_classes, pretrained=False, **kwargs):
+    model = RadFormer(num_cls=num_classes)
+    return model

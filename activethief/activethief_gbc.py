@@ -1,5 +1,5 @@
 from __future__ import print_function, division
-import os
+import os, sys
 import random
 import numpy as np
 from tqdm import tqdm
@@ -11,6 +11,8 @@ import torch.optim as optim
 import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torch.optim.lr_scheduler as lr_scheduler
+
+sys.path.append('/home/ankita/scratch/MSA_Medical')
 from GBCNet.dataloader import GbDataset, GbCropDataset, GbRawDataset
 # from gb_dataloader import GbDataset, GbRawDataset, GbCropDataset
 import torchvision.transforms as T
@@ -50,7 +52,7 @@ if __name__ == "__main__":
     li = []
     results_arr = []
     uncertainty_arr = []
-    for trial in range(cfg.RNG_SEED):
+    for trial in range(cfg.TRIALS):
 
         # Load thief dataset
         thief_data, thief_data_aug = load_thief_dataset(cfg, cfg.THIEF.DATASET, cfg.THIEF.DATA_ROOT, target_model)
@@ -93,7 +95,6 @@ if __name__ == "__main__":
 
             # Load thief model            
             thief_model = load_thief_model(cfg, cfg.THIEF.ARCH, n_classes, cfg.ACTIVE.PRETRAINED_PATH)
-            # thief_model = Resnet50().cuda()
 
             print("Thief model initialized successfully")
 

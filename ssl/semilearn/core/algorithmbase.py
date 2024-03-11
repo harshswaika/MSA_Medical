@@ -17,6 +17,7 @@ from torch.cuda.amp import autocast, GradScaler
 from semilearn.core.hooks import Hook, get_priority, CheckpointHook, TimerHook, LoggingHook, DistSamplerSeedHook, ParamUpdateHook, EvaluationHook, EMAHook, WANDBHook, AimHook
 from semilearn.core.utils import get_dataset, get_data_loader, get_optimizer, get_cosine_schedule_with_warmup, Bn_Controller
 from semilearn.core.criterions import CELoss, ConsistencyLoss
+from utils_train_pocus import classwise_accuracy
 
 
 class AlgorithmBase:
@@ -357,7 +358,7 @@ class AlgorithmBase:
         evaluation function
         """
         self.model.eval()
-        self.ema.apply_shadow()
+        # self.ema.apply_shadow()
 
         eval_loader = self.loader_dict[eval_dest]
         total_loss = 0.0
@@ -384,7 +385,7 @@ class AlgorithmBase:
                 num_batch = y.shape[0]
                 total_num += num_batch
 
-                logits = self.model(x)[out_key]
+                logits = self.model(x)
                 
                 loss = F.cross_entropy(logits, y, reduction='mean', ignore_index=-1)
                 y_true.extend(y.cpu().tolist())
@@ -404,14 +405,18 @@ class AlgorithmBase:
             cfm = confusion_matrix(y_true, y_pred)
             spec = (cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1])/(np.sum(cfm[0]) + np.sum(cfm[1]))
             sens = cfm[2][2]/np.sum(cfm[2])
+            accuracy_per_class = classwise_accuracy(y_true, y_pred)
 
-        self.ema.restore()
+        # self.ema.restore()
         self.model.train()
 
         eval_dict = {eval_dest+'/loss': total_loss / total_num, eval_dest+'/top-1-acc': top1, 
                      eval_dest+'/balanced_acc': balanced_top1, eval_dest+'/precision': precision, 
                      eval_dest+'/recall': recall, eval_dest+'/F1': F1, 
-                     eval_dest+'/spec': spec, eval_dest+'/sens': sens}
+                     eval_dest+'/spec': spec, eval_dest+'/sens': sens, 
+                     eval_dest+'/acc1': accuracy_per_class[0], 
+                     eval_dest+'/acc2': accuracy_per_class[1], 
+                     eval_dest+'/acc3': accuracy_per_class[2]}
         if return_logits:
             eval_dict[eval_dest+'/logits'] = y_logits
         return eval_dict
@@ -444,7 +449,7 @@ class AlgorithmBase:
                 trues_unmasked.extend(preds_victim.tolist())
 
                 # anchor model's pred
-                logits_anchor = self.anchor_model(x)[out_key]
+                logits_anchor = self.anchor_model(x)
                 preds_anchor = logits_anchor.argmax(axis=1, keepdim=False).detach().cpu()
                 # unmasked samples
                 pl_anchor_unmasked.extend(preds_anchor.tolist())
@@ -456,7 +461,7 @@ class AlgorithmBase:
                 num_labels_anchor += len(pl_anchor)
 
                 # student model's pred
-                logits_student = self.model(x)[out_key]
+                logits_student = self.model(x)
                 preds_student = logits_student.argmax(axis=1, keepdim=False).detach().cpu()
                 # unmasked samples
                 pl_student_unmasked.extend(preds_student.tolist())

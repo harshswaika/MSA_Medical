@@ -15,7 +15,7 @@ from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
 import torch.nn.functional as F
 import torch.nn as nn
 
-from torchvision.models import resnet34, resnet50
+from torchvision.models import resnet34, resnet50, resnet18
 
 sys.path.append('/home/ankita/scratch/MSA_Medical/')
 sys.path.append('/home/ankita/scratch/MSA_Medical/GBCNet')
@@ -66,6 +66,24 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
+class Victim(nn.Module):
+    """class for victim model
+
+    Args:
+        nn (_type_): _description_
+    """
+    def __init__(self, model, arch):
+        super(Victim, self).__init__()
+        self.model = model
+        self.arch = arch
+        
+    def forward(self, x):
+        # change forward here
+        x = torch.nn.functional.interpolate(x, size=224)
+        out = self.model(x)
+        return out
+    
+
 def create_model(arch, num_classes):
     if arch == 'resnet50_usucl':
         model.net = resnet50(num_classes=3) 
@@ -76,7 +94,9 @@ def create_model(arch, num_classes):
                           nn.Linear(256, 3)
                         )
     elif arch == 'resnet50_gc':
-        model = Resnet50_GC(num_cls=3, last_layer=False, pretrain=True) 
+        model = Resnet50_GC(num_cls=3, last_layer=False, pretrain=False) 
+    elif arch == 'resnet18':
+        model = resnet18(num_classes=3) 
     elif arch == 'gbcnet':
         model = GbcNet(num_cls=3, pretrain=False)
     elif arch == 'radformer':
@@ -89,6 +109,7 @@ def create_model(arch, num_classes):
     
     logger.info("Total params: {:.2f}M".format(
         sum(p.numel() for p in model.parameters())/1e6))
+    
     return model
 
 
@@ -97,9 +118,9 @@ def test(args, test_loader, model, verbose=True):
     y_true, y_pred = [], []
     model.eval()
     with torch.no_grad():
-        for batch_idx, (inp, target, _) in enumerate(test_loader):
-            input_var = torch.autograd.Variable(inp.cuda())
-            target_var = torch.autograd.Variable(target)
+        for batch_idx, data in enumerate(test_loader):
+            input_var = torch.autograd.Variable(data[0].cuda())
+            target_var = torch.autograd.Variable(data[1])
 
             if len(input_var.shape) == 5:
                 images = input_var.squeeze(0)
@@ -139,6 +160,28 @@ def test(args, test_loader, model, verbose=True):
     return acc, spec, sens
 
 
+def classwise_accuracy(true_labels, predicted_labels):
+    # Check if the input arrays have the same length
+    if len(true_labels) != len(predicted_labels):
+        raise ValueError("Input arrays must have the same length.")
+
+    # Create a confusion matrix
+    confusion_matrix = np.zeros((3, 3), dtype=int)
+
+    # Populate the confusion matrix
+    for true_label, predicted_label in zip(true_labels, predicted_labels):
+        confusion_matrix[true_label, predicted_label] += 1
+
+    # Compute classwise accuracy
+    classwise_accuracy = np.zeros(3)
+    for i in range(3):
+        if np.sum(confusion_matrix[i, :]) != 0:
+            classwise_accuracy[i] = confusion_matrix[i, i] / np.sum(confusion_matrix[i, :])
+            # print(np.sum(confusion_matrix[i, :]))
+
+    return classwise_accuracy
+
+
 def test_thief(model, net, victim_model, test_loader, ema=False,  out_key='logits'):
     net.eval()
     if ema is True:
@@ -150,16 +193,17 @@ def test_thief(model, net, victim_model, test_loader, ema=False,  out_key='logit
     y_true = []
     y_pred = []
     with torch.no_grad():
-        for inp, target, _ in test_loader:
-            input_var = torch.autograd.Variable(inp.cuda())
-            target_var = torch.autograd.Variable(target)
+        for data in test_loader:
+            input_var = torch.autograd.Variable(data[0].cuda())
+            target_var = torch.autograd.Variable(data[1])
 
             num_batch = target_var.shape[0]
             total_num += num_batch
             
             if len(input_var.shape) == 5:
                 images = input_var.squeeze(0)
-                logits =  net(images)['logits']
+                # logits =  net(images)['logits']
+                logits =  net(images)
                 _, pred = torch.max(logits, dim=1)
                 pred_label = torch.max(pred)
                 pred_label = pred_label.unsqueeze(0)
@@ -168,7 +212,9 @@ def test_thief(model, net, victim_model, test_loader, ema=False,  out_key='logit
                 y_true.append([target_var.tolist()[0][0]])
 
             else:
-                logits = net(input_var)['logits']
+                # logits = net(input_var)['logits']
+                logits = net(input_var)
+
                 _, pred_label = torch.max(logits, dim=1)
                 logits_victim = victim_model(input_var)
                 y_pred.extend(pred_label.tolist()) 
@@ -188,12 +234,13 @@ def test_thief(model, net, victim_model, test_loader, ema=False,  out_key='logit
     cfm = confusion_matrix(y_true, y_pred)
     spec = (cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1])/(np.sum(cfm[0]) + np.sum(cfm[1]))
     sens = cfm[2][2]/np.sum(cfm[2])
+    cac = classwise_accuracy(y_true, y_pred)
 
     if ema is True:
         model.ema.restore()
     net.train()
     
-    return acc, agreement, spec, sens
+    return acc, agreement, spec, sens, cac
 
 
 def agree(model1, model2, test_loader):
@@ -210,8 +257,8 @@ def agree(model1, model2, test_loader):
             try:
                 x2=model2(inputs).argmax(axis=-1,keepdims=False)
             except:
-                # x1=model1(inputs).argmax(axis=-1,keepdims=False)
-                x2=model2(inputs)['logits'].argmax(axis=-1,keepdims=False)
+                x1=model1(inputs).argmax(axis=-1,keepdims=False)
+                # x2=model2(inputs)['logits'].argmax(axis=-1,keepdims=False)
             c+=n-int((torch.count_nonzero(x1-x2)).detach().cpu())
             l+=n
             # print(c, l)
@@ -295,6 +342,19 @@ def load_victim_dataset(args):
                                     T.ToTensor(),
                                     normalize,
                                 ]))
+        
+    elif args.victim_dataset == 'pocus':
+        from covid_dataset import COVIDDataset
+
+        args.num_classes = 3
+        img_dir = os.path.join(args.victim_data_root, 'covid_data1.pkl')
+        testset = COVIDDataset(data_dir=img_dir, 
+                               train=False, 
+                               transform=T.Compose([
+                                    T.Resize(224),
+                                    T.CenterCrop(224),
+                                    T.ToTensor(),
+                                    T.Normalize(mean=[0.5,0.5,0.5], std=[0.25,0.25,0.25])]))
 
     else:
         raise NotImplementedError

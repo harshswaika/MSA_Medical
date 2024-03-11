@@ -45,6 +45,7 @@ def get_net_builder(net_name, from_name: bool):
         import semilearn.nets as nets
         builder = getattr(nets, net_name)
         return builder
+    
 
 
 
@@ -78,7 +79,7 @@ def get_dataset(args, algorithm, dataset, num_labels, num_classes, data_dir='./d
         data_dir: data folder
         include_lb_to_ulb: flag of including labeled data into unlabeled data
     """
-    from semilearn.datasets import get_eurosat, get_medmnist, get_semi_aves, get_cifar, get_svhn, get_stl10, get_imagenet, get_json_dset, get_pkl_dset, get_imagenet32, get_imagenet_full, get_gbvideodataset
+    from semilearn.datasets import get_eurosat, get_medmnist, get_semi_aves, get_cifar, get_svhn, get_stl10, get_imagenet, get_json_dset, get_pkl_dset, get_imagenet32, get_imagenet_full, get_gbvideodataset, get_butterfly, get_covidx
 
     if dataset == "eurosat":
         lb_dset, ulb_dset, eval_dset = get_eurosat(args, algorithm, dataset, num_labels, num_classes, data_dir=data_dir, include_lb_to_ulb=include_lb_to_ulb)
@@ -120,6 +121,14 @@ def get_dataset(args, algorithm, dataset, num_labels, num_classes, data_dir='./d
         test_dset = None
     elif dataset == 'GBUSV':
         lb_dset, ulb_dset, eval_dset = get_gbvideodataset(args, algorithm, victim_model, num_labels, num_classes, 
+                                                         dataset_root=data_dir, labeled_idxs=labeled_idxs, val_idxs=val_idxs)
+        test_dset = None
+    elif dataset == 'butterfly':
+        lb_dset, ulb_dset, eval_dset = get_butterfly(args, algorithm, victim_model, num_labels, num_classes, 
+                                                         dataset_root=data_dir, labeled_idxs=labeled_idxs, val_idxs=val_idxs)
+        test_dset = None
+    elif dataset == 'covidx':
+        lb_dset, ulb_dset, eval_dset = get_covidx(args, algorithm, victim_model, num_labels, num_classes, 
                                                          dataset_root=data_dir, labeled_idxs=labeled_idxs, val_idxs=val_idxs)
         test_dset = None
     else:

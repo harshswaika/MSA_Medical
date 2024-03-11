@@ -1,0 +1,717 @@
+nohup: ignoring input
+[2024-03-07 19:59:35,027 INFO] Use GPU: None for training
+[2024-03-07 19:59:35,027 INFO] 
+
+[2024-03-07 19:59:35,950 INFO] Total params: 109.04M
+[2024-03-07 19:59:43,442 INFO] acc: 0.90
+[2024-03-07 19:59:43,458 INFO] Victim model accuracy = 0.9016, spec = 0.90, sens = 0.93
+[2024-03-07 19:59:43,458 INFO] Loading thief dataset ...
+[2024-03-07 19:59:43,459 INFO] 
+Initializing thief model ...
+
+
+Loaded supervised labeled set of length  4500
+Labeled set expanded to length  4500 , unique indices  4500
+dataset root /home/ankita/scratch/data_msa_medical/GBUSV-Shared
+Num of videos 64 frames 15800
+15800
+15800
+Num of videos 64 frames 15800
+  0%|          | 0/36 [00:00<?, ?it/s]  3%|▎         | 1/36 [00:05<02:55,  5.02s/it]  6%|▌         | 2/36 [00:06<01:32,  2.72s/it]  8%|▊         | 3/36 [00:07<01:06,  2.02s/it] 11%|█         | 4/36 [00:08<00:53,  1.68s/it] 14%|█▍        | 5/36 [00:09<00:45,  1.47s/it] 17%|█▋        | 6/36 [00:10<00:39,  1.33s/it] 19%|█▉        | 7/36 [00:11<00:36,  1.27s/it] 22%|██▏       | 8/36 [00:12<00:34,  1.24s/it] 25%|██▌       | 9/36 [00:14<00:33,  1.24s/it] 28%|██▊       | 10/36 [00:15<00:31,  1.22s/it] 31%|███       | 11/36 [00:16<00:29,  1.19s/it] 33%|███▎      | 12/36 [00:17<00:28,  1.17s/it] 36%|███▌      | 13/36 [00:18<00:26,  1.16s/it] 39%|███▉      | 14/36 [00:19<00:25,  1.15s/it] 42%|████▏     | 15/36 [00:21<00:24,  1.18s/it] 44%|████▍     | 16/36 [00:22<00:24,  1.22s/it] 47%|████▋     | 17/36 [00:23<00:23,  1.25s/it] 50%|█████     | 18/36 [00:24<00:21,  1.21s/it] 53%|█████▎    | 19/36 [00:25<00:20,  1.18s/it] 56%|█████▌    | 20/36 [00:27<00:18,  1.15s/it] 58%|█████▊    | 21/36 [00:28<00:17,  1.15s/it] 61%|██████    | 22/36 [00:29<00:16,  1.20s/it] 64%|██████▍   | 23/36 [00:30<00:15,  1.19s/it] 67%|██████▋   | 24/36 [00:32<00:16,  1.36s/it] 69%|██████▉   | 25/36 [00:35<00:19,  1.75s/it] 72%|███████▏  | 26/36 [00:38<00:21,  2.11s/it] 75%|███████▌  | 27/36 [00:39<00:16,  1.82s/it] 78%|███████▊  | 28/36 [00:40<00:13,  1.63s/it] 81%|████████  | 29/36 [00:41<00:10,  1.50s/it] 83%|████████▎ | 30/36 [00:42<00:08,  1.39s/it] 86%|████████▌ | 31/36 [00:44<00:06,  1.38s/it] 89%|████████▉ | 32/36 [00:46<00:06,  1.73s/it] 92%|█████████▏| 33/36 [00:49<00:06,  2.22s/it] 94%|█████████▍| 34/36 [00:51<00:03,  1.89s/it] 97%|█████████▋| 35/36 [00:52<00:01,  1.66s/it]100%|██████████| 36/36 [00:53<00:00,  1.60s/it]100%|██████████| 36/36 [00:53<00:00,  1.50s/it]
+Num of videos 64 frames 15800
+  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [00:02<00:06,  2.02s/it] 50%|█████     | 2/4 [00:03<00:03,  1.51s/it] 75%|███████▌  | 3/4 [00:04<00:01,  1.29s/it]100%|██████████| 4/4 [00:07<00:00,  2.10s/it]100%|██████████| 4/4 [00:07<00:00,  1.92s/it]
+[2024-03-07 20:00:45,023 INFO] unlabeled data number: 15800, labeled data number 4500
+[2024-03-07 20:00:45,023 INFO] Create train and test data loaders
+[2024-03-07 20:00:45,023 INFO] [!] data loader keys: dict_keys(['train_lb', 'train_ulb', 'eval', 'test'])
+[2024-03-07 20:00:47,609 INFO] Create optimizer and scheduler
+[2024-03-07 20:00:47,613 INFO] Number of Trainable Params: 85800963
+Num of videos 64 frames 15800
+Load pretrained model for initializing the thief from  /home/ankita/scratch/data_msa_medical/ckpts/deit_base_patch16_224-b5f2ef4d.pth
+key not found head.weight
+key not found head.bias
+Common keys pretrained model:  150
+Load anchor model /home/ankita/scratch/data_msa_medical/results_ankita/gbusg_radformer/GBUSV_deit/SGD/5000_val500/random_/trial_1_cycle_1_best.pth
+thief state:  ['cls_token', 'pos_embed', 'patch_embed.proj.weight', 'patch_embed.proj.bias', 'blocks.0.norm1.weight']
+pretrained state:  ['cls_token', 'pos_embed', 'patch_embed.proj.weight', 'patch_embed.proj.bias', 'blocks.0.norm1.weight']
+Common keys anchor model:  152
+[2024-03-07 20:00:55,423 INFO] Anchor model on target dataset: acc = 0.7131, spec = 0.81, sens = 0.79
+[2024-03-07 20:00:55,645 INFO] Arguments: Namespace(save_dir='saved_models/radformer', save_name='selfkd_5k_deit_trial_1_u3', resume=False, load_path=None, overwrite=True, use_tensorboard=True, use_wandb=True, use_aim=False, epoch=100, num_train_iter=900000, num_warmup_iter=5120, num_eval_iter=234, num_log_iter=234, batch_size=16, uratio=3, eval_batch_size=16, ema_m=0.999, ulb_loss_ratio=1.0, optim='SGD', lr=0.02, momentum=0.9, weight_decay=0.0005, layer_decay=0.5, net='deit_base_patch16_224', net_from_name=False, use_pretrain=True, pretrain_path='', algorithm='selfkd', use_cat=True, amp=False, clip_grad=0, imb_algorithm=None, data_dir='./data', dataset='GBUSV', num_classes=3, train_sampler='RandomSampler', num_workers=4, include_lb_to_ulb=True, lb_imb_ratio=1, ulb_imb_ratio=1, ulb_num_labels=None, img_size=224, crop_ratio=0.875, max_length=512, max_length_seconds=4.0, sample_rate=16000, world_size=1, rank=0, dist_url='tcp://127.0.0.1:26449', dist_backend='nccl', seed=5, gpu=None, multiprocessing_distributed=False, c='configs/gbc/selfkd_deit.yaml', hard_label=True, T=0.5, p_cutoff=0.95, victim_dataset='gbusg', victim_arch='radformer', victim_model_path='/home/ankita/scratch/data_msa_medical/victim_models/radformer/radformer.pkl', victim_data_root='/home/ankita/scratch/data_msa_medical/GBCU-Shared', subset=128116, thief_root='/home/ankita/scratch/data_msa_medical/GBUSV-Shared', pretrained_dir='/home/ankita/scratch/data_msa_medical/ckpts/deit_base_patch16_224-b5f2ef4d.pth', load_labeled_set=True, warmstart=False, warmstart_dir='/home/ankita/scratch/data_msa_medical/results_ankita/gbusg_radformer/GBUSV_deit/SGD/5000_val500/random_/trial_1_cycle_1_best.pth', labeled_set_path='/home/ankita/scratch/data_msa_medical/results_ankita/gbusg_radformer/GBUSV_deit/SGD/5000_val500/random_/X_trial_1_cycle_1_labeled_set.npy', val_set_path='/home/ankita/scratch/data_msa_medical/results_ankita/gbusg_radformer/GBUSV_deit/SGD/5000_val500/random_/X_trial_1_cycle_1_val_set.npy', scheduler_type='cosine', warmup_epoch=10, la=False, tro=1, kd_alpha=0.4, kd_temp=1.5, kd_alpha_ulb=0.5, kd_temp_ulb=1.5, no_progress=True, expand_labels=True, eval_step=234, local_rank=-1, num_labels=5000, warmup=0, clip=0.0, ds_seed=123, distributed=False, device=device(type='cuda'), ulb_dest_len=15800, lb_dest_len=4500)
+[2024-03-07 20:00:55,645 INFO] Validation set distribution: 
+anchor model temp =  1.0
+Number of samples  500
+[2024-03-07 20:00:57,342 INFO] {0: 74, 1: 125, 2: 301}
+[2024-03-07 20:00:57,342 INFO] Labeled set distribution: 
+Number of samples  4500
+[2024-03-07 20:01:05,048 INFO] {0: 581, 1: 1067, 2: 2848}
+[2024-03-07 20:01:08,328 INFO] Initial model on target dataset (without EMA): acc = 0.3934, agreement = 0.3689, spec = 0.74, sens = 0.31
+[2024-03-07 20:01:08,328 INFO] Resume load path None does not exist
+[2024-03-07 20:01:08,328 INFO] 
+Model training
+wandb: Currently logged in as: raj-ankita92. Use `wandb login --relogin` to force relogin
+wandb: - Waiting for wandb.init()...wandb: \ Waiting for wandb.init()...wandb: wandb version 0.16.4 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.15.4
+wandb: Run data is saved locally in saved_models/radformer/wandb/selfkd_5k_deit_trial_1_u3/wandb/run-20240307_200110-anuuubii
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run selfkd_5k_deit_trial_1_u3
+wandb: ⭐️ View project at https://wandb.ai/raj-ankita92/radformer
+wandb: 🚀 View run at https://wandb.ai/raj-ankita92/radformer/runs/anuuubii
+[2024-03-07 20:01:14,864 INFO] 
+
+epoch 0
+[2024-03-07 20:03:17,595 INFO] validating...
+[2024-03-07 20:03:22,726 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:03:23,916 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:03:23,917 INFO] 282 iteration, USE_EMA: True, train/sup_loss: 1.63917, train/unsup_loss: 1.03320, train/total_loss: 2.67237, train/util_ratio: 0.89583, train/run_time: 0.38823, lr: 0.00000, train/prefecth_time: 0.01747, eval/loss: 1.08584, eval/top-1-acc: 0.31400, eval/balanced_acc: 0.34605, eval/precision: 0.41237, eval/recall: 0.34605, eval/F1: 0.26813, eval/spec: 0.92462, eval/sens: 0.18605, eval/acc1: 0.10811, eval/acc2: 0.74400, eval/acc3: 0.18605, test/loss: 1.04011, test/top-1-acc: 0.39344, test/balanced_acc: 0.34522, test/precision: 0.42590, test/recall: 0.34522, test/F1: 0.30214, test/spec: 0.73750, test/sens: 0.30952, test/acc1: 0.03226, test/acc2: 0.69388, test/acc3: 0.30952 BEST_EVAL_ACC: 0.3140, at 282 iters BEST_TEST_ACC: 0.3934, at 282 iters
+[2024-03-07 20:03:23,922 INFO] 
+
+epoch 1
+[2024-03-07 20:05:29,296 INFO] validating...
+[2024-03-07 20:05:38,864 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:05:42,953 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:05:42,955 INFO] 563 iteration, USE_EMA: True, train/sup_loss: 0.67645, train/unsup_loss: 0.48911, train/total_loss: 1.16555, train/util_ratio: 0.83333, train/run_time: 0.41145, lr: 0.00200, train/prefecth_time: 0.02792, eval/loss: 0.52638, eval/top-1-acc: 0.75600, eval/balanced_acc: 0.68073, eval/precision: 0.69269, eval/recall: 0.68073, eval/F1: 0.68030, eval/spec: 0.70854, eval/sens: 0.89701, eval/acc1: 0.68919, eval/acc2: 0.45600, eval/acc3: 0.89701, test/loss: 0.99713, test/top-1-acc: 0.50820, test/balanced_acc: 0.47725, test/precision: 0.60073, test/recall: 0.47725, test/F1: 0.44185, test/spec: 0.52500, test/sens: 0.83333, test/acc1: 0.12903, test/acc2: 0.46939, test/acc3: 0.83333 BEST_EVAL_ACC: 0.7560, at 563 iters BEST_TEST_ACC: 0.5082, at 563 iters
+[2024-03-07 20:05:42,959 INFO] 
+
+epoch 2
+[2024-03-07 20:07:46,120 INFO] validating...
+[2024-03-07 20:07:53,801 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:07:57,153 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:07:57,154 INFO] 844 iteration, USE_EMA: True, train/sup_loss: 0.51433, train/unsup_loss: 0.44586, train/total_loss: 0.96019, train/util_ratio: 0.93750, train/run_time: 0.39028, lr: 0.00400, train/prefecth_time: 0.01892, eval/loss: 0.42207, eval/top-1-acc: 0.81800, eval/balanced_acc: 0.76875, eval/precision: 0.77857, eval/recall: 0.76875, eval/F1: 0.76847, eval/spec: 0.77889, eval/sens: 0.91694, eval/acc1: 0.79730, eval/acc2: 0.59200, eval/acc3: 0.91694, test/loss: 0.97318, test/top-1-acc: 0.57377, test/balanced_acc: 0.57117, test/precision: 0.65278, test/recall: 0.57117, test/F1: 0.57162, test/spec: 0.56250, test/sens: 0.83333, test/acc1: 0.45161, test/acc2: 0.42857, test/acc3: 0.83333 BEST_EVAL_ACC: 0.8180, at 844 iters BEST_TEST_ACC: 0.5738, at 844 iters
+[2024-03-07 20:07:57,158 INFO] 
+
+epoch 3
+[2024-03-07 20:10:00,690 INFO] validating...
+[2024-03-07 20:10:09,669 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:10:13,203 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:10:13,205 INFO] 1125 iteration, USE_EMA: True, train/sup_loss: 0.30783, train/unsup_loss: 0.41264, train/total_loss: 0.72047, train/util_ratio: 0.89583, train/run_time: 0.39204, lr: 0.00600, train/prefecth_time: 0.01660, eval/loss: 0.42455, eval/top-1-acc: 0.83000, eval/balanced_acc: 0.77155, eval/precision: 0.81216, eval/recall: 0.77155, eval/F1: 0.77795, eval/spec: 0.73869, eval/sens: 0.95681, eval/acc1: 0.83784, eval/acc2: 0.52000, eval/acc3: 0.95681, test/loss: 1.08748, test/top-1-acc: 0.55738, test/balanced_acc: 0.56719, test/precision: 0.68812, test/recall: 0.56719, test/F1: 0.54440, test/spec: 0.41250, test/sens: 0.95238, test/acc1: 0.48387, test/acc2: 0.26531, test/acc3: 0.95238 BEST_EVAL_ACC: 0.8300, at 1125 iters BEST_TEST_ACC: 0.5574, at 1125 iters
+[2024-03-07 20:10:13,209 INFO] 
+
+epoch 4
+[2024-03-07 20:12:16,105 INFO] validating...
+[2024-03-07 20:12:23,690 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:12:27,015 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:12:27,017 INFO] 1406 iteration, USE_EMA: True, train/sup_loss: 0.29380, train/unsup_loss: 0.36734, train/total_loss: 0.66114, train/util_ratio: 0.91667, train/run_time: 0.39366, lr: 0.00800, train/prefecth_time: 0.01644, eval/loss: 0.38859, eval/top-1-acc: 0.84800, eval/balanced_acc: 0.80234, eval/precision: 0.82516, eval/recall: 0.80234, eval/F1: 0.80417, eval/spec: 0.78894, eval/sens: 0.95017, eval/acc1: 0.86486, eval/acc2: 0.59200, eval/acc3: 0.95017, test/loss: 0.99690, test/top-1-acc: 0.59836, test/balanced_acc: 0.60683, test/precision: 0.68784, test/recall: 0.60683, test/F1: 0.59727, test/spec: 0.51250, test/sens: 0.90476, test/acc1: 0.54839, test/acc2: 0.36735, test/acc3: 0.90476 BEST_EVAL_ACC: 0.8480, at 1406 iters BEST_TEST_ACC: 0.5984, at 1406 iters
+[2024-03-07 20:12:27,021 INFO] 
+
+epoch 5
+[2024-03-07 20:14:30,411 INFO] validating...
+[2024-03-07 20:14:38,014 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:14:41,841 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:14:41,843 INFO] 1687 iteration, USE_EMA: True, train/sup_loss: 0.24528, train/unsup_loss: 0.27961, train/total_loss: 0.52488, train/util_ratio: 0.89583, train/run_time: 0.39035, lr: 0.01000, train/prefecth_time: 0.01547, eval/loss: 0.35840, eval/top-1-acc: 0.86800, eval/balanced_acc: 0.83141, eval/precision: 0.85525, eval/recall: 0.83141, eval/F1: 0.83519, eval/spec: 0.80402, eval/sens: 0.95681, eval/acc1: 0.90541, eval/acc2: 0.63200, eval/acc3: 0.95681, test/loss: 0.94000, test/top-1-acc: 0.63934, test/balanced_acc: 0.65270, test/precision: 0.70310, test/recall: 0.65270, test/F1: 0.64205, test/spec: 0.58750, test/sens: 0.90476, test/acc1: 0.64516, test/acc2: 0.40816, test/acc3: 0.90476 BEST_EVAL_ACC: 0.8680, at 1687 iters BEST_TEST_ACC: 0.6393, at 1687 iters
+[2024-03-07 20:14:41,847 INFO] 
+
+epoch 6
+[2024-03-07 20:16:45,343 INFO] validating...
+[2024-03-07 20:16:52,788 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:16:52,789 INFO] 1968 iteration, USE_EMA: True, train/sup_loss: 0.30754, train/unsup_loss: 0.22507, train/total_loss: 0.53261, train/util_ratio: 0.91667, train/run_time: 0.39204, lr: 0.01200, train/prefecth_time: 0.01425, eval/loss: 0.33001, eval/top-1-acc: 0.86600, eval/balanced_acc: 0.82762, eval/precision: 0.83772, eval/recall: 0.82762, eval/F1: 0.82995, eval/spec: 0.83920, eval/sens: 0.94352, eval/acc1: 0.85135, eval/acc2: 0.68800, eval/acc3: 0.94352, test/loss: 0.93293, test/top-1-acc: 0.62295, test/balanced_acc: 0.62724, test/precision: 0.69998, test/recall: 0.62724, test/F1: 0.62389, test/spec: 0.57500, test/sens: 0.90476, test/acc1: 0.54839, test/acc2: 0.42857, test/acc3: 0.90476 BEST_EVAL_ACC: 0.8680, at 1687 iters BEST_TEST_ACC: 0.6393, at 1687 iters
+[2024-03-07 20:16:52,795 INFO] 
+
+epoch 7
+[2024-03-07 20:18:57,473 INFO] validating...
+[2024-03-07 20:19:05,804 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:19:09,462 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:19:09,465 INFO] 2249 iteration, USE_EMA: True, train/sup_loss: 0.18596, train/unsup_loss: 0.20917, train/total_loss: 0.39513, train/util_ratio: 0.85417, train/run_time: 0.39485, lr: 0.01400, train/prefecth_time: 0.01974, eval/loss: 0.31258, eval/top-1-acc: 0.89000, eval/balanced_acc: 0.85394, eval/precision: 0.87398, eval/recall: 0.85394, eval/F1: 0.86073, eval/spec: 0.84925, eval/sens: 0.96346, eval/acc1: 0.87838, eval/acc2: 0.72000, eval/acc3: 0.96346, test/loss: 0.86531, test/top-1-acc: 0.64754, test/balanced_acc: 0.64425, test/precision: 0.68903, test/recall: 0.64425, test/F1: 0.64910, test/spec: 0.71250, test/sens: 0.83333, test/acc1: 0.54839, test/acc2: 0.55102, test/acc3: 0.83333 BEST_EVAL_ACC: 0.8900, at 2249 iters BEST_TEST_ACC: 0.6475, at 2249 iters
+[2024-03-07 20:19:09,471 INFO] 
+
+epoch 8
+[2024-03-07 20:21:18,191 INFO] validating...
+[2024-03-07 20:21:27,407 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:21:31,065 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:21:31,066 INFO] 2530 iteration, USE_EMA: True, train/sup_loss: 0.27586, train/unsup_loss: 0.14482, train/total_loss: 0.42068, train/util_ratio: 0.87500, train/run_time: 0.39293, lr: 0.01600, train/prefecth_time: 0.02335, eval/loss: 0.28380, eval/top-1-acc: 0.89800, eval/balanced_acc: 0.86121, eval/precision: 0.87953, eval/recall: 0.86121, eval/F1: 0.86848, eval/spec: 0.86935, eval/sens: 0.96678, eval/acc1: 0.86486, eval/acc2: 0.75200, eval/acc3: 0.96678, test/loss: 0.85256, test/top-1-acc: 0.68033, test/balanced_acc: 0.68331, test/precision: 0.72093, test/recall: 0.68331, test/F1: 0.68767, test/spec: 0.70000, test/sens: 0.83333, test/acc1: 0.64516, test/acc2: 0.57143, test/acc3: 0.83333 BEST_EVAL_ACC: 0.8980, at 2530 iters BEST_TEST_ACC: 0.6803, at 2530 iters
+[2024-03-07 20:21:31,070 INFO] 
+
+epoch 9
+[2024-03-07 20:23:38,828 INFO] validating...
+[2024-03-07 20:23:51,855 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:23:51,857 INFO] 2811 iteration, USE_EMA: True, train/sup_loss: 0.08107, train/unsup_loss: 0.15997, train/total_loss: 0.24104, train/util_ratio: 0.95833, train/run_time: 0.39797, lr: 0.01800, train/prefecth_time: 0.02316, eval/loss: 0.31029, eval/top-1-acc: 0.89000, eval/balanced_acc: 0.86725, eval/precision: 0.85734, eval/recall: 0.86725, eval/F1: 0.85836, eval/spec: 0.89447, eval/sens: 0.94684, eval/acc1: 0.91892, eval/acc2: 0.73600, eval/acc3: 0.94684, test/loss: 0.80819, test/top-1-acc: 0.71311, test/balanced_acc: 0.70825, test/precision: 0.74974, test/recall: 0.70825, test/F1: 0.72000, test/spec: 0.80000, test/sens: 0.78571, test/acc1: 0.64516, test/acc2: 0.69388, test/acc3: 0.78571 BEST_EVAL_ACC: 0.8980, at 2530 iters BEST_TEST_ACC: 0.6803, at 2530 iters
+[2024-03-07 20:23:51,861 INFO] 
+
+epoch 10
+[2024-03-07 20:26:05,779 INFO] validating...
+[2024-03-07 20:26:15,762 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:26:15,763 INFO] 3092 iteration, USE_EMA: True, train/sup_loss: 0.10196, train/unsup_loss: 0.07531, train/total_loss: 0.17726, train/util_ratio: 0.83333, train/run_time: 0.39634, lr: 0.02000, train/prefecth_time: 0.01988, eval/loss: 0.32466, eval/top-1-acc: 0.89000, eval/balanced_acc: 0.85467, eval/precision: 0.87158, eval/recall: 0.85467, eval/F1: 0.86216, eval/spec: 0.85930, eval/sens: 0.95017, eval/acc1: 0.83784, eval/acc2: 0.77600, eval/acc3: 0.95017, test/loss: 0.92797, test/top-1-acc: 0.64754, test/balanced_acc: 0.64538, test/precision: 0.68323, test/recall: 0.64538, test/F1: 0.64571, test/spec: 0.68750, test/sens: 0.85714, test/acc1: 0.54839, test/acc2: 0.53061, test/acc3: 0.85714 BEST_EVAL_ACC: 0.8980, at 2530 iters BEST_TEST_ACC: 0.6803, at 2530 iters
+[2024-03-07 20:26:15,766 INFO] 
+
+epoch 11
+[2024-03-07 20:28:24,571 INFO] validating...
+[2024-03-07 20:28:32,754 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:28:36,073 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:28:36,075 INFO] 3373 iteration, USE_EMA: True, train/sup_loss: 0.11886, train/unsup_loss: 0.07725, train/total_loss: 0.19610, train/util_ratio: 0.87500, train/run_time: 0.41487, lr: 0.02000, train/prefecth_time: 0.03231, eval/loss: 0.30088, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.88924, eval/precision: 0.89224, eval/recall: 0.88924, eval/F1: 0.88953, eval/spec: 0.89447, eval/sens: 0.95681, eval/acc1: 0.91892, eval/acc2: 0.79200, eval/acc3: 0.95681, test/loss: 0.80609, test/top-1-acc: 0.70492, test/balanced_acc: 0.70767, test/precision: 0.73810, test/recall: 0.70767, test/F1: 0.71242, test/spec: 0.73750, test/sens: 0.83333, test/acc1: 0.67742, test/acc2: 0.61224, test/acc3: 0.83333 BEST_EVAL_ACC: 0.9100, at 3373 iters BEST_TEST_ACC: 0.7049, at 3373 iters
+[2024-03-07 20:28:36,081 INFO] 
+
+epoch 12
+[2024-03-07 20:30:39,465 INFO] validating...
+[2024-03-07 20:30:47,068 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:30:47,069 INFO] 3654 iteration, USE_EMA: True, train/sup_loss: 0.08248, train/unsup_loss: 0.07517, train/total_loss: 0.15764, train/util_ratio: 0.85417, train/run_time: 0.39223, lr: 0.01999, train/prefecth_time: 0.01594, eval/loss: 0.30367, eval/top-1-acc: 0.89600, eval/balanced_acc: 0.87598, eval/precision: 0.87126, eval/recall: 0.87598, eval/F1: 0.87346, eval/spec: 0.89950, eval/sens: 0.93355, eval/acc1: 0.87838, eval/acc2: 0.81600, eval/acc3: 0.93355, test/loss: 0.78038, test/top-1-acc: 0.72131, test/balanced_acc: 0.72577, test/precision: 0.74007, test/recall: 0.72577, test/F1: 0.73087, test/spec: 0.81250, test/sens: 0.76190, test/acc1: 0.74194, test/acc2: 0.67347, test/acc3: 0.76190 BEST_EVAL_ACC: 0.9100, at 3373 iters BEST_TEST_ACC: 0.7049, at 3373 iters
+[2024-03-07 20:30:47,073 INFO] 
+
+epoch 13
+[2024-03-07 20:32:51,760 INFO] validating...
+[2024-03-07 20:32:59,617 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:32:59,619 INFO] 3935 iteration, USE_EMA: True, train/sup_loss: 0.08378, train/unsup_loss: 0.08107, train/total_loss: 0.16485, train/util_ratio: 0.89583, train/run_time: 0.39266, lr: 0.01998, train/prefecth_time: 0.01913, eval/loss: 0.32646, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.85920, eval/precision: 0.88199, eval/recall: 0.85920, eval/F1: 0.86985, eval/spec: 0.88442, eval/sens: 0.96678, eval/acc1: 0.81081, eval/acc2: 0.80000, eval/acc3: 0.96678, test/loss: 0.89478, test/top-1-acc: 0.68033, test/balanced_acc: 0.67541, test/precision: 0.72690, test/recall: 0.67541, test/F1: 0.68375, test/spec: 0.72500, test/sens: 0.83333, test/acc1: 0.58065, test/acc2: 0.61224, test/acc3: 0.83333 BEST_EVAL_ACC: 0.9100, at 3373 iters BEST_TEST_ACC: 0.7049, at 3373 iters
+[2024-03-07 20:32:59,625 INFO] 
+
+epoch 14
+[2024-03-07 20:35:04,281 INFO] validating...
+[2024-03-07 20:35:11,742 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:35:11,744 INFO] 4216 iteration, USE_EMA: True, train/sup_loss: 0.13488, train/unsup_loss: 0.05197, train/total_loss: 0.18685, train/util_ratio: 0.87500, train/run_time: 0.38786, lr: 0.01996, train/prefecth_time: 0.01989, eval/loss: 0.30931, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87407, eval/precision: 0.88354, eval/recall: 0.87407, eval/F1: 0.87869, eval/spec: 0.89447, eval/sens: 0.94684, eval/acc1: 0.85135, eval/acc2: 0.82400, eval/acc3: 0.94684, test/loss: 0.82609, test/top-1-acc: 0.72131, test/balanced_acc: 0.71505, test/precision: 0.74768, test/recall: 0.71505, test/F1: 0.72436, test/spec: 0.80000, test/sens: 0.78571, test/acc1: 0.64516, test/acc2: 0.71429, test/acc3: 0.78571 BEST_EVAL_ACC: 0.9100, at 3373 iters BEST_TEST_ACC: 0.7049, at 3373 iters
+[2024-03-07 20:35:11,748 INFO] 
+
+epoch 15
+[2024-03-07 20:37:15,991 INFO] validating...
+[2024-03-07 20:37:25,378 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:37:25,380 INFO] 4497 iteration, USE_EMA: True, train/sup_loss: 0.12701, train/unsup_loss: 0.04197, train/total_loss: 0.16898, train/util_ratio: 0.83333, train/run_time: 0.39517, lr: 0.01994, train/prefecth_time: 0.02421, eval/loss: 0.34213, eval/top-1-acc: 0.89400, eval/balanced_acc: 0.86964, eval/precision: 0.87431, eval/recall: 0.86964, eval/F1: 0.87191, eval/spec: 0.89447, eval/sens: 0.93355, eval/acc1: 0.85135, eval/acc2: 0.82400, eval/acc3: 0.93355, test/loss: 0.79976, test/top-1-acc: 0.72951, test/balanced_acc: 0.71736, test/precision: 0.75518, test/recall: 0.71736, test/F1: 0.72395, test/spec: 0.78750, test/sens: 0.85714, test/acc1: 0.58065, test/acc2: 0.71429, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9100, at 3373 iters BEST_TEST_ACC: 0.7049, at 3373 iters
+[2024-03-07 20:37:25,386 INFO] 
+
+epoch 16
+[2024-03-07 20:39:31,137 INFO] validating...
+[2024-03-07 20:39:39,053 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:39:39,054 INFO] 4778 iteration, USE_EMA: True, train/sup_loss: 0.02937, train/unsup_loss: 0.03290, train/total_loss: 0.06228, train/util_ratio: 0.89583, train/run_time: 0.39126, lr: 0.01992, train/prefecth_time: 0.01760, eval/loss: 0.37432, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.87087, eval/precision: 0.88996, eval/recall: 0.87087, eval/F1: 0.87954, eval/spec: 0.88442, eval/sens: 0.96678, eval/acc1: 0.83784, eval/acc2: 0.80800, eval/acc3: 0.96678, test/loss: 0.98629, test/top-1-acc: 0.65574, test/balanced_acc: 0.67420, test/precision: 0.73593, test/recall: 0.67420, test/F1: 0.66431, test/spec: 0.57500, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.40816, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9100, at 3373 iters BEST_TEST_ACC: 0.7049, at 3373 iters
+[2024-03-07 20:39:39,059 INFO] 
+
+epoch 17
+[2024-03-07 20:41:47,004 INFO] validating...
+[2024-03-07 20:41:56,266 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:41:56,268 INFO] 5059 iteration, USE_EMA: True, train/sup_loss: 0.10035, train/unsup_loss: 0.01562, train/total_loss: 0.11597, train/util_ratio: 0.83333, train/run_time: 0.41433, lr: 0.01989, train/prefecth_time: 0.03593, eval/loss: 0.32859, eval/top-1-acc: 0.91400, eval/balanced_acc: 0.87859, eval/precision: 0.89852, eval/recall: 0.87859, eval/F1: 0.88807, eval/spec: 0.89950, eval/sens: 0.96346, eval/acc1: 0.82432, eval/acc2: 0.84800, eval/acc3: 0.96346, test/loss: 1.02157, test/top-1-acc: 0.65574, test/balanced_acc: 0.64147, test/precision: 0.74392, test/recall: 0.64147, test/F1: 0.64800, test/spec: 0.67500, test/sens: 0.88095, test/acc1: 0.45161, test/acc2: 0.59184, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9100, at 3373 iters BEST_TEST_ACC: 0.7049, at 3373 iters
+[2024-03-07 20:41:56,273 INFO] 
+
+epoch 18
+[2024-03-07 20:44:00,821 INFO] validating...
+[2024-03-07 20:44:08,812 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:44:12,543 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 20:44:12,544 INFO] 5340 iteration, USE_EMA: True, train/sup_loss: 0.08490, train/unsup_loss: 0.03696, train/total_loss: 0.12186, train/util_ratio: 0.87500, train/run_time: 0.38985, lr: 0.01985, train/prefecth_time: 0.01674, eval/loss: 0.33717, eval/top-1-acc: 0.91600, eval/balanced_acc: 0.90404, eval/precision: 0.89095, eval/recall: 0.90404, eval/F1: 0.89612, eval/spec: 0.92462, eval/sens: 0.95017, eval/acc1: 0.94595, eval/acc2: 0.81600, eval/acc3: 0.95017, test/loss: 0.72410, test/top-1-acc: 0.72951, test/balanced_acc: 0.73257, test/precision: 0.76028, test/recall: 0.73257, test/F1: 0.74247, test/spec: 0.81250, test/sens: 0.76190, test/acc1: 0.74194, test/acc2: 0.69388, test/acc3: 0.76190 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 20:44:12,549 INFO] 
+
+epoch 19
+[2024-03-07 20:46:16,436 INFO] validating...
+[2024-03-07 20:46:24,299 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:46:24,300 INFO] 5621 iteration, USE_EMA: True, train/sup_loss: 0.03337, train/unsup_loss: 0.02069, train/total_loss: 0.05406, train/util_ratio: 0.85417, train/run_time: 0.39473, lr: 0.01981, train/prefecth_time: 0.01647, eval/loss: 0.35974, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.88519, eval/precision: 0.88225, eval/recall: 0.88519, eval/F1: 0.88240, eval/spec: 0.89950, eval/sens: 0.95017, eval/acc1: 0.90541, eval/acc2: 0.80000, eval/acc3: 0.95017, test/loss: 0.84648, test/top-1-acc: 0.72951, test/balanced_acc: 0.72639, test/precision: 0.75444, test/recall: 0.72639, test/F1: 0.73112, test/spec: 0.80000, test/sens: 0.88095, test/acc1: 0.64516, test/acc2: 0.65306, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 20:46:24,304 INFO] 
+
+epoch 20
+[2024-03-07 20:48:29,283 INFO] validating...
+[2024-03-07 20:48:36,710 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:48:36,711 INFO] 5902 iteration, USE_EMA: True, train/sup_loss: 0.09183, train/unsup_loss: 0.03936, train/total_loss: 0.13119, train/util_ratio: 0.85417, train/run_time: 0.39122, lr: 0.01977, train/prefecth_time: 0.01692, eval/loss: 0.44199, eval/top-1-acc: 0.89400, eval/balanced_acc: 0.87799, eval/precision: 0.86853, eval/recall: 0.87799, eval/F1: 0.87313, eval/spec: 0.90452, eval/sens: 0.92359, eval/acc1: 0.87838, eval/acc2: 0.83200, eval/acc3: 0.92359, test/loss: 0.81810, test/top-1-acc: 0.71311, test/balanced_acc: 0.71216, test/precision: 0.75506, test/recall: 0.71216, test/F1: 0.72633, test/spec: 0.87500, test/sens: 0.61905, test/acc1: 0.74194, test/acc2: 0.77551, test/acc3: 0.61905 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 20:48:36,714 INFO] 
+
+epoch 21
+[2024-03-07 20:50:40,456 INFO] validating...
+[2024-03-07 20:50:48,270 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:50:48,271 INFO] 6183 iteration, USE_EMA: True, train/sup_loss: 0.02979, train/unsup_loss: 0.01138, train/total_loss: 0.04118, train/util_ratio: 0.85417, train/run_time: 0.39199, lr: 0.01972, train/prefecth_time: 0.02082, eval/loss: 0.37345, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.88124, eval/precision: 0.88905, eval/recall: 0.88124, eval/F1: 0.88494, eval/spec: 0.88945, eval/sens: 0.94684, eval/acc1: 0.86486, eval/acc2: 0.83200, eval/acc3: 0.94684, test/loss: 0.80239, test/top-1-acc: 0.76230, test/balanced_acc: 0.76037, test/precision: 0.78908, test/recall: 0.76037, test/F1: 0.76779, test/spec: 0.81250, test/sens: 0.85714, test/acc1: 0.70968, test/acc2: 0.71429, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 20:50:48,276 INFO] 
+
+epoch 22
+[2024-03-07 20:52:52,794 INFO] validating...
+[2024-03-07 20:53:01,109 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:53:01,110 INFO] 6464 iteration, USE_EMA: True, train/sup_loss: 0.05394, train/unsup_loss: 0.01932, train/total_loss: 0.07326, train/util_ratio: 0.89583, train/run_time: 0.39613, lr: 0.01967, train/prefecth_time: 0.02048, eval/loss: 0.35132, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.88914, eval/precision: 0.88709, eval/recall: 0.88914, eval/F1: 0.88802, eval/spec: 0.90955, eval/sens: 0.94352, eval/acc1: 0.89189, eval/acc2: 0.83200, eval/acc3: 0.94352, test/loss: 0.82340, test/top-1-acc: 0.74590, test/balanced_acc: 0.74055, test/precision: 0.77564, test/recall: 0.74055, test/F1: 0.75077, test/spec: 0.81250, test/sens: 0.80952, test/acc1: 0.67742, test/acc2: 0.73469, test/acc3: 0.80952 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 20:53:01,113 INFO] 
+
+epoch 23
+[2024-03-07 20:55:04,636 INFO] validating...
+[2024-03-07 20:55:11,826 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:55:11,829 INFO] 6745 iteration, USE_EMA: True, train/sup_loss: 0.06977, train/unsup_loss: 0.01163, train/total_loss: 0.08140, train/util_ratio: 0.89583, train/run_time: 0.39351, lr: 0.01961, train/prefecth_time: 0.02187, eval/loss: 0.35751, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.88869, eval/precision: 0.88783, eval/recall: 0.88869, eval/F1: 0.88796, eval/spec: 0.90955, eval/sens: 0.95017, eval/acc1: 0.89189, eval/acc2: 0.82400, eval/acc3: 0.95017, test/loss: 0.93570, test/top-1-acc: 0.73770, test/balanced_acc: 0.73996, test/precision: 0.77020, test/recall: 0.73996, test/F1: 0.74606, test/spec: 0.77500, test/sens: 0.85714, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 20:55:11,833 INFO] 
+
+epoch 24
+[2024-03-07 20:57:15,708 INFO] validating...
+[2024-03-07 20:57:23,512 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:57:23,513 INFO] 7026 iteration, USE_EMA: True, train/sup_loss: 0.04234, train/unsup_loss: 0.01442, train/total_loss: 0.05676, train/util_ratio: 0.87500, train/run_time: 0.39513, lr: 0.01954, train/prefecth_time: 0.02155, eval/loss: 0.38163, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87701, eval/precision: 0.88453, eval/recall: 0.87701, eval/F1: 0.88057, eval/spec: 0.89447, eval/sens: 0.95017, eval/acc1: 0.86486, eval/acc2: 0.81600, eval/acc3: 0.95017, test/loss: 0.84004, test/top-1-acc: 0.72131, test/balanced_acc: 0.71392, test/precision: 0.75825, test/recall: 0.71392, test/F1: 0.72755, test/spec: 0.83750, test/sens: 0.76190, test/acc1: 0.64516, test/acc2: 0.73469, test/acc3: 0.76190 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 20:57:23,519 INFO] 
+
+epoch 25
+[2024-03-07 20:59:28,364 INFO] validating...
+[2024-03-07 20:59:38,383 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 20:59:38,384 INFO] 7307 iteration, USE_EMA: True, train/sup_loss: 0.07862, train/unsup_loss: 0.01713, train/total_loss: 0.09575, train/util_ratio: 0.87500, train/run_time: 0.39357, lr: 0.01948, train/prefecth_time: 0.01729, eval/loss: 0.36508, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.88317, eval/precision: 0.89021, eval/recall: 0.88317, eval/F1: 0.88662, eval/spec: 0.90955, eval/sens: 0.95017, eval/acc1: 0.85135, eval/acc2: 0.84800, eval/acc3: 0.95017, test/loss: 0.78944, test/top-1-acc: 0.71311, test/balanced_acc: 0.70372, test/precision: 0.75581, test/recall: 0.70372, test/F1: 0.71976, test/spec: 0.86250, test/sens: 0.69048, test/acc1: 0.64516, test/acc2: 0.77551, test/acc3: 0.69048 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 20:59:38,389 INFO] 
+
+epoch 26
+[2024-03-07 21:01:41,897 INFO] validating...
+[2024-03-07 21:01:49,294 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:01:49,295 INFO] 7588 iteration, USE_EMA: True, train/sup_loss: 0.12081, train/unsup_loss: 0.03075, train/total_loss: 0.15156, train/util_ratio: 0.87500, train/run_time: 0.39071, lr: 0.01941, train/prefecth_time: 0.02073, eval/loss: 0.37957, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87801, eval/precision: 0.87902, eval/recall: 0.87801, eval/F1: 0.87839, eval/spec: 0.91960, eval/sens: 0.94020, eval/acc1: 0.83784, eval/acc2: 0.85600, eval/acc3: 0.94020, test/loss: 0.89411, test/top-1-acc: 0.71311, test/balanced_acc: 0.71392, test/precision: 0.76172, test/recall: 0.71392, test/F1: 0.71738, test/spec: 0.70000, test/sens: 0.90476, test/acc1: 0.64516, test/acc2: 0.59184, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:01:49,298 INFO] 
+
+epoch 27
+[2024-03-07 21:03:51,890 INFO] validating...
+[2024-03-07 21:03:59,201 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:03:59,203 INFO] 7869 iteration, USE_EMA: True, train/sup_loss: 0.07603, train/unsup_loss: 0.00833, train/total_loss: 0.08436, train/util_ratio: 0.87500, train/run_time: 0.38924, lr: 0.01933, train/prefecth_time: 0.01332, eval/loss: 0.37751, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.87628, eval/precision: 0.88253, eval/recall: 0.87628, eval/F1: 0.87927, eval/spec: 0.90452, eval/sens: 0.95349, eval/acc1: 0.85135, eval/acc2: 0.82400, eval/acc3: 0.95349, test/loss: 0.99217, test/top-1-acc: 0.68033, test/balanced_acc: 0.68671, test/precision: 0.75626, test/recall: 0.68671, test/F1: 0.68997, test/spec: 0.62500, test/sens: 0.90476, test/acc1: 0.64516, test/acc2: 0.51020, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:03:59,208 INFO] 
+
+epoch 28
+[2024-03-07 21:06:02,492 INFO] validating...
+[2024-03-07 21:06:09,725 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:06:09,726 INFO] 8150 iteration, USE_EMA: True, train/sup_loss: 0.02897, train/unsup_loss: 0.00954, train/total_loss: 0.03851, train/util_ratio: 0.87500, train/run_time: 0.39592, lr: 0.01925, train/prefecth_time: 0.01672, eval/loss: 0.41911, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.88647, eval/precision: 0.88293, eval/recall: 0.88647, eval/F1: 0.88451, eval/spec: 0.90955, eval/sens: 0.94352, eval/acc1: 0.89189, eval/acc2: 0.82400, eval/acc3: 0.94352, test/loss: 0.82621, test/top-1-acc: 0.73770, test/balanced_acc: 0.73148, test/precision: 0.77784, test/recall: 0.73148, test/F1: 0.74568, test/spec: 0.81250, test/sens: 0.76190, test/acc1: 0.67742, test/acc2: 0.75510, test/acc3: 0.76190 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:06:09,728 INFO] 
+
+epoch 29
+[2024-03-07 21:08:12,929 INFO] validating...
+[2024-03-07 21:08:20,166 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:08:20,168 INFO] 8431 iteration, USE_EMA: True, train/sup_loss: 0.03977, train/unsup_loss: 0.01343, train/total_loss: 0.05320, train/util_ratio: 0.89583, train/run_time: 0.39297, lr: 0.01916, train/prefecth_time: 0.01360, eval/loss: 0.36319, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.88557, eval/precision: 0.88810, eval/recall: 0.88557, eval/F1: 0.88577, eval/spec: 0.89950, eval/sens: 0.95681, eval/acc1: 0.89189, eval/acc2: 0.80800, eval/acc3: 0.95681, test/loss: 0.86766, test/top-1-acc: 0.72131, test/balanced_acc: 0.72354, test/precision: 0.76089, test/recall: 0.72354, test/F1: 0.72815, test/spec: 0.73750, test/sens: 0.88095, test/acc1: 0.67742, test/acc2: 0.61224, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:08:20,174 INFO] 
+
+epoch 30
+[2024-03-07 21:10:22,979 INFO] validating...
+[2024-03-07 21:10:30,824 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:10:30,826 INFO] 8712 iteration, USE_EMA: True, train/sup_loss: 0.10669, train/unsup_loss: 0.03869, train/total_loss: 0.14537, train/util_ratio: 0.91667, train/run_time: 0.38974, lr: 0.01907, train/prefecth_time: 0.01420, eval/loss: 0.38375, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.88776, eval/precision: 0.88025, eval/recall: 0.88776, eval/F1: 0.88219, eval/spec: 0.89950, eval/sens: 0.94684, eval/acc1: 0.93243, eval/acc2: 0.78400, eval/acc3: 0.94684, test/loss: 0.89314, test/top-1-acc: 0.69672, test/balanced_acc: 0.71216, test/precision: 0.75665, test/recall: 0.71216, test/F1: 0.70838, test/spec: 0.65000, test/sens: 0.90476, test/acc1: 0.74194, test/acc2: 0.48980, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:10:30,829 INFO] 
+
+epoch 31
+[2024-03-07 21:12:32,070 INFO] validating...
+[2024-03-07 21:12:39,300 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:12:39,301 INFO] 8993 iteration, USE_EMA: True, train/sup_loss: 0.07847, train/unsup_loss: 0.00820, train/total_loss: 0.08667, train/util_ratio: 0.89583, train/run_time: 0.38801, lr: 0.01898, train/prefecth_time: 0.01334, eval/loss: 0.37972, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.88876, eval/precision: 0.87039, eval/recall: 0.88876, eval/F1: 0.87854, eval/spec: 0.92965, eval/sens: 0.93688, eval/acc1: 0.90541, eval/acc2: 0.82400, eval/acc3: 0.93688, test/loss: 0.75629, test/top-1-acc: 0.78689, test/balanced_acc: 0.78754, test/precision: 0.80769, test/recall: 0.78754, test/F1: 0.79426, test/spec: 0.83750, test/sens: 0.83333, test/acc1: 0.77419, test/acc2: 0.75510, test/acc3: 0.83333 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:12:39,305 INFO] 
+
+epoch 32
+[2024-03-07 21:14:43,074 INFO] validating...
+[2024-03-07 21:14:50,740 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:14:50,742 INFO] 9274 iteration, USE_EMA: True, train/sup_loss: 0.03551, train/unsup_loss: 0.00731, train/total_loss: 0.04282, train/util_ratio: 0.83333, train/run_time: 0.39181, lr: 0.01888, train/prefecth_time: 0.01491, eval/loss: 0.36044, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.88345, eval/precision: 0.88981, eval/recall: 0.88345, eval/F1: 0.88649, eval/spec: 0.90452, eval/sens: 0.95349, eval/acc1: 0.86486, eval/acc2: 0.83200, eval/acc3: 0.95349, test/loss: 0.80620, test/top-1-acc: 0.74590, test/balanced_acc: 0.75071, test/precision: 0.77882, test/recall: 0.75071, test/F1: 0.75566, test/spec: 0.76250, test/sens: 0.85714, test/acc1: 0.74194, test/acc2: 0.65306, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:14:50,794 INFO] 
+
+epoch 33
+[2024-03-07 21:16:54,338 INFO] validating...
+[2024-03-07 21:17:02,190 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:17:02,193 INFO] 9555 iteration, USE_EMA: True, train/sup_loss: 0.11950, train/unsup_loss: 0.00559, train/total_loss: 0.12509, train/util_ratio: 0.87500, train/run_time: 0.39381, lr: 0.01878, train/prefecth_time: 0.02118, eval/loss: 0.37473, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.88380, eval/precision: 0.88718, eval/recall: 0.88380, eval/F1: 0.88495, eval/spec: 0.88442, eval/sens: 0.94352, eval/acc1: 0.89189, eval/acc2: 0.81600, eval/acc3: 0.94352, test/loss: 0.88081, test/top-1-acc: 0.76230, test/balanced_acc: 0.76264, test/precision: 0.80297, test/recall: 0.76264, test/F1: 0.76926, test/spec: 0.76250, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.67347, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:17:02,198 INFO] 
+
+epoch 34
+[2024-03-07 21:19:06,147 INFO] validating...
+[2024-03-07 21:19:14,184 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:19:14,186 INFO] 9836 iteration, USE_EMA: True, train/sup_loss: 0.06558, train/unsup_loss: 0.00500, train/total_loss: 0.07058, train/util_ratio: 0.87500, train/run_time: 0.39112, lr: 0.01867, train/prefecth_time: 0.01995, eval/loss: 0.37085, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87489, eval/precision: 0.88016, eval/recall: 0.87489, eval/F1: 0.87749, eval/spec: 0.90452, eval/sens: 0.94684, eval/acc1: 0.83784, eval/acc2: 0.84000, eval/acc3: 0.94684, test/loss: 0.85949, test/top-1-acc: 0.73770, test/balanced_acc: 0.72979, test/precision: 0.77942, test/recall: 0.72979, test/F1: 0.74279, test/spec: 0.80000, test/sens: 0.80952, test/acc1: 0.64516, test/acc2: 0.73469, test/acc3: 0.80952 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:19:14,189 INFO] 
+
+epoch 35
+[2024-03-07 21:21:17,237 INFO] validating...
+[2024-03-07 21:21:24,637 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:21:24,638 INFO] 10117 iteration, USE_EMA: True, train/sup_loss: 0.03321, train/unsup_loss: 0.00638, train/total_loss: 0.03959, train/util_ratio: 0.87500, train/run_time: 0.38857, lr: 0.01856, train/prefecth_time: 0.01401, eval/loss: 0.38796, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.88446, eval/precision: 0.88642, eval/recall: 0.88446, eval/F1: 0.88472, eval/spec: 0.89950, eval/sens: 0.95349, eval/acc1: 0.89189, eval/acc2: 0.80800, eval/acc3: 0.95349, test/loss: 0.87372, test/top-1-acc: 0.71311, test/balanced_acc: 0.72859, test/precision: 0.75338, test/recall: 0.72859, test/F1: 0.72418, test/spec: 0.70000, test/sens: 0.88095, test/acc1: 0.77419, test/acc2: 0.53061, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:21:24,643 INFO] 
+
+epoch 36
+[2024-03-07 21:23:27,773 INFO] validating...
+[2024-03-07 21:23:35,438 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:23:35,439 INFO] 10398 iteration, USE_EMA: True, train/sup_loss: 0.05896, train/unsup_loss: 0.02095, train/total_loss: 0.07992, train/util_ratio: 0.91667, train/run_time: 0.39085, lr: 0.01844, train/prefecth_time: 0.01975, eval/loss: 0.35669, eval/top-1-acc: 0.89600, eval/balanced_acc: 0.86735, eval/precision: 0.86831, eval/recall: 0.86735, eval/F1: 0.86777, eval/spec: 0.89950, eval/sens: 0.94020, eval/acc1: 0.83784, eval/acc2: 0.82400, eval/acc3: 0.94020, test/loss: 0.90456, test/top-1-acc: 0.72951, test/balanced_acc: 0.72131, test/precision: 0.77500, test/recall: 0.72131, test/F1: 0.73204, test/spec: 0.77500, test/sens: 0.85714, test/acc1: 0.61290, test/acc2: 0.69388, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:23:35,443 INFO] 
+
+epoch 37
+[2024-03-07 21:25:38,921 INFO] validating...
+[2024-03-07 21:25:45,965 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:25:45,967 INFO] 10679 iteration, USE_EMA: True, train/sup_loss: 0.10721, train/unsup_loss: 0.03437, train/total_loss: 0.14158, train/util_ratio: 0.89583, train/run_time: 0.38912, lr: 0.01832, train/prefecth_time: 0.01292, eval/loss: 0.37246, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.88546, eval/precision: 0.88798, eval/recall: 0.88546, eval/F1: 0.88670, eval/spec: 0.90452, eval/sens: 0.94352, eval/acc1: 0.86486, eval/acc2: 0.84800, eval/acc3: 0.94352, test/loss: 0.86175, test/top-1-acc: 0.73770, test/balanced_acc: 0.73319, test/precision: 0.78592, test/recall: 0.73319, test/F1: 0.74221, test/spec: 0.73750, test/sens: 0.88095, test/acc1: 0.64516, test/acc2: 0.67347, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:25:45,971 INFO] 
+
+epoch 38
+[2024-03-07 21:27:49,342 INFO] validating...
+[2024-03-07 21:27:56,667 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:27:56,668 INFO] 10960 iteration, USE_EMA: True, train/sup_loss: 0.13659, train/unsup_loss: 0.00888, train/total_loss: 0.14547, train/util_ratio: 0.87500, train/run_time: 0.39842, lr: 0.01820, train/prefecth_time: 0.01626, eval/loss: 0.35451, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87958, eval/precision: 0.88289, eval/recall: 0.87958, eval/F1: 0.88040, eval/spec: 0.88442, eval/sens: 0.94684, eval/acc1: 0.89189, eval/acc2: 0.80000, eval/acc3: 0.94684, test/loss: 0.82402, test/top-1-acc: 0.73770, test/balanced_acc: 0.73319, test/precision: 0.78383, test/recall: 0.73319, test/F1: 0.74213, test/spec: 0.75000, test/sens: 0.88095, test/acc1: 0.64516, test/acc2: 0.67347, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:27:56,672 INFO] 
+
+epoch 39
+[2024-03-07 21:29:59,289 INFO] validating...
+[2024-03-07 21:30:06,754 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:30:06,755 INFO] 11241 iteration, USE_EMA: True, train/sup_loss: 0.07399, train/unsup_loss: 0.00796, train/total_loss: 0.08195, train/util_ratio: 0.83333, train/run_time: 0.38656, lr: 0.01807, train/prefecth_time: 0.01602, eval/loss: 0.40989, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.87840, eval/precision: 0.89157, eval/recall: 0.87840, eval/F1: 0.88415, eval/spec: 0.87940, eval/sens: 0.95681, eval/acc1: 0.87838, eval/acc2: 0.80000, eval/acc3: 0.95681, test/loss: 0.90212, test/top-1-acc: 0.72131, test/balanced_acc: 0.72241, test/precision: 0.75894, test/recall: 0.72241, test/F1: 0.72879, test/spec: 0.75000, test/sens: 0.85714, test/acc1: 0.67742, test/acc2: 0.63265, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:30:06,758 INFO] 
+
+epoch 40
+[2024-03-07 21:32:09,654 INFO] validating...
+[2024-03-07 21:32:16,873 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:32:16,876 INFO] 11522 iteration, USE_EMA: True, train/sup_loss: 0.08341, train/unsup_loss: 0.00558, train/total_loss: 0.08899, train/util_ratio: 0.85417, train/run_time: 0.39026, lr: 0.01794, train/prefecth_time: 0.02061, eval/loss: 0.36851, eval/top-1-acc: 0.91200, eval/balanced_acc: 0.88979, eval/precision: 0.89307, eval/recall: 0.88979, eval/F1: 0.89112, eval/spec: 0.90452, eval/sens: 0.95349, eval/acc1: 0.89189, eval/acc2: 0.82400, eval/acc3: 0.95349, test/loss: 0.83556, test/top-1-acc: 0.74590, test/balanced_acc: 0.74055, test/precision: 0.78477, test/recall: 0.74055, test/F1: 0.75324, test/spec: 0.81250, test/sens: 0.80952, test/acc1: 0.67742, test/acc2: 0.73469, test/acc3: 0.80952 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:32:16,880 INFO] 
+
+epoch 41
+[2024-03-07 21:34:20,874 INFO] validating...
+[2024-03-07 21:34:28,706 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:34:28,708 INFO] 11803 iteration, USE_EMA: True, train/sup_loss: 0.08750, train/unsup_loss: 0.00750, train/total_loss: 0.09500, train/util_ratio: 0.87500, train/run_time: 0.39182, lr: 0.01780, train/prefecth_time: 0.01513, eval/loss: 0.39016, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.85680, eval/precision: 0.88789, eval/recall: 0.85680, eval/F1: 0.87079, eval/spec: 0.88442, eval/sens: 0.96013, eval/acc1: 0.77027, eval/acc2: 0.84000, eval/acc3: 0.96013, test/loss: 0.98707, test/top-1-acc: 0.72951, test/balanced_acc: 0.71849, test/precision: 0.79084, test/recall: 0.71849, test/F1: 0.73017, test/spec: 0.75000, test/sens: 0.88095, test/acc1: 0.58065, test/acc2: 0.69388, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:34:28,749 INFO] 
+
+epoch 42
+[2024-03-07 21:36:33,421 INFO] validating...
+[2024-03-07 21:36:40,718 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:36:40,721 INFO] 12084 iteration, USE_EMA: True, train/sup_loss: 0.06816, train/unsup_loss: 0.01320, train/total_loss: 0.08136, train/util_ratio: 0.87500, train/run_time: 0.39240, lr: 0.01766, train/prefecth_time: 0.01332, eval/loss: 0.38894, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.88692, eval/precision: 0.87828, eval/recall: 0.88692, eval/F1: 0.88238, eval/spec: 0.91457, eval/sens: 0.93688, eval/acc1: 0.89189, eval/acc2: 0.83200, eval/acc3: 0.93688, test/loss: 0.85114, test/top-1-acc: 0.74590, test/balanced_acc: 0.73941, test/precision: 0.78493, test/recall: 0.73941, test/F1: 0.75317, test/spec: 0.82500, test/sens: 0.78571, test/acc1: 0.67742, test/acc2: 0.75510, test/acc3: 0.78571 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:36:40,726 INFO] 
+
+epoch 43
+[2024-03-07 21:38:44,003 INFO] validating...
+[2024-03-07 21:38:51,373 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:38:51,375 INFO] 12365 iteration, USE_EMA: True, train/sup_loss: 0.14743, train/unsup_loss: 0.00745, train/total_loss: 0.15488, train/util_ratio: 0.87500, train/run_time: 0.39285, lr: 0.01751, train/prefecth_time: 0.01513, eval/loss: 0.38491, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.87444, eval/precision: 0.88819, eval/recall: 0.87444, eval/F1: 0.88108, eval/spec: 0.89447, eval/sens: 0.95349, eval/acc1: 0.83784, eval/acc2: 0.83200, eval/acc3: 0.95349, test/loss: 0.91131, test/top-1-acc: 0.73770, test/balanced_acc: 0.73601, test/precision: 0.77101, test/recall: 0.73601, test/F1: 0.74330, test/spec: 0.77500, test/sens: 0.85714, test/acc1: 0.67742, test/acc2: 0.67347, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:38:51,380 INFO] 
+
+epoch 44
+[2024-03-07 21:40:54,256 INFO] validating...
+[2024-03-07 21:41:01,833 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:41:01,835 INFO] 12646 iteration, USE_EMA: True, train/sup_loss: 0.04673, train/unsup_loss: 0.00493, train/total_loss: 0.05166, train/util_ratio: 0.85417, train/run_time: 0.39026, lr: 0.01736, train/prefecth_time: 0.02194, eval/loss: 0.39577, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.87996, eval/precision: 0.87965, eval/recall: 0.87996, eval/F1: 0.87899, eval/spec: 0.90452, eval/sens: 0.95349, eval/acc1: 0.87838, eval/acc2: 0.80800, eval/acc3: 0.95349, test/loss: 0.84623, test/top-1-acc: 0.76230, test/balanced_acc: 0.76264, test/precision: 0.80552, test/recall: 0.76264, test/F1: 0.76938, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.67347, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:41:01,839 INFO] 
+
+epoch 45
+[2024-03-07 21:43:04,882 INFO] validating...
+[2024-03-07 21:43:12,752 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:43:12,754 INFO] 12927 iteration, USE_EMA: True, train/sup_loss: 0.07165, train/unsup_loss: 0.07526, train/total_loss: 0.14691, train/util_ratio: 0.87500, train/run_time: 0.39130, lr: 0.01721, train/prefecth_time: 0.01396, eval/loss: 0.41559, eval/top-1-acc: 0.90000, eval/balanced_acc: 0.87324, eval/precision: 0.87920, eval/recall: 0.87324, eval/F1: 0.87595, eval/spec: 0.88945, eval/sens: 0.94684, eval/acc1: 0.86486, eval/acc2: 0.80800, eval/acc3: 0.94684, test/loss: 0.91926, test/top-1-acc: 0.72951, test/balanced_acc: 0.73148, test/precision: 0.78224, test/recall: 0.73148, test/F1: 0.73738, test/spec: 0.71250, test/sens: 0.90476, test/acc1: 0.67742, test/acc2: 0.61224, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:43:12,759 INFO] 
+
+epoch 46
+[2024-03-07 21:45:18,375 INFO] validating...
+[2024-03-07 21:45:26,755 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:45:26,756 INFO] 13208 iteration, USE_EMA: True, train/sup_loss: 0.05153, train/unsup_loss: 0.00363, train/total_loss: 0.05516, train/util_ratio: 0.85417, train/run_time: 0.39613, lr: 0.01705, train/prefecth_time: 0.01982, eval/loss: 0.38749, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.88086, eval/precision: 0.87762, eval/recall: 0.88086, eval/F1: 0.87917, eval/spec: 0.90955, eval/sens: 0.94020, eval/acc1: 0.87838, eval/acc2: 0.82400, eval/acc3: 0.94020, test/loss: 0.84726, test/top-1-acc: 0.76230, test/balanced_acc: 0.76037, test/precision: 0.80032, test/recall: 0.76037, test/F1: 0.76983, test/spec: 0.77500, test/sens: 0.85714, test/acc1: 0.70968, test/acc2: 0.71429, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:45:26,759 INFO] 
+
+epoch 47
+[2024-03-07 21:47:31,114 INFO] validating...
+[2024-03-07 21:47:38,943 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:47:38,944 INFO] 13489 iteration, USE_EMA: True, train/sup_loss: 0.08585, train/unsup_loss: 0.00499, train/total_loss: 0.09084, train/util_ratio: 0.83333, train/run_time: 0.38853, lr: 0.01689, train/prefecth_time: 0.01704, eval/loss: 0.36662, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87673, eval/precision: 0.88201, eval/recall: 0.87673, eval/F1: 0.87933, eval/spec: 0.90452, eval/sens: 0.94684, eval/acc1: 0.85135, eval/acc2: 0.83200, eval/acc3: 0.94684, test/loss: 0.83732, test/top-1-acc: 0.77869, test/balanced_acc: 0.77624, test/precision: 0.82687, test/recall: 0.77624, test/F1: 0.78625, test/spec: 0.76250, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.71429, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:47:38,947 INFO] 
+
+epoch 48
+[2024-03-07 21:49:42,659 INFO] validating...
+[2024-03-07 21:49:50,332 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:49:50,334 INFO] 13770 iteration, USE_EMA: True, train/sup_loss: 0.15280, train/unsup_loss: 0.01327, train/total_loss: 0.16607, train/util_ratio: 0.89583, train/run_time: 0.39123, lr: 0.01673, train/prefecth_time: 0.01756, eval/loss: 0.41768, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.88463, eval/precision: 0.88271, eval/recall: 0.88463, eval/F1: 0.88343, eval/spec: 0.90452, eval/sens: 0.94352, eval/acc1: 0.87838, eval/acc2: 0.83200, eval/acc3: 0.94352, test/loss: 0.88775, test/top-1-acc: 0.73770, test/balanced_acc: 0.74223, test/precision: 0.78636, test/recall: 0.74223, test/F1: 0.74724, test/spec: 0.72500, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.61224, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:49:50,338 INFO] 
+
+epoch 49
+[2024-03-07 21:51:53,878 INFO] validating...
+[2024-03-07 21:52:01,196 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:52:01,197 INFO] 14051 iteration, USE_EMA: True, train/sup_loss: 0.07015, train/unsup_loss: 0.04176, train/total_loss: 0.11191, train/util_ratio: 0.89583, train/run_time: 0.39176, lr: 0.01656, train/prefecth_time: 0.02181, eval/loss: 0.38545, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.89153, eval/precision: 0.88745, eval/recall: 0.89153, eval/F1: 0.88947, eval/spec: 0.91960, eval/sens: 0.94020, eval/acc1: 0.87838, eval/acc2: 0.85600, eval/acc3: 0.94020, test/loss: 0.78515, test/top-1-acc: 0.78689, test/balanced_acc: 0.78304, test/precision: 0.82187, test/recall: 0.78304, test/F1: 0.79084, test/spec: 0.78750, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.73469, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:52:01,235 INFO] 
+
+epoch 50
+[2024-03-07 21:54:05,518 INFO] validating...
+[2024-03-07 21:54:12,777 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:54:12,779 INFO] 14332 iteration, USE_EMA: True, train/sup_loss: 0.06478, train/unsup_loss: 0.00356, train/total_loss: 0.06834, train/util_ratio: 0.85417, train/run_time: 0.39422, lr: 0.01638, train/prefecth_time: 0.01601, eval/loss: 0.37088, eval/top-1-acc: 0.90000, eval/balanced_acc: 0.86772, eval/precision: 0.87288, eval/recall: 0.86772, eval/F1: 0.87026, eval/spec: 0.90452, eval/sens: 0.94684, eval/acc1: 0.82432, eval/acc2: 0.83200, eval/acc3: 0.94684, test/loss: 0.86207, test/top-1-acc: 0.75410, test/balanced_acc: 0.74680, test/precision: 0.80580, test/recall: 0.74680, test/F1: 0.75879, test/spec: 0.77500, test/sens: 0.88095, test/acc1: 0.64516, test/acc2: 0.71429, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:54:12,782 INFO] 
+
+epoch 51
+[2024-03-07 21:56:15,610 INFO] validating...
+[2024-03-07 21:56:23,033 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:56:23,035 INFO] 14613 iteration, USE_EMA: True, train/sup_loss: 0.01703, train/unsup_loss: 0.01608, train/total_loss: 0.03311, train/util_ratio: 0.87500, train/run_time: 0.38961, lr: 0.01621, train/prefecth_time: 0.01599, eval/loss: 0.39539, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.88418, eval/precision: 0.88623, eval/recall: 0.88418, eval/F1: 0.88511, eval/spec: 0.90955, eval/sens: 0.95017, eval/acc1: 0.87838, eval/acc2: 0.82400, eval/acc3: 0.95017, test/loss: 0.86321, test/top-1-acc: 0.75410, test/balanced_acc: 0.75243, test/precision: 0.79259, test/recall: 0.75243, test/F1: 0.76283, test/spec: 0.77500, test/sens: 0.83333, test/acc1: 0.70968, test/acc2: 0.71429, test/acc3: 0.83333 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:56:23,040 INFO] 
+
+epoch 52
+[2024-03-07 21:58:28,252 INFO] validating...
+[2024-03-07 21:58:36,932 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 21:58:36,934 INFO] 14894 iteration, USE_EMA: True, train/sup_loss: 0.04113, train/unsup_loss: 0.00441, train/total_loss: 0.04555, train/util_ratio: 0.83333, train/run_time: 0.39327, lr: 0.01603, train/prefecth_time: 0.01454, eval/loss: 0.37810, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87902, eval/precision: 0.87853, eval/recall: 0.87902, eval/F1: 0.87865, eval/spec: 0.89950, eval/sens: 0.94020, eval/acc1: 0.86486, eval/acc2: 0.83200, eval/acc3: 0.94020, test/loss: 0.87460, test/top-1-acc: 0.76230, test/balanced_acc: 0.75869, test/precision: 0.80397, test/recall: 0.75869, test/F1: 0.76642, test/spec: 0.76250, test/sens: 0.90476, test/acc1: 0.67742, test/acc2: 0.69388, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 21:58:36,939 INFO] 
+
+epoch 53
+[2024-03-07 22:00:41,560 INFO] validating...
+[2024-03-07 22:00:49,334 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:00:49,336 INFO] 15175 iteration, USE_EMA: True, train/sup_loss: 0.04697, train/unsup_loss: 0.00588, train/total_loss: 0.05285, train/util_ratio: 0.89583, train/run_time: 0.39519, lr: 0.01584, train/prefecth_time: 0.01733, eval/loss: 0.38279, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.88536, eval/precision: 0.88053, eval/recall: 0.88536, eval/F1: 0.88279, eval/spec: 0.90955, eval/sens: 0.94020, eval/acc1: 0.89189, eval/acc2: 0.82400, eval/acc3: 0.94020, test/loss: 0.81861, test/top-1-acc: 0.72951, test/balanced_acc: 0.72694, test/precision: 0.77224, test/recall: 0.72694, test/F1: 0.73896, test/spec: 0.77500, test/sens: 0.80952, test/acc1: 0.67742, test/acc2: 0.69388, test/acc3: 0.80952 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 22:00:49,340 INFO] 
+
+epoch 54
+[2024-03-07 22:02:53,386 INFO] validating...
+[2024-03-07 22:03:00,421 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:03:00,423 INFO] 15456 iteration, USE_EMA: True, train/sup_loss: 0.03587, train/unsup_loss: 0.00513, train/total_loss: 0.04100, train/util_ratio: 0.89583, train/run_time: 0.39409, lr: 0.01565, train/prefecth_time: 0.02526, eval/loss: 0.39187, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.87472, eval/precision: 0.88229, eval/recall: 0.87472, eval/F1: 0.87814, eval/spec: 0.89950, eval/sens: 0.95681, eval/acc1: 0.85135, eval/acc2: 0.81600, eval/acc3: 0.95681, test/loss: 0.87394, test/top-1-acc: 0.72951, test/balanced_acc: 0.73148, test/precision: 0.78951, test/recall: 0.73148, test/F1: 0.73798, test/spec: 0.68750, test/sens: 0.90476, test/acc1: 0.67742, test/acc2: 0.61224, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 22:03:00,428 INFO] 
+
+epoch 55
+[2024-03-07 22:05:04,444 INFO] validating...
+[2024-03-07 22:05:12,494 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:05:12,496 INFO] 15737 iteration, USE_EMA: True, train/sup_loss: 0.05520, train/unsup_loss: 0.00470, train/total_loss: 0.05990, train/util_ratio: 0.89583, train/run_time: 0.38941, lr: 0.01546, train/prefecth_time: 0.01921, eval/loss: 0.39835, eval/top-1-acc: 0.91600, eval/balanced_acc: 0.88833, eval/precision: 0.89620, eval/recall: 0.88833, eval/F1: 0.89206, eval/spec: 0.90955, eval/sens: 0.96013, eval/acc1: 0.86486, eval/acc2: 0.84000, eval/acc3: 0.96013, test/loss: 0.86288, test/top-1-acc: 0.77049, test/balanced_acc: 0.76831, test/precision: 0.80823, test/recall: 0.76831, test/F1: 0.77680, test/spec: 0.77500, test/sens: 0.88095, test/acc1: 0.70968, test/acc2: 0.71429, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9160, at 5340 iters BEST_TEST_ACC: 0.7295, at 5340 iters
+[2024-03-07 22:05:12,500 INFO] 
+
+epoch 56
+[2024-03-07 22:07:16,236 INFO] validating...
+[2024-03-07 22:07:24,030 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:07:27,606 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 22:07:27,607 INFO] 16018 iteration, USE_EMA: True, train/sup_loss: 0.03954, train/unsup_loss: 0.00346, train/total_loss: 0.04299, train/util_ratio: 0.87500, train/run_time: 0.39473, lr: 0.01526, train/prefecth_time: 0.01936, eval/loss: 0.37120, eval/top-1-acc: 0.91800, eval/balanced_acc: 0.89963, eval/precision: 0.90022, eval/recall: 0.89963, eval/F1: 0.89975, eval/spec: 0.91457, eval/sens: 0.95349, eval/acc1: 0.90541, eval/acc2: 0.84000, eval/acc3: 0.95349, test/loss: 0.82445, test/top-1-acc: 0.74590, test/balanced_acc: 0.75013, test/precision: 0.78074, test/recall: 0.75013, test/F1: 0.76070, test/spec: 0.78750, test/sens: 0.76190, test/acc1: 0.77419, test/acc2: 0.71429, test/acc3: 0.76190 BEST_EVAL_ACC: 0.9180, at 16018 iters BEST_TEST_ACC: 0.7459, at 16018 iters
+[2024-03-07 22:07:27,612 INFO] 
+
+epoch 57
+[2024-03-07 22:09:31,334 INFO] validating...
+[2024-03-07 22:09:39,266 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:09:39,267 INFO] 16299 iteration, USE_EMA: True, train/sup_loss: 0.06184, train/unsup_loss: 0.00623, train/total_loss: 0.06807, train/util_ratio: 0.83333, train/run_time: 0.39363, lr: 0.01507, train/prefecth_time: 0.01646, eval/loss: 0.40144, eval/top-1-acc: 0.89800, eval/balanced_acc: 0.86222, eval/precision: 0.87645, eval/recall: 0.86222, eval/F1: 0.86864, eval/spec: 0.87940, eval/sens: 0.95681, eval/acc1: 0.83784, eval/acc2: 0.79200, eval/acc3: 0.95681, test/loss: 0.94133, test/top-1-acc: 0.76230, test/balanced_acc: 0.75869, test/precision: 0.80397, test/recall: 0.75869, test/F1: 0.76642, test/spec: 0.76250, test/sens: 0.90476, test/acc1: 0.67742, test/acc2: 0.69388, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9180, at 16018 iters BEST_TEST_ACC: 0.7459, at 16018 iters
+[2024-03-07 22:09:39,270 INFO] 
+
+epoch 58
+[2024-03-07 22:11:42,938 INFO] validating...
+[2024-03-07 22:11:50,540 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:11:50,542 INFO] 16580 iteration, USE_EMA: True, train/sup_loss: 0.03805, train/unsup_loss: 0.00648, train/total_loss: 0.04453, train/util_ratio: 0.83333, train/run_time: 0.39318, lr: 0.01486, train/prefecth_time: 0.01735, eval/loss: 0.38836, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87178, eval/precision: 0.88543, eval/recall: 0.87178, eval/F1: 0.87837, eval/spec: 0.89447, eval/sens: 0.95349, eval/acc1: 0.83784, eval/acc2: 0.82400, eval/acc3: 0.95349, test/loss: 0.90878, test/top-1-acc: 0.75410, test/balanced_acc: 0.74962, test/precision: 0.80514, test/recall: 0.74962, test/F1: 0.76227, test/spec: 0.76250, test/sens: 0.85714, test/acc1: 0.67742, test/acc2: 0.71429, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9180, at 16018 iters BEST_TEST_ACC: 0.7459, at 16018 iters
+[2024-03-07 22:11:50,547 INFO] 
+
+epoch 59
+[2024-03-07 22:13:54,711 INFO] validating...
+[2024-03-07 22:14:02,088 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:14:05,990 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/model_best.pth
+[2024-03-07 22:14:05,991 INFO] 16861 iteration, USE_EMA: True, train/sup_loss: 0.12795, train/unsup_loss: 0.01223, train/total_loss: 0.14017, train/util_ratio: 0.89583, train/run_time: 0.39497, lr: 0.01466, train/prefecth_time: 0.01679, eval/loss: 0.38214, eval/top-1-acc: 0.92000, eval/balanced_acc: 0.89918, eval/precision: 0.90535, eval/recall: 0.89918, eval/F1: 0.90198, eval/spec: 0.90955, eval/sens: 0.96013, eval/acc1: 0.90541, eval/acc2: 0.83200, eval/acc3: 0.96013, test/loss: 0.88575, test/top-1-acc: 0.77049, test/balanced_acc: 0.76944, test/precision: 0.81090, test/recall: 0.76944, test/F1: 0.77658, test/spec: 0.76250, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.69388, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:14:05,996 INFO] 
+
+epoch 60
+[2024-03-07 22:16:09,047 INFO] validating...
+[2024-03-07 22:16:16,766 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:16:16,767 INFO] 17142 iteration, USE_EMA: True, train/sup_loss: 0.03570, train/unsup_loss: 0.02034, train/total_loss: 0.05604, train/util_ratio: 0.91667, train/run_time: 0.38876, lr: 0.01445, train/prefecth_time: 0.01640, eval/loss: 0.37899, eval/top-1-acc: 0.91200, eval/balanced_acc: 0.88612, eval/precision: 0.88839, eval/recall: 0.88612, eval/F1: 0.88716, eval/spec: 0.91457, eval/sens: 0.95349, eval/acc1: 0.86486, eval/acc2: 0.84000, eval/acc3: 0.95349, test/loss: 0.79174, test/top-1-acc: 0.77869, test/balanced_acc: 0.77511, test/precision: 0.82424, test/recall: 0.77511, test/F1: 0.78634, test/spec: 0.77500, test/sens: 0.88095, test/acc1: 0.70968, test/acc2: 0.73469, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:16:16,772 INFO] 
+
+epoch 61
+[2024-03-07 22:18:20,303 INFO] validating...
+[2024-03-07 22:18:28,025 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:18:28,026 INFO] 17423 iteration, USE_EMA: True, train/sup_loss: 0.04416, train/unsup_loss: 0.00742, train/total_loss: 0.05158, train/util_ratio: 0.83333, train/run_time: 0.39407, lr: 0.01423, train/prefecth_time: 0.01773, eval/loss: 0.38817, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.88886, eval/precision: 0.88325, eval/recall: 0.88886, eval/F1: 0.88600, eval/spec: 0.91960, eval/sens: 0.94020, eval/acc1: 0.87838, eval/acc2: 0.84800, eval/acc3: 0.94020, test/loss: 0.83183, test/top-1-acc: 0.75410, test/balanced_acc: 0.75243, test/precision: 0.79143, test/recall: 0.75243, test/F1: 0.76289, test/spec: 0.78750, test/sens: 0.83333, test/acc1: 0.70968, test/acc2: 0.71429, test/acc3: 0.83333 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:18:28,029 INFO] 
+
+epoch 62
+[2024-03-07 22:20:31,294 INFO] validating...
+[2024-03-07 22:20:39,329 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:20:39,330 INFO] 17704 iteration, USE_EMA: True, train/sup_loss: 0.03432, train/unsup_loss: 0.00389, train/total_loss: 0.03821, train/util_ratio: 0.89583, train/run_time: 0.39557, lr: 0.01402, train/prefecth_time: 0.01884, eval/loss: 0.37710, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87407, eval/precision: 0.88486, eval/recall: 0.87407, eval/F1: 0.87930, eval/spec: 0.88945, eval/sens: 0.94684, eval/acc1: 0.85135, eval/acc2: 0.82400, eval/acc3: 0.94684, test/loss: 0.85414, test/top-1-acc: 0.75410, test/balanced_acc: 0.75075, test/precision: 0.79600, test/recall: 0.75075, test/F1: 0.75958, test/spec: 0.76250, test/sens: 0.88095, test/acc1: 0.67742, test/acc2: 0.69388, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:20:39,334 INFO] 
+
+epoch 63
+[2024-03-07 22:22:42,463 INFO] validating...
+[2024-03-07 22:22:50,413 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:22:50,415 INFO] 17985 iteration, USE_EMA: True, train/sup_loss: 0.02036, train/unsup_loss: 0.01303, train/total_loss: 0.03339, train/util_ratio: 0.93750, train/run_time: 0.39260, lr: 0.01380, train/prefecth_time: 0.01973, eval/loss: 0.42556, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.88280, eval/precision: 0.87976, eval/recall: 0.88280, eval/F1: 0.88121, eval/spec: 0.91457, eval/sens: 0.94352, eval/acc1: 0.86486, eval/acc2: 0.84000, eval/acc3: 0.94352, test/loss: 0.84726, test/top-1-acc: 0.75410, test/balanced_acc: 0.75583, test/precision: 0.80020, test/recall: 0.75583, test/F1: 0.76213, test/spec: 0.73750, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:22:50,421 INFO] 
+
+epoch 64
+[2024-03-07 22:24:53,258 INFO] validating...
+[2024-03-07 22:25:00,709 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:25:00,711 INFO] 18266 iteration, USE_EMA: True, train/sup_loss: 0.02281, train/unsup_loss: 0.00437, train/total_loss: 0.02718, train/util_ratio: 0.87500, train/run_time: 0.38706, lr: 0.01358, train/prefecth_time: 0.01799, eval/loss: 0.39121, eval/top-1-acc: 0.91800, eval/balanced_acc: 0.89128, eval/precision: 0.89904, eval/recall: 0.89128, eval/F1: 0.89479, eval/spec: 0.90955, eval/sens: 0.96346, eval/acc1: 0.87838, eval/acc2: 0.83200, eval/acc3: 0.96346, test/loss: 0.89782, test/top-1-acc: 0.72951, test/balanced_acc: 0.73543, test/precision: 0.78440, test/recall: 0.73543, test/F1: 0.74000, test/spec: 0.70000, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.59184, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:25:00,715 INFO] 
+
+epoch 65
+[2024-03-07 22:27:03,750 INFO] validating...
+[2024-03-07 22:27:11,798 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:27:11,801 INFO] 18547 iteration, USE_EMA: True, train/sup_loss: 0.02971, train/unsup_loss: 0.00679, train/total_loss: 0.03650, train/util_ratio: 0.87500, train/run_time: 0.38902, lr: 0.01335, train/prefecth_time: 0.01628, eval/loss: 0.41234, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.88373, eval/precision: 0.88719, eval/recall: 0.88373, eval/F1: 0.88492, eval/spec: 0.90452, eval/sens: 0.95681, eval/acc1: 0.87838, eval/acc2: 0.81600, eval/acc3: 0.95681, test/loss: 0.83850, test/top-1-acc: 0.75410, test/balanced_acc: 0.75470, test/precision: 0.79712, test/recall: 0.75470, test/F1: 0.76252, test/spec: 0.75000, test/sens: 0.88095, test/acc1: 0.70968, test/acc2: 0.67347, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:27:11,805 INFO] 
+
+epoch 66
+[2024-03-07 22:29:16,013 INFO] validating...
+[2024-03-07 22:29:23,475 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:29:23,477 INFO] 18828 iteration, USE_EMA: True, train/sup_loss: 0.08465, train/unsup_loss: 0.00569, train/total_loss: 0.09034, train/util_ratio: 0.87500, train/run_time: 0.39239, lr: 0.01312, train/prefecth_time: 0.01801, eval/loss: 0.40862, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.88345, eval/precision: 0.88845, eval/recall: 0.88345, eval/F1: 0.88586, eval/spec: 0.90955, eval/sens: 0.95349, eval/acc1: 0.86486, eval/acc2: 0.83200, eval/acc3: 0.95349, test/loss: 0.81574, test/top-1-acc: 0.75410, test/balanced_acc: 0.74962, test/precision: 0.79282, test/recall: 0.74962, test/F1: 0.75984, test/spec: 0.78750, test/sens: 0.85714, test/acc1: 0.67742, test/acc2: 0.71429, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:29:23,481 INFO] 
+
+epoch 67
+[2024-03-07 22:31:27,617 INFO] validating...
+[2024-03-07 22:31:35,409 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:31:35,411 INFO] 19109 iteration, USE_EMA: True, train/sup_loss: 0.09304, train/unsup_loss: 0.00580, train/total_loss: 0.09884, train/util_ratio: 0.85417, train/run_time: 0.39121, lr: 0.01289, train/prefecth_time: 0.01672, eval/loss: 0.40315, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87590, eval/precision: 0.88203, eval/recall: 0.87590, eval/F1: 0.87869, eval/spec: 0.88945, eval/sens: 0.94684, eval/acc1: 0.86486, eval/acc2: 0.81600, eval/acc3: 0.94684, test/loss: 0.91292, test/top-1-acc: 0.75410, test/balanced_acc: 0.75075, test/precision: 0.79600, test/recall: 0.75075, test/F1: 0.75958, test/spec: 0.76250, test/sens: 0.88095, test/acc1: 0.67742, test/acc2: 0.69388, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:31:35,416 INFO] 
+
+epoch 68
+[2024-03-07 22:33:39,561 INFO] validating...
+[2024-03-07 22:33:47,124 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:33:47,125 INFO] 19390 iteration, USE_EMA: True, train/sup_loss: 0.03442, train/unsup_loss: 0.00641, train/total_loss: 0.04084, train/util_ratio: 0.89583, train/run_time: 0.39560, lr: 0.01265, train/prefecth_time: 0.02406, eval/loss: 0.41632, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87205, eval/precision: 0.88369, eval/recall: 0.87205, eval/F1: 0.87741, eval/spec: 0.88945, eval/sens: 0.95681, eval/acc1: 0.85135, eval/acc2: 0.80800, eval/acc3: 0.95681, test/loss: 0.87331, test/top-1-acc: 0.75410, test/balanced_acc: 0.75583, test/precision: 0.80020, test/recall: 0.75583, test/F1: 0.76213, test/spec: 0.73750, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:33:47,130 INFO] 
+
+epoch 69
+[2024-03-07 22:35:51,417 INFO] validating...
+[2024-03-07 22:36:00,254 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:36:00,255 INFO] 19671 iteration, USE_EMA: True, train/sup_loss: 0.02214, train/unsup_loss: 0.00360, train/total_loss: 0.02574, train/util_ratio: 0.87500, train/run_time: 0.39412, lr: 0.01242, train/prefecth_time: 0.01718, eval/loss: 0.40504, eval/top-1-acc: 0.90000, eval/balanced_acc: 0.87691, eval/precision: 0.87303, eval/recall: 0.87691, eval/F1: 0.87436, eval/spec: 0.90452, eval/sens: 0.94684, eval/acc1: 0.89189, eval/acc2: 0.79200, eval/acc3: 0.94684, test/loss: 0.80336, test/top-1-acc: 0.75410, test/balanced_acc: 0.75243, test/precision: 0.79143, test/recall: 0.75243, test/F1: 0.76289, test/spec: 0.78750, test/sens: 0.83333, test/acc1: 0.70968, test/acc2: 0.71429, test/acc3: 0.83333 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:36:00,259 INFO] 
+
+epoch 70
+[2024-03-07 22:38:03,805 INFO] validating...
+[2024-03-07 22:38:11,465 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:38:11,466 INFO] 19952 iteration, USE_EMA: True, train/sup_loss: 0.03210, train/unsup_loss: 0.00415, train/total_loss: 0.03624, train/util_ratio: 0.87500, train/run_time: 0.39427, lr: 0.01218, train/prefecth_time: 0.01708, eval/loss: 0.39600, eval/top-1-acc: 0.91400, eval/balanced_acc: 0.89246, eval/precision: 0.89053, eval/recall: 0.89246, eval/F1: 0.89105, eval/spec: 0.91457, eval/sens: 0.95349, eval/acc1: 0.89189, eval/acc2: 0.83200, eval/acc3: 0.95349, test/loss: 0.84677, test/top-1-acc: 0.75410, test/balanced_acc: 0.74962, test/precision: 0.79403, test/recall: 0.74962, test/F1: 0.75976, test/spec: 0.77500, test/sens: 0.85714, test/acc1: 0.67742, test/acc2: 0.71429, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:38:11,469 INFO] 
+
+epoch 71
+[2024-03-07 22:40:16,518 INFO] validating...
+[2024-03-07 22:40:24,206 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:40:24,208 INFO] 20233 iteration, USE_EMA: True, train/sup_loss: 0.06692, train/unsup_loss: 0.00493, train/total_loss: 0.07185, train/util_ratio: 0.89583, train/run_time: 0.39275, lr: 0.01193, train/prefecth_time: 0.02093, eval/loss: 0.39207, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.88418, eval/precision: 0.88617, eval/recall: 0.88418, eval/F1: 0.88494, eval/spec: 0.90452, eval/sens: 0.95017, eval/acc1: 0.87838, eval/acc2: 0.82400, eval/acc3: 0.95017, test/loss: 0.85963, test/top-1-acc: 0.77049, test/balanced_acc: 0.76831, test/precision: 0.80649, test/recall: 0.76831, test/F1: 0.77678, test/spec: 0.78750, test/sens: 0.88095, test/acc1: 0.70968, test/acc2: 0.71429, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:40:24,214 INFO] 
+
+epoch 72
+[2024-03-07 22:42:27,343 INFO] validating...
+[2024-03-07 22:42:34,897 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:42:34,899 INFO] 20514 iteration, USE_EMA: True, train/sup_loss: 0.06324, train/unsup_loss: 0.00413, train/total_loss: 0.06736, train/util_ratio: 0.89583, train/run_time: 0.39138, lr: 0.01168, train/prefecth_time: 0.01598, eval/loss: 0.38819, eval/top-1-acc: 0.91600, eval/balanced_acc: 0.89173, eval/precision: 0.89818, eval/recall: 0.89173, eval/F1: 0.89482, eval/spec: 0.90955, eval/sens: 0.95681, eval/acc1: 0.87838, eval/acc2: 0.84000, eval/acc3: 0.95681, test/loss: 0.87074, test/top-1-acc: 0.76230, test/balanced_acc: 0.75869, test/precision: 0.80195, test/recall: 0.75869, test/F1: 0.76638, test/spec: 0.77500, test/sens: 0.90476, test/acc1: 0.67742, test/acc2: 0.69388, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:42:34,901 INFO] 
+
+epoch 73
+[2024-03-07 22:44:38,298 INFO] validating...
+[2024-03-07 22:44:45,765 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:44:45,766 INFO] 20795 iteration, USE_EMA: True, train/sup_loss: 0.03304, train/unsup_loss: 0.00560, train/total_loss: 0.03864, train/util_ratio: 0.87500, train/run_time: 0.39213, lr: 0.01144, train/prefecth_time: 0.01658, eval/loss: 0.39684, eval/top-1-acc: 0.91200, eval/balanced_acc: 0.88144, eval/precision: 0.89477, eval/recall: 0.88144, eval/F1: 0.88753, eval/spec: 0.89447, eval/sens: 0.96346, eval/acc1: 0.86486, eval/acc2: 0.81600, eval/acc3: 0.96346, test/loss: 0.94592, test/top-1-acc: 0.72951, test/balanced_acc: 0.73543, test/precision: 0.78440, test/recall: 0.73543, test/F1: 0.74000, test/spec: 0.70000, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.59184, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:44:45,771 INFO] 
+
+epoch 74
+[2024-03-07 22:46:49,240 INFO] validating...
+[2024-03-07 22:46:57,113 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:46:57,114 INFO] 21076 iteration, USE_EMA: True, train/sup_loss: 0.02744, train/unsup_loss: 0.00218, train/total_loss: 0.02962, train/util_ratio: 0.85417, train/run_time: 0.39433, lr: 0.01118, train/prefecth_time: 0.01565, eval/loss: 0.36515, eval/top-1-acc: 0.91600, eval/balanced_acc: 0.89357, eval/precision: 0.89847, eval/recall: 0.89357, eval/F1: 0.89562, eval/spec: 0.90452, eval/sens: 0.95681, eval/acc1: 0.89189, eval/acc2: 0.83200, eval/acc3: 0.95681, test/loss: 0.90169, test/top-1-acc: 0.74590, test/balanced_acc: 0.74281, test/precision: 0.78678, test/recall: 0.74281, test/F1: 0.75275, test/spec: 0.77500, test/sens: 0.85714, test/acc1: 0.67742, test/acc2: 0.69388, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:46:57,118 INFO] 
+
+epoch 75
+[2024-03-07 22:48:59,954 INFO] validating...
+[2024-03-07 22:49:08,432 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:49:08,433 INFO] 21357 iteration, USE_EMA: True, train/sup_loss: 0.03996, train/unsup_loss: 0.01036, train/total_loss: 0.05031, train/util_ratio: 0.89583, train/run_time: 0.39123, lr: 0.01093, train/prefecth_time: 0.02008, eval/loss: 0.40879, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87361, eval/precision: 0.88398, eval/recall: 0.87361, eval/F1: 0.87844, eval/spec: 0.88945, eval/sens: 0.95349, eval/acc1: 0.85135, eval/acc2: 0.81600, eval/acc3: 0.95349, test/loss: 0.94839, test/top-1-acc: 0.73770, test/balanced_acc: 0.73714, test/precision: 0.78262, test/recall: 0.73714, test/F1: 0.74519, test/spec: 0.75000, test/sens: 0.88095, test/acc1: 0.67742, test/acc2: 0.65306, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:49:08,437 INFO] 
+
+epoch 76
+[2024-03-07 22:51:14,314 INFO] validating...
+[2024-03-07 22:51:22,274 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:51:22,276 INFO] 21638 iteration, USE_EMA: True, train/sup_loss: 0.04838, train/unsup_loss: 0.00741, train/total_loss: 0.05579, train/util_ratio: 0.85417, train/run_time: 0.39451, lr: 0.01067, train/prefecth_time: 0.01892, eval/loss: 0.39725, eval/top-1-acc: 0.90600, eval/balanced_acc: 0.87656, eval/precision: 0.89115, eval/recall: 0.87656, eval/F1: 0.88337, eval/spec: 0.88442, eval/sens: 0.95681, eval/acc1: 0.86486, eval/acc2: 0.80800, eval/acc3: 0.95681, test/loss: 0.90105, test/top-1-acc: 0.75410, test/balanced_acc: 0.75583, test/precision: 0.80020, test/recall: 0.75583, test/F1: 0.76213, test/spec: 0.73750, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:51:22,282 INFO] 
+
+epoch 77
+[2024-03-07 22:53:26,091 INFO] validating...
+[2024-03-07 22:53:33,687 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:53:33,688 INFO] 21919 iteration, USE_EMA: True, train/sup_loss: 0.05143, train/unsup_loss: 0.01982, train/total_loss: 0.07126, train/util_ratio: 0.85417, train/run_time: 0.39275, lr: 0.01041, train/prefecth_time: 0.01702, eval/loss: 0.39544, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87251, eval/precision: 0.88154, eval/recall: 0.87251, eval/F1: 0.87686, eval/spec: 0.89447, eval/sens: 0.95017, eval/acc1: 0.85135, eval/acc2: 0.81600, eval/acc3: 0.95017, test/loss: 0.90517, test/top-1-acc: 0.74590, test/balanced_acc: 0.74281, test/precision: 0.78573, test/recall: 0.74281, test/F1: 0.75289, test/spec: 0.78750, test/sens: 0.85714, test/acc1: 0.67742, test/acc2: 0.69388, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:53:33,693 INFO] 
+
+epoch 78
+[2024-03-07 22:55:38,343 INFO] validating...
+[2024-03-07 22:55:46,550 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:55:46,551 INFO] 22200 iteration, USE_EMA: True, train/sup_loss: 0.03028, train/unsup_loss: 0.00973, train/total_loss: 0.04002, train/util_ratio: 0.91667, train/run_time: 0.39373, lr: 0.01015, train/prefecth_time: 0.01703, eval/loss: 0.40306, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.87721, eval/precision: 0.89366, eval/recall: 0.87721, eval/F1: 0.88429, eval/spec: 0.88442, eval/sens: 0.96678, eval/acc1: 0.86486, eval/acc2: 0.80000, eval/acc3: 0.96678, test/loss: 0.85185, test/top-1-acc: 0.75410, test/balanced_acc: 0.75583, test/precision: 0.80020, test/recall: 0.75583, test/F1: 0.76213, test/spec: 0.73750, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:55:46,555 INFO] 
+
+epoch 79
+[2024-03-07 22:57:49,169 INFO] validating...
+[2024-03-07 22:57:57,937 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 22:57:57,938 INFO] 22481 iteration, USE_EMA: True, train/sup_loss: 0.04166, train/unsup_loss: 0.00690, train/total_loss: 0.04855, train/util_ratio: 0.87500, train/run_time: 0.39093, lr: 0.00989, train/prefecth_time: 0.01473, eval/loss: 0.40593, eval/top-1-acc: 0.91400, eval/balanced_acc: 0.88778, eval/precision: 0.89948, eval/recall: 0.88778, eval/F1: 0.89294, eval/spec: 0.89447, eval/sens: 0.96346, eval/acc1: 0.89189, eval/acc2: 0.80800, eval/acc3: 0.96346, test/loss: 0.95336, test/top-1-acc: 0.75410, test/balanced_acc: 0.75188, test/precision: 0.79848, test/recall: 0.75188, test/F1: 0.75924, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.67742, test/acc2: 0.67347, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 22:57:57,942 INFO] 
+
+epoch 80
+[2024-03-07 23:00:02,543 INFO] validating...
+[2024-03-07 23:00:10,567 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:00:10,568 INFO] 22762 iteration, USE_EMA: True, train/sup_loss: 0.06368, train/unsup_loss: 0.00687, train/total_loss: 0.07055, train/util_ratio: 0.87500, train/run_time: 0.39202, lr: 0.00962, train/prefecth_time: 0.01711, eval/loss: 0.41455, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87251, eval/precision: 0.88319, eval/recall: 0.87251, eval/F1: 0.87769, eval/spec: 0.89447, eval/sens: 0.95017, eval/acc1: 0.85135, eval/acc2: 0.81600, eval/acc3: 0.95017, test/loss: 0.90668, test/top-1-acc: 0.75410, test/balanced_acc: 0.75188, test/precision: 0.79848, test/recall: 0.75188, test/F1: 0.75924, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.67742, test/acc2: 0.67347, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:00:10,573 INFO] 
+
+epoch 81
+[2024-03-07 23:02:15,251 INFO] validating...
+[2024-03-07 23:02:22,581 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:02:22,582 INFO] 23043 iteration, USE_EMA: True, train/sup_loss: 0.05351, train/unsup_loss: 0.00447, train/total_loss: 0.05798, train/util_ratio: 0.87500, train/run_time: 0.39472, lr: 0.00935, train/prefecth_time: 0.01789, eval/loss: 0.37808, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.87767, eval/precision: 0.89222, eval/recall: 0.87767, eval/F1: 0.88446, eval/spec: 0.88945, eval/sens: 0.96013, eval/acc1: 0.86486, eval/acc2: 0.80800, eval/acc3: 0.96013, test/loss: 0.90782, test/top-1-acc: 0.75410, test/balanced_acc: 0.75188, test/precision: 0.79848, test/recall: 0.75188, test/F1: 0.75924, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.67742, test/acc2: 0.67347, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:02:22,586 INFO] 
+
+epoch 82
+[2024-03-07 23:04:26,436 INFO] validating...
+[2024-03-07 23:04:33,802 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:04:33,803 INFO] 23324 iteration, USE_EMA: True, train/sup_loss: 0.01853, train/unsup_loss: 0.00389, train/total_loss: 0.02242, train/util_ratio: 0.87500, train/run_time: 0.39242, lr: 0.00908, train/prefecth_time: 0.02230, eval/loss: 0.40098, eval/top-1-acc: 0.90000, eval/balanced_acc: 0.87324, eval/precision: 0.87509, eval/recall: 0.87324, eval/F1: 0.87393, eval/spec: 0.89950, eval/sens: 0.94684, eval/acc1: 0.86486, eval/acc2: 0.80800, eval/acc3: 0.94684, test/loss: 0.88239, test/top-1-acc: 0.75410, test/balanced_acc: 0.75583, test/precision: 0.79739, test/recall: 0.75583, test/F1: 0.76198, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:04:33,806 INFO] 
+
+epoch 83
+[2024-03-07 23:06:37,682 INFO] validating...
+[2024-03-07 23:06:44,938 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:06:44,939 INFO] 23605 iteration, USE_EMA: True, train/sup_loss: 0.02373, train/unsup_loss: 0.00371, train/total_loss: 0.02744, train/util_ratio: 0.87500, train/run_time: 0.39278, lr: 0.00881, train/prefecth_time: 0.01649, eval/loss: 0.39858, eval/top-1-acc: 0.92000, eval/balanced_acc: 0.89550, eval/precision: 0.90504, eval/recall: 0.89550, eval/F1: 0.90011, eval/spec: 0.90955, eval/sens: 0.96013, eval/acc1: 0.87838, eval/acc2: 0.84800, eval/acc3: 0.96013, test/loss: 0.91744, test/top-1-acc: 0.76230, test/balanced_acc: 0.76150, test/precision: 0.80066, test/recall: 0.76150, test/F1: 0.76963, test/spec: 0.77500, test/sens: 0.88095, test/acc1: 0.70968, test/acc2: 0.69388, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:06:44,974 INFO] 
+
+epoch 84
+[2024-03-07 23:08:48,613 INFO] validating...
+[2024-03-07 23:08:56,021 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:08:56,023 INFO] 23886 iteration, USE_EMA: True, train/sup_loss: 0.09729, train/unsup_loss: 0.06036, train/total_loss: 0.15765, train/util_ratio: 0.87500, train/run_time: 0.39296, lr: 0.00853, train/prefecth_time: 0.02219, eval/loss: 0.40793, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.87583, eval/precision: 0.89055, eval/recall: 0.87583, eval/F1: 0.88284, eval/spec: 0.89447, eval/sens: 0.96013, eval/acc1: 0.85135, eval/acc2: 0.81600, eval/acc3: 0.96013, test/loss: 0.92470, test/top-1-acc: 0.75410, test/balanced_acc: 0.75583, test/precision: 0.80020, test/recall: 0.75583, test/F1: 0.76213, test/spec: 0.73750, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:08:56,027 INFO] 
+
+epoch 85
+[2024-03-07 23:10:59,359 INFO] validating...
+[2024-03-07 23:11:07,099 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:11:07,101 INFO] 24167 iteration, USE_EMA: True, train/sup_loss: 0.02564, train/unsup_loss: 0.00366, train/total_loss: 0.02930, train/util_ratio: 0.91667, train/run_time: 0.39412, lr: 0.00825, train/prefecth_time: 0.01625, eval/loss: 0.41392, eval/top-1-acc: 0.91200, eval/balanced_acc: 0.88144, eval/precision: 0.88977, eval/recall: 0.88144, eval/F1: 0.88470, eval/spec: 0.89950, eval/sens: 0.96346, eval/acc1: 0.86486, eval/acc2: 0.81600, eval/acc3: 0.96346, test/loss: 0.89495, test/top-1-acc: 0.75410, test/balanced_acc: 0.75978, test/precision: 0.79001, test/recall: 0.75978, test/F1: 0.76199, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.74194, test/acc2: 0.63265, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:11:07,104 INFO] 
+
+epoch 86
+[2024-03-07 23:13:11,005 INFO] validating...
+[2024-03-07 23:13:18,764 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:13:18,766 INFO] 24448 iteration, USE_EMA: True, train/sup_loss: 0.00978, train/unsup_loss: 0.00484, train/total_loss: 0.01462, train/util_ratio: 0.83333, train/run_time: 0.39169, lr: 0.00797, train/prefecth_time: 0.01651, eval/loss: 0.38701, eval/top-1-acc: 0.91400, eval/balanced_acc: 0.88906, eval/precision: 0.89827, eval/recall: 0.88906, eval/F1: 0.89339, eval/spec: 0.89950, eval/sens: 0.95681, eval/acc1: 0.87838, eval/acc2: 0.83200, eval/acc3: 0.95681, test/loss: 0.87699, test/top-1-acc: 0.76230, test/balanced_acc: 0.76545, test/precision: 0.80159, test/recall: 0.76545, test/F1: 0.77225, test/spec: 0.76250, test/sens: 0.88095, test/acc1: 0.74194, test/acc2: 0.67347, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:13:18,770 INFO] 
+
+epoch 87
+[2024-03-07 23:15:22,271 INFO] validating...
+[2024-03-07 23:15:29,664 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:15:29,666 INFO] 24729 iteration, USE_EMA: True, train/sup_loss: 0.01243, train/unsup_loss: 0.00445, train/total_loss: 0.01688, train/util_ratio: 0.89583, train/run_time: 0.39012, lr: 0.00769, train/prefecth_time: 0.01932, eval/loss: 0.38184, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.88390, eval/precision: 0.88929, eval/recall: 0.88390, eval/F1: 0.88656, eval/spec: 0.90452, eval/sens: 0.94684, eval/acc1: 0.86486, eval/acc2: 0.84000, eval/acc3: 0.94684, test/loss: 0.90304, test/top-1-acc: 0.75410, test/balanced_acc: 0.75357, test/precision: 0.79291, test/recall: 0.75357, test/F1: 0.76274, test/spec: 0.77500, test/sens: 0.85714, test/acc1: 0.70968, test/acc2: 0.69388, test/acc3: 0.85714 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:15:29,671 INFO] 
+
+epoch 88
+[2024-03-07 23:17:33,914 INFO] validating...
+[2024-03-07 23:17:41,915 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:17:41,916 INFO] 25010 iteration, USE_EMA: True, train/sup_loss: 0.03515, train/unsup_loss: 0.00175, train/total_loss: 0.03690, train/util_ratio: 0.79167, train/run_time: 0.39062, lr: 0.00741, train/prefecth_time: 0.01885, eval/loss: 0.40508, eval/top-1-acc: 0.90800, eval/balanced_acc: 0.87923, eval/precision: 0.88823, eval/recall: 0.87923, eval/F1: 0.88327, eval/spec: 0.89447, eval/sens: 0.95681, eval/acc1: 0.86486, eval/acc2: 0.81600, eval/acc3: 0.95681, test/loss: 0.93723, test/top-1-acc: 0.75410, test/balanced_acc: 0.75978, test/precision: 0.79909, test/recall: 0.75978, test/F1: 0.76446, test/spec: 0.73750, test/sens: 0.90476, test/acc1: 0.74194, test/acc2: 0.63265, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:17:41,919 INFO] 
+
+epoch 89
+[2024-03-07 23:19:45,353 INFO] validating...
+[2024-03-07 23:19:52,704 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:19:52,705 INFO] 25291 iteration, USE_EMA: True, train/sup_loss: 0.06265, train/unsup_loss: 0.00740, train/total_loss: 0.07005, train/util_ratio: 0.89583, train/run_time: 0.38886, lr: 0.00713, train/prefecth_time: 0.01469, eval/loss: 0.38886, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87590, eval/precision: 0.88062, eval/recall: 0.87590, eval/F1: 0.87806, eval/spec: 0.89447, eval/sens: 0.94684, eval/acc1: 0.86486, eval/acc2: 0.81600, eval/acc3: 0.94684, test/loss: 0.94654, test/top-1-acc: 0.74590, test/balanced_acc: 0.74790, test/precision: 0.78918, test/recall: 0.74790, test/F1: 0.75520, test/spec: 0.75000, test/sens: 0.88095, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:19:52,709 INFO] 
+
+epoch 90
+[2024-03-07 23:21:55,909 INFO] validating...
+[2024-03-07 23:22:03,348 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:22:03,350 INFO] 25572 iteration, USE_EMA: True, train/sup_loss: 0.07011, train/unsup_loss: 0.00216, train/total_loss: 0.07226, train/util_ratio: 0.89583, train/run_time: 0.39578, lr: 0.00684, train/prefecth_time: 0.01520, eval/loss: 0.40671, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87545, eval/precision: 0.88564, eval/recall: 0.87545, eval/F1: 0.88019, eval/spec: 0.88945, eval/sens: 0.95349, eval/acc1: 0.86486, eval/acc2: 0.80800, eval/acc3: 0.95349, test/loss: 0.93432, test/top-1-acc: 0.73770, test/balanced_acc: 0.74223, test/precision: 0.78636, test/recall: 0.74223, test/F1: 0.74724, test/spec: 0.72500, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.61224, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:22:03,355 INFO] 
+
+epoch 91
+[2024-03-07 23:24:06,858 INFO] validating...
+[2024-03-07 23:24:14,444 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:24:14,445 INFO] 25853 iteration, USE_EMA: True, train/sup_loss: 0.01706, train/unsup_loss: 0.00385, train/total_loss: 0.02090, train/util_ratio: 0.89583, train/run_time: 0.38876, lr: 0.00655, train/prefecth_time: 0.01664, eval/loss: 0.39198, eval/top-1-acc: 0.91000, eval/balanced_acc: 0.88529, eval/precision: 0.89293, eval/recall: 0.88529, eval/F1: 0.88891, eval/spec: 0.89950, eval/sens: 0.95349, eval/acc1: 0.87838, eval/acc2: 0.82400, eval/acc3: 0.95349, test/loss: 0.93004, test/top-1-acc: 0.73770, test/balanced_acc: 0.74223, test/precision: 0.78636, test/recall: 0.74223, test/F1: 0.74724, test/spec: 0.72500, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.61224, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:24:14,447 INFO] 
+
+epoch 92
+[2024-03-07 23:26:17,451 INFO] validating...
+[2024-03-07 23:26:25,674 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:26:25,675 INFO] 26134 iteration, USE_EMA: True, train/sup_loss: 0.02922, train/unsup_loss: 0.00554, train/total_loss: 0.03476, train/util_ratio: 0.87500, train/run_time: 0.39180, lr: 0.00626, train/prefecth_time: 0.01420, eval/loss: 0.40667, eval/top-1-acc: 0.90400, eval/balanced_acc: 0.87205, eval/precision: 0.88091, eval/recall: 0.87205, eval/F1: 0.87602, eval/spec: 0.89447, eval/sens: 0.95681, eval/acc1: 0.85135, eval/acc2: 0.80800, eval/acc3: 0.95681, test/loss: 0.92927, test/top-1-acc: 0.76230, test/balanced_acc: 0.76264, test/precision: 0.81363, test/recall: 0.76264, test/F1: 0.77182, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.67347, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:26:25,680 INFO] 
+
+epoch 93
+[2024-03-07 23:28:29,533 INFO] validating...
+[2024-03-07 23:28:36,976 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:28:36,977 INFO] 26415 iteration, USE_EMA: True, train/sup_loss: 0.09190, train/unsup_loss: 0.00228, train/total_loss: 0.09418, train/util_ratio: 0.85417, train/run_time: 0.39358, lr: 0.00597, train/prefecth_time: 0.02360, eval/loss: 0.39633, eval/top-1-acc: 0.91400, eval/balanced_acc: 0.88778, eval/precision: 0.89387, eval/recall: 0.88778, eval/F1: 0.89006, eval/spec: 0.90452, eval/sens: 0.96346, eval/acc1: 0.89189, eval/acc2: 0.80800, eval/acc3: 0.96346, test/loss: 0.92127, test/top-1-acc: 0.77049, test/balanced_acc: 0.76944, test/precision: 0.80860, test/recall: 0.76944, test/F1: 0.77649, test/spec: 0.77500, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.69388, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:28:37,011 INFO] 
+
+epoch 94
+[2024-03-07 23:30:40,461 INFO] validating...
+[2024-03-07 23:30:47,865 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:30:47,866 INFO] 26696 iteration, USE_EMA: True, train/sup_loss: 0.02832, train/unsup_loss: 0.00323, train/total_loss: 0.03155, train/util_ratio: 0.87500, train/run_time: 0.39444, lr: 0.00568, train/prefecth_time: 0.01836, eval/loss: 0.39006, eval/top-1-acc: 0.91400, eval/balanced_acc: 0.88750, eval/precision: 0.89800, eval/recall: 0.88750, eval/F1: 0.89239, eval/spec: 0.89950, eval/sens: 0.96013, eval/acc1: 0.87838, eval/acc2: 0.82400, eval/acc3: 0.96013, test/loss: 0.93296, test/top-1-acc: 0.75410, test/balanced_acc: 0.75583, test/precision: 0.79739, test/recall: 0.75583, test/F1: 0.76198, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:30:47,869 INFO] 
+
+epoch 95
+[2024-03-07 23:32:51,329 INFO] validating...
+[2024-03-07 23:33:00,275 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:33:00,276 INFO] 26977 iteration, USE_EMA: True, train/sup_loss: 0.03733, train/unsup_loss: 0.00440, train/total_loss: 0.04174, train/util_ratio: 0.91667, train/run_time: 0.39007, lr: 0.00539, train/prefecth_time: 0.01710, eval/loss: 0.38453, eval/top-1-acc: 0.91200, eval/balanced_acc: 0.88484, eval/precision: 0.89529, eval/recall: 0.88484, eval/F1: 0.88949, eval/spec: 0.89447, eval/sens: 0.96013, eval/acc1: 0.87838, eval/acc2: 0.81600, eval/acc3: 0.96013, test/loss: 0.95663, test/top-1-acc: 0.75410, test/balanced_acc: 0.75583, test/precision: 0.80020, test/recall: 0.75583, test/F1: 0.76213, test/spec: 0.73750, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.65306, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:33:00,281 INFO] 
+
+epoch 96
+[2024-03-07 23:35:03,816 INFO] validating...
+[2024-03-07 23:35:11,783 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:35:11,784 INFO] 27258 iteration, USE_EMA: True, train/sup_loss: 0.04132, train/unsup_loss: 0.00250, train/total_loss: 0.04382, train/util_ratio: 0.89583, train/run_time: 0.39352, lr: 0.00509, train/prefecth_time: 0.01535, eval/loss: 0.40771, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87434, eval/precision: 0.88312, eval/recall: 0.87434, eval/F1: 0.87846, eval/spec: 0.88945, eval/sens: 0.95017, eval/acc1: 0.86486, eval/acc2: 0.80800, eval/acc3: 0.95017, test/loss: 0.98064, test/top-1-acc: 0.74590, test/balanced_acc: 0.74903, test/precision: 0.78520, test/recall: 0.74903, test/F1: 0.75234, test/spec: 0.73750, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.63265, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:35:11,788 INFO] 
+
+epoch 97
+[2024-03-07 23:37:15,366 INFO] validating...
+[2024-03-07 23:37:22,867 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:37:22,868 INFO] 27539 iteration, USE_EMA: True, train/sup_loss: 0.02043, train/unsup_loss: 0.00274, train/total_loss: 0.02316, train/util_ratio: 0.87500, train/run_time: 0.38870, lr: 0.00480, train/prefecth_time: 0.01994, eval/loss: 0.37451, eval/top-1-acc: 0.91400, eval/balanced_acc: 0.89402, eval/precision: 0.89619, eval/recall: 0.89402, eval/F1: 0.89501, eval/spec: 0.90955, eval/sens: 0.95017, eval/acc1: 0.89189, eval/acc2: 0.84000, eval/acc3: 0.95017, test/loss: 0.93953, test/top-1-acc: 0.75410, test/balanced_acc: 0.75470, test/precision: 0.79712, test/recall: 0.75470, test/F1: 0.76252, test/spec: 0.75000, test/sens: 0.88095, test/acc1: 0.70968, test/acc2: 0.67347, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:37:22,872 INFO] 
+
+epoch 98
+[2024-03-07 23:39:26,252 INFO] validating...
+[2024-03-07 23:39:33,999 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:39:34,000 INFO] 27820 iteration, USE_EMA: True, train/sup_loss: 0.06675, train/unsup_loss: 0.00518, train/total_loss: 0.07193, train/util_ratio: 0.89583, train/run_time: 0.38820, lr: 0.00450, train/prefecth_time: 0.01565, eval/loss: 0.40718, eval/top-1-acc: 0.90200, eval/balanced_acc: 0.87618, eval/precision: 0.88627, eval/recall: 0.87618, eval/F1: 0.88066, eval/spec: 0.87940, eval/sens: 0.95017, eval/acc1: 0.87838, eval/acc2: 0.80000, eval/acc3: 0.95017, test/loss: 0.92139, test/top-1-acc: 0.75410, test/balanced_acc: 0.75470, test/precision: 0.79489, test/recall: 0.75470, test/F1: 0.76244, test/spec: 0.76250, test/sens: 0.88095, test/acc1: 0.70968, test/acc2: 0.67347, test/acc3: 0.88095 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:39:34,003 INFO] 
+
+epoch 99
+[2024-03-07 23:41:37,239 INFO] validating...
+[2024-03-07 23:41:45,028 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:41:45,030 INFO] 28101 iteration, USE_EMA: True, train/sup_loss: 0.03381, train/unsup_loss: 0.00806, train/total_loss: 0.04187, train/util_ratio: 0.89583, train/run_time: 0.38902, lr: 0.00420, train/prefecth_time: 0.01416, eval/loss: 0.38349, eval/top-1-acc: 0.91200, eval/balanced_acc: 0.88640, eval/precision: 0.89401, eval/recall: 0.88640, eval/F1: 0.89000, eval/spec: 0.90452, eval/sens: 0.95681, eval/acc1: 0.87838, eval/acc2: 0.82400, eval/acc3: 0.95681, test/loss: 0.92986, test/top-1-acc: 0.76230, test/balanced_acc: 0.76264, test/precision: 0.80552, test/recall: 0.76264, test/F1: 0.76938, test/spec: 0.75000, test/sens: 0.90476, test/acc1: 0.70968, test/acc2: 0.67347, test/acc3: 0.90476 BEST_EVAL_ACC: 0.9200, at 16861 iters BEST_TEST_ACC: 0.7705, at 16861 iters
+[2024-03-07 23:41:48,618 INFO] model saved: saved_models/radformer/selfkd_5k_deit_trial_1_u3/latest_model.pth
+[2024-03-07 23:41:54,177 INFO] Model loaded
+wandb: Waiting for W&B process to finish... (success).
+wandb: - 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: \ 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: | 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: / 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: - 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: \ 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: | 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: / 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: - 0.012 MB of 0.012 MB uploaded (0.000 MB deduped)wandb: 
+wandb: Run history:
+wandb:          eval/F1 ▁▇▇█████████████████████████████████████
+wandb:    eval/best-acc ▁▇▇█████████████████████████████████████
+wandb:   eval/precision ▁▆▇█████▇███████████████████████████████
+wandb:      eval/recall ▁▆▇▇▇███████████████████████████████████
+wandb:   eval/top-1-acc ▁▇▇█████████████████████████████████████
+wandb:               lr ▁▂▅▇██████████▇▇▇▇▇▇▇▇▆▆▆▆▆▅▅▅▅▄▄▄▄▃▃▃▃▂
+wandb:          test/F1 ▁▅▆▆▆▇▇▆▇▇▇▇▇█▇▇█▇▇▇█▇███████▇██████▇███
+wandb:   test/precision ▁▅▆▆▆▇▇▇▇▇▇▇▇█▇▇▇▇▇▇█▇████▇██▇██████▇█▇█
+wandb:      test/recall ▁▅▆▆▆▇▇▆▇▇▇▇▇█▇▇▇▇▇▇█▇███████▇██████▇███
+wandb:   test/top-1-acc ▁▄▅▆▆▇▇▆▇▇▇▆▇█▇▇▇▇▇▇█▇███████▇██████▇█▇█
+wandb:   train/run_time ▂▃▅▅█▅▆█▄▆▅▄▃▆▄▃▃▅█▆▆▇▂▅▆▅▅▄▅▆▃▁▇▅▃▇▂▃▄▂
+wandb:   train/sup_loss █▃▃▂▁▁▁▁▁▁▁▁▁▂▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb: train/total_loss █▃▃▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb: train/unsup_loss █▄▃▃▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb: train/util_ratio ▄▆▁▆▁▂▆▆▂▄▃▁▅▃▄▅▂▃█▁▂▄▃▁▁▆▁▁▄▄▁▆▃▆▆▄▄▃▄▄
+wandb: 
+wandb: Run summary:
+wandb:          eval/F1 0.89
+wandb:    eval/best-acc 0.92
+wandb:   eval/precision 0.89401
+wandb:      eval/recall 0.8864
+wandb:   eval/top-1-acc 0.912
+wandb:               lr 0.0042
+wandb:          test/F1 0.76938
+wandb:   test/precision 0.80552
+wandb:      test/recall 0.76264
+wandb:   test/top-1-acc 0.7623
+wandb:   train/run_time 0.38902
+wandb:   train/sup_loss 0.03381
+wandb: train/total_loss 0.04187
+wandb: train/unsup_loss 0.00806
+wandb: train/util_ratio 0.89583
+wandb: 
+wandb: 🚀 View run selfkd_5k_deit_trial_1_u3 at: https://wandb.ai/raj-ankita92/radformer/runs/anuuubii
+wandb: Synced 6 W&B file(s), 0 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: saved_models/radformer/wandb/selfkd_5k_deit_trial_1_u3/wandb/run-20240307_200110-anuuubii/logs
+[2024-03-07 23:42:08,148 INFO] Model result - eval/best_f1 : 0.9019846106621817
+[2024-03-07 23:42:08,148 INFO] Model result - eval/best_it : 16860
+[2024-03-07 23:42:08,148 INFO] Model result - test/best_acc : 0.7704918032786885
+[2024-03-07 23:42:11,765 INFO] Best model on target dataset (without EMA): acc = 0.7705, agreement = 0.7705, spec = 0.76, sens = 0.90
+[2024-03-07 23:42:15,217 INFO] Best model on target dataset (with EMA): acc = 0.7705, agreement = 0.7705, spec = 0.76, sens = 0.90
+[2024-03-07 23:42:15,217 WARNING] GPU 0 training is FINISHED
