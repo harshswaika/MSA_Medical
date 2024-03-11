@@ -11,52 +11,109 @@ from torch.autograd import Variable
 from PIL import Image
 from torch.autograd import Variable
 
-def testz(model, dataloader, no_roi=True, verbose=True):
+# def testz(model, dataloader, no_roi=True, verbose=True):
     
+#     model.eval()
+#     y_true, y_pred = [], []
+#     for i, (inp, target, fname) in enumerate(dataloader):
+#         with torch.no_grad():
+#             input_var = torch.autograd.Variable(inp.cuda())
+#             target_var = torch.autograd.Variable(target)
+
+#             if len(input_var.shape) == 5:
+#                 # input_var = torch.nn.functional.interpolate(input_var, size=224)
+#                 images = input_var.squeeze(0)
+#                 outputs =  model(images)
+#                 _, pred = torch.max(outputs, dim=1)
+#                 pred_label = torch.max(pred)
+#                 pred_label = pred_label.unsqueeze(0)
+#                 y_true.append([target_var.tolist()][0][0])
+#                 y_pred.append([pred_label.tolist()])
+
+#             else:
+#                 # input_var = torch.nn.functional.interpolate(input_var, size=224)
+#                 outputs = model(input_var)
+#                 _, pred_label = torch.max(outputs, dim=1)
+#                 y_pred.append(pred_label.tolist()) 
+#                 # if soft labels, extract hard label from it
+#                 if len(target_var.shape) > 1:
+#                     target_var = target_var.argmax(axis=1)
+#                 y_true.append(target_var.tolist())
+
+#     y_pred = np.concatenate(y_pred, 0)
+#     y_true = np.concatenate(y_true, 0)
+
+#     # print('y_pred: ', y_pred)
+#     # print('y_true: ', y_true)
+
+#     acc = accuracy_score(y_true, y_pred)
+#     cfm = confusion_matrix(y_true, y_pred)
+#     spec = (cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1])/(np.sum(cfm[0]) + np.sum(cfm[1]))
+#     sens = cfm[2][2]/np.sum(cfm[2])
+#     f1 = f1_score(y_true=y_true, y_pred=y_pred, average='macro')
+
+#     if verbose == True:
+#         print('specificity = {}/{}'.format(cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1], np.sum(cfm[0]) + np.sum(cfm[1])))
+#         print('sensitivity = {}/{}'.format(cfm[2][2], np.sum(cfm[2])))
+    
+#     return acc, f1, spec, sens
+
+
+def classwise_accuracy(true_labels, predicted_labels):
+    # Check if the input arrays have the same length
+    if len(true_labels) != len(predicted_labels):
+        raise ValueError("Input arrays must have the same length.")
+
+    # Create a confusion matrix
+    confusion_matrix = np.zeros((3, 3), dtype=int)
+
+    # Populate the confusion matrix
+    for true_label, predicted_label in zip(true_labels, predicted_labels):
+        confusion_matrix[true_label, predicted_label] += 1
+
+    # Compute classwise accuracy
+    classwise_accuracy = np.zeros(3)
+    for i in range(3):
+        if np.sum(confusion_matrix[i, :]) != 0:
+            classwise_accuracy[i] = confusion_matrix[i, i] / np.sum(confusion_matrix[i, :])
+            # print(np.sum(confusion_matrix[i, :]))
+
+    return classwise_accuracy
+
+def testz(model, dataloader, verbose=True):
     model.eval()
-    y_true, y_pred = [], []
-    for i, (inp, target, fname) in enumerate(dataloader):
-        with torch.no_grad():
-            input_var = torch.autograd.Variable(inp.cuda())
-            target_var = torch.autograd.Variable(target)
 
-            if len(input_var.shape) == 5:
-                # input_var = torch.nn.functional.interpolate(input_var, size=224)
-                images = input_var.squeeze(0)
-                outputs =  model(images)
-                _, pred = torch.max(outputs, dim=1)
-                pred_label = torch.max(pred)
-                pred_label = pred_label.unsqueeze(0)
-                y_true.append([target_var.tolist()][0][0])
-                y_pred.append([pred_label.tolist()])
+    trues = []
+    preds = []
+    # print("Calculating metrics")
+    # import pdb;pdb.set_trace()
+    with torch.no_grad():
+        for data in (dataloader):
+            inputs = data[0].cuda()
+            labels = data[1].cuda()
 
-            else:
-                # input_var = torch.nn.functional.interpolate(input_var, size=224)
-                outputs = model(input_var)
-                _, pred_label = torch.max(outputs, dim=1)
-                y_pred.append(pred_label.tolist()) 
-                # if soft labels, extract hard label from it
-                if len(target_var.shape) > 1:
-                    target_var = target_var.argmax(axis=1)
-                y_true.append(target_var.tolist())
+            scores = model(inputs)
+            _, pred = torch.max(scores.data, 1)
 
-    y_pred = np.concatenate(y_pred, 0)
-    y_true = np.concatenate(y_true, 0)
+            preds.append(pred.cpu())
+            trues.append(labels.cpu())
 
-    # print('y_pred: ', y_pred)
-    # print('y_true: ', y_true)
-
-    acc = accuracy_score(y_true, y_pred)
-    cfm = confusion_matrix(y_true, y_pred)
+        preds = np.concatenate(preds)
+        trues = np.concatenate(trues)
+    # print('max predicted label: ', preds.max())
+    
+    cac = classwise_accuracy(trues, preds)
+    acc = accuracy_score(trues, preds)
+    cfm = confusion_matrix(trues, preds)
     spec = (cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1])/(np.sum(cfm[0]) + np.sum(cfm[1]))
     sens = cfm[2][2]/np.sum(cfm[2])
-    f1 = f1_score(y_true=y_true, y_pred=y_pred, average='macro')
+    f1 = f1_score(y_true=trues, y_pred=preds, average='macro')
 
     if verbose == True:
         print('specificity = {}/{}'.format(cfm[0][0] + cfm[0][1] + cfm[1][0] + cfm[1][1], np.sum(cfm[0]) + np.sum(cfm[1])))
         print('sensitivity = {}/{}'.format(cfm[2][2], np.sum(cfm[2])))
     
-    return acc, f1, spec, sens
+    return acc, f1, spec, sens, cac
 
 
 def agree(model1, model2, test_loader):
@@ -65,7 +122,9 @@ def agree(model1, model2, test_loader):
     model1.eval()
     model2.eval()
     with torch.no_grad():
-        for images, targets, _ in test_loader:
+        for data in test_loader:
+            images = data[0]
+            targets = data[1]
             images, targets = images.float().cuda(), targets.cuda()
             if len(images.shape) == 5:
                 images = images.squeeze(0)
@@ -150,7 +209,7 @@ def train_with_validation(model, criterion, optimizers, scheduler, dataloaders, 
         # print(f'epoch {epoch}, loss = {t_loss}')
 
         if (epoch+1)%2==0:
-            val_acc, val_f1, spec, sens = testz(model, dataloaders['val'], verbose=False)
+            val_acc, val_f1, spec, sens, cac = testz(model, dataloaders['val'], verbose=False)
             # test_acc, test_f1 = testz(model, dataloaders['test'])
 
             if best_f1 is None or val_f1 > best_f1 :
@@ -177,24 +236,24 @@ def train_with_validation(model, criterion, optimizers, scheduler, dataloaders, 
 
         # Display progress
         if (epoch+1) % display_every == 0:
-            train_acc, train_f1, spec1, sens1 = testz(model, dataloaders['train'], verbose=False)
-            test_acc, test_f1, spec2, sens2 = testz(model, dataloaders['test'], verbose=False)
-            print(f"Epoch {epoch+1}: Train acc/f1 = {train_acc:.4f} / {train_f1:.4f} / {spec1:.4f} / {sens1:.4f} \n\
-                Val acc/f1/spec/sens = {val_acc:.4f} / {val_f1:.4f} / {spec:.4f} / {sens:.4f}\n\
-                Test acc/f1/spec/sens = {test_acc:.4f} / {test_f1:.4f} / {spec2:.4f} / {sens2:.4f}")
+            train_acc, train_f1, spec1, sens1, cac1 = testz(model, dataloaders['train'], verbose=False)
+            test_acc, test_f1, spec2, sens2, cac2 = testz(model, dataloaders['test'], verbose=False)
+            print(f"Epoch {epoch+1}: Train acc/f1 = {train_acc:.4f} / {train_f1:.4f} / {spec1:.4f} / {sens1:.4f}/ {cac1} \n\
+                Val acc/f1/spec/sens = {val_acc:.4f} / {val_f1:.4f} / {spec:.4f} / {sens:.4f}/ {cac}\n\
+                Test acc/f1/spec/sens = {test_acc:.4f} / {test_f1:.4f} / {spec2:.4f} / {sens2:.4f}/ {cac2}")
 
         if exit:
             print(f"Number of epochs processed: {epoch+1} in cycle {cycle+1}") 
             break
 
-    train_acc, train_f1, spec1, sens1 = testz(model, dataloaders['train'])
-    val_acc, val_f1, spec2, sens2 = testz(model, dataloaders['val'])
-    test_acc, test_f1, spec3, sens3 = testz(model, dataloaders['test'])
+    train_acc, train_f1, spec1, sens1, cac1 = testz(model, dataloaders['train'])
+    val_acc, val_f1, spec2, sens2, cac2 = testz(model, dataloaders['val'])
+    test_acc, test_f1, spec3, sens3, cac3 = testz(model, dataloaders['test'])
 
     print(f"Trial {trial+1}, Cycle {cycle+1}")
-    print(f"Train acc/f1/spec/sens = {train_acc:.4f} / {train_f1:.4f} / {spec1:.4f} / {sens1:.4f}")
-    print(f"Val acc/f1/spec/sens = {val_acc:.4f} / {val_f1:.4f} / {spec2:.4f} / {sens2:.4f}")
-    print(f"Test acc/f1/spec/sens = {test_acc:.4f} / {test_f1:.4f} / {spec3:.4f} / {sens3:.4f}")
+    print(f"Train acc/f1/spec/sens = {train_acc:.4f} / {train_f1:.4f} / {spec1:.4f} / {sens1:.4f}/ {cac1}")
+    print(f"Val acc/f1/spec/sens = {val_acc:.4f} / {val_f1:.4f} / {spec2:.4f} / {sens2:.4f}/ {cac2}")
+    print(f"Test acc/f1/spec/sens = {test_acc:.4f} / {test_f1:.4f} / {spec3:.4f} / {sens3:.4f}/ {cac3}")
 
     # Save the last model
     torch.save({'trial': trial + 1,

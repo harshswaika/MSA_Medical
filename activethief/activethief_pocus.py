@@ -26,9 +26,9 @@ from covid_dataset import *
 
 import utils
 # import utilsdfal
-from train_utils_butterfly import testz1, train_with_validation, train_with_kd, agree, dist
+from train_utils_gbc import testz, train_with_validation, train_with_kd, agree, dist
 from conf import cfg, load_cfg_fom_args
-from loader_utils_butterfly import *
+from loader_utils import *
 
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False

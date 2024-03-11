@@ -12,11 +12,9 @@ import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torch.optim.lr_scheduler as lr_scheduler
 
-<<<<<<< HEAD
+# sys.path.append('/home/harsh/scratch/MSA_Medical')
+# sys.path.append('/home/deepankar/scratch/MSA_Medical')
 sys.path.append('/home/ankita/scratch/MSA_Medical')
-=======
-sys.path.append('/home/deepankar/scratch/MSA_Medical')
->>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 from GBCNet.dataloader import GbDataset, GbCropDataset, GbRawDataset
 # from gb_dataloader import GbDataset, GbRawDataset, GbCropDataset
 import torchvision.transforms as T
@@ -47,10 +45,10 @@ if __name__ == "__main__":
     target_model = load_victim_model(cfg.VICTIM.ARCH, cfg.VICTIM.PATH)
 
     # Evaluate target model on target dataset: sanity check
-    acc, f1, spec, sens = testz(target_model, test_loader, no_roi=False)
+    acc, f1, spec, sens, cac = testz(target_model, test_loader)
     print(f"\nTarget model acc = {acc}")
-    print('Val-Acc: {:.4f} Val-Spec: {:.4f} Val-Sens: {:.4f}'\
-            .format(acc, spec, sens))
+    print('Val-Acc: {:.4f} Val-Spec: {:.4f} Val-Sens: {:.4f} Class Acc: {}'\
+            .format(acc, spec, sens, cac))
     
     # Begin trials
     li = []
@@ -97,20 +95,24 @@ if __name__ == "__main__":
             label_dist = dist(labeled_set, dataloaders['train'])
             print(label_dist)
 
+            print('Test set distribution: ')
+            label_dist = dist(testset, dataloaders['test'])
+            print(label_dist)
+
             # Load thief model            
             thief_model = load_thief_model(cfg, cfg.THIEF.ARCH, n_classes, cfg.ACTIVE.PRETRAINED_PATH)
 
             print("Thief model initialized successfully")
 
             # Compute metrics on target dataset
-            acc, f1, spec, sens = testz(thief_model, test_loader, no_roi=False)
+            acc, f1, spec, sens, cac = testz(thief_model, test_loader)
             agr = agree(target_model, thief_model, test_loader)
-            print(f'Initial model on target dataset: acc = {acc:.4f}, agreement = {agr:.4f}, f1 = {f1:.4f}, spec = {spec:.4f}, sens = {sens:.4f}')
+            print(f'Initial model on target dataset: acc = {acc:.4f}, agreement = {agr:.4f}, f1 = {f1:.4f}, spec = {spec:.4f}, sens = {sens:.4f} Class Acc: {cac}')
             
             # Compute metrics on validation dataset
-            acc, f1, spec, sens = testz(thief_model, dataloaders['val'])
+            acc, f1, spec, sens, cac = testz(thief_model, dataloaders['val'])
             agr = agree(target_model, thief_model, dataloaders['val'])
-            print(f'Initial model on validation dataset: acc = {acc:.4f}, agreement = {agr:.4f}, f1 = {f1:.4f}, spec = {spec:.4f}, sens = {sens:.4f}')
+            print(f'Initial model on validation dataset: acc = {acc:.4f}, agreement = {agr:.4f}, f1 = {f1:.4f}, spec = {spec:.4f}, sens = {sens:.4f} Class Acc: {cac}')
 
             # Set up thief optimizer, scheduler
             criterion = nn.CrossEntropyLoss(reduction='none')
@@ -143,9 +145,9 @@ if __name__ == "__main__":
 
 
             # Compute accuracy and agreement on target dataset
-            acc,f1, spec, sens = testz(thief_model, test_loader, no_roi=False)
+            acc,f1, spec, sens, cac = testz(thief_model, test_loader)
             agr = agree(target_model, thief_model, test_loader)
-            print('Acc, agreement for latest model: ', acc, agr)
+            print('Acc, agreement for latest model: ', acc, agr, cac)
 
             # Load checkpoint for best model
             print("Load best checkpoint for thief model")
@@ -154,12 +156,12 @@ if __name__ == "__main__":
             thief_model.load_state_dict(best_state)
 
             # Compute accuracy and agreement on target dataset
-            acc, f1, spec, sens = testz(thief_model, test_loader, no_roi=False)
+            acc, f1, spec, sens, cac = testz(thief_model, test_loader)
             agr = agree(target_model, thief_model, test_loader)
-            print('Acc, agreement for best model: ', acc, agr)
+            print('Acc, agreement for best model: ', acc, agr, cac)
             
-            print('Trial {}/{} || Cycle {}/{} || Label set size {} || Test acc {:.4f} || Test agreement {:.4f} || Spec {:.4f} || Sens {:.4f}'.format(trial, 
-                                                cfg.RNG_SEED, cycle+1, cfg.ACTIVE.CYCLES, len(labeled_set), acc, agr, spec, sens))
+            print('Trial {}/{} || Cycle {}/{} || Label set size {} || Test acc {:.4f} || Test agreement {:.4f} || Spec {:.4f} || Sens {:.4f} Class Acc: {}'.format(trial, 
+                                                cfg.RNG_SEED, cycle+1, cfg.ACTIVE.CYCLES, len(labeled_set), acc, agr, spec, sens, cac))
             print("*"*100, "\n")
 
             # Select labeled subset for next cycle            
@@ -267,12 +269,13 @@ if __name__ == "__main__":
 
         # Final stats at the end of a trial
         trial_results = {}
-        acc, f1, spec, sens = testz(thief_model, test_loader, no_roi=False)
+        acc, f1, spec, sens, cac = testz(thief_model, test_loader)
         f = agree(target_model, thief_model, test_loader)
         trial_results['acc'] = acc
         trial_results['agr'] = f
         trial_results['spec'] = spec
         trial_results['sens'] =  sens
+        trial_results['Class Acc'] =  cac
         trial_results['label dist'] = dist(labeled_set, dataloaders['train']) #dist(val_set, val_loader) 
         results_arr.append(trial_results)
         li.append(f)

@@ -116,7 +116,6 @@ def agree(model1, model2, test_loader):
     model1.eval()
     model2.eval()
     with torch.no_grad():
-        # for images, targets, _ in test_loader:
         for data in test_loader:
             images = data[0]
             targets = data[1]

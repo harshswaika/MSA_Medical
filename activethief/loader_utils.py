@@ -9,16 +9,19 @@ import torch.utils
 from torch.utils.data import Dataset, DataLoader, Subset
 import torchvision.transforms as transforms
 from torchvision.models import resnet34, resnet50, resnet152, resnet18, resnet101,vit_b_16
-<<<<<<< HEAD
 from inception import inception_v3
-=======
->>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 from timm.models.vision_transformer import VisionTransformer
+
+# SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 sys.path.append('GBCNet')
 from GBCNet.dataloader import GbDataset, GbRawDataset, GbCropDataset
 from GBCNet.models import Resnet50 as Resnet50_GC
 from GBCNet.models import GbcNet
+
+from butterfly_dataset import ButterflyDataset
+from covid_dataset import *
 
 sys.path.append('Radformer')
 from RadFormer.models import RadFormer
@@ -92,6 +95,8 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
     
     if arch == 'resnet34':
         thief_model = resnet34(num_classes=n_classes)
+    elif arch == 'resnet18':
+        thief_model = resnet18(num_classes=n_classes)
     elif arch == 'resnet50':
         thief_model = resnet50(num_classes=n_classes)
     elif arch == 'radformer':
@@ -109,12 +114,9 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
 
     elif arch == 'vit':
         thief_model = vit_b_16(num_classes=n_classes)
-<<<<<<< HEAD
     
     elif arch == 'inception_v3':
         thief_model = inception_v3(num_classes=n_classes)
-=======
->>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
 
     # elif arch == 'resnet50_usucl':
         # thief_model.net = resnet50(num_classes=3) 
@@ -128,8 +130,6 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
     if load_pretrained == True:
         thief_state = thief_model.state_dict()
         print('thief state: ', print(thief_state.keys()))
-
-        
         if 'state_dict' in pretrained_state:
             pretrained_state = pretrained_state['state_dict']
         pretrained_state = { k:v for k,v in pretrained_state.items() if k in thief_state and v.size() == thief_state[k].size() }
@@ -193,23 +193,24 @@ def load_victim_dataset(cfg, dataset_name):
                                     transforms.ToTensor(),
                                     normalize,
                                 ]))
-
+        test_loader = DataLoader(dataset=testset, batch_size=32, 
+                                shuffle=False, num_workers=4)
 
     elif dataset_name == 'pocus':
         from covid_dataset import COVIDDataset
+        valid_transform = transforms.Compose([
+                            transforms.Resize((224, 224)),
+                            transforms.ToTensor(),
+                            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.25,0.25,0.25])
+                            ])
 
         img_dir = os.path.join(cfg.VICTIM.DATA_ROOT, 'covid_data1.pkl')
         testset = COVIDDataset(data_dir=img_dir, 
                                train=False, 
-                               transform=transforms.Compose([
-                                    transforms.Resize(224),
-                                    transforms.CenterCrop(224),
-                                    transforms.ToTensor(),
-                                    normalize,
-                                ]))
+                               transform=valid_transform)
 
-    test_loader = DataLoader(dataset=testset, batch_size=1, 
-                                shuffle=False, num_workers=0)
+        test_loader = DataLoader(dataset=testset, batch_size=32, 
+                                    shuffle=False, num_workers=4)
 
     return testset, test_loader, n_classes
 
@@ -232,6 +233,24 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
         thief_data = dataset(cfg, target_model, transform=teacher_transform)
         thief_data_aug = dataset(cfg, target_model, transform=student_transform)
 
+    elif dataset_name == 'butterfly':
+        normalize = transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.25,0.25,0.25])
+        
+        transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                        transforms.ToTensor(), 
+                                        normalize
+                                        ])
+        transforms2= transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                        transforms.RandomHorizontalFlip(),
+                                        # transforms.RandAugment(),
+                                        transforms.ToTensor(), 
+                                        normalize
+                                        ])
+        
+        thief_data = ButterflyDataset(data_root, transforms1)
+        thief_data_aug = ButterflyDataset(data_root, transforms2)
+
+
     elif 'GBUSV' in dataset_name:
         from gbusv_dataset import GbVideoDataset
 
@@ -244,10 +263,6 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
                 mean=[0.485, 0.456, 0.406],
                 std=[0.229, 0.224, 0.225]
                 )
-            # transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH)),
-                                            # transforms.CenterCrop(224),
-                                            # transforms.ToTensor(), 
-                                            # normalize])
             transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
                                             transforms.ToTensor(), 
                                             normalize])
@@ -259,15 +274,10 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
                                             ])
         
         if dataset_name == 'GBUSV':
-<<<<<<< HEAD
             thief_data = GbVideoDataset(data_root, transforms1)
                                         # pickle_root='/home/deepankar/scratch/MSA_Medical/')
             thief_data_aug = GbVideoDataset(data_root, transforms2)
                                             # pickle_root='/home/deepankar/scratch/MSA_Medical/')
-=======
-            thief_data = GbVideoDataset(data_root, transforms1,pickle_root='/home/deepankar/scratch/MSA_Medical/')
-            thief_data_aug = GbVideoDataset(data_root, transforms2,pickle_root='/home/deepankar/scratch/MSA_Medical/')
->>>>>>> ba1060430d61521041e28b47a409dc50ce80da3d
            
         elif dataset_name == 'GBUSV_benign':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='benign',pickle_root='/home/deepankar/scratch/MSA_Medical/')
@@ -276,8 +286,25 @@ def load_thief_dataset(cfg, dataset_name, data_root, target_model):
         elif dataset_name == 'GBUSV_malignant':
             thief_data = GbVideoDataset(data_root, transforms1, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
             thief_data_aug = GbVideoDataset(data_root, transforms2, data_split='malignant',pickle_root='/home/deepankar/scratch/MSA_Medical/')
-           
 
+    elif dataset_name == 'covidx':
+        from covidx_dataset import COVIDxDataset
+
+        normalize = transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.25,0.25,0.25])
+        
+        transforms1 = transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                        transforms.ToTensor(), 
+                                        normalize
+                                        ])
+        transforms2= transforms.Compose([transforms.Resize((cfg.VICTIM.WIDTH, cfg.VICTIM.WIDTH)),
+                                        transforms.RandomHorizontalFlip(),
+                                        # transforms.RandAugment(),
+                                        transforms.ToTensor(), 
+                                        normalize
+                                        ])
+        
+        thief_data = COVIDxDataset(data_root, transforms1)
+        thief_data_aug = COVIDxDataset(data_root, transforms2)
         
     else:
         raise AssertionError('invalid thief dataset')
@@ -297,7 +324,6 @@ def create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlab
     with torch.no_grad():
         for d, l0, ind0 in tqdm(train_loader):
             d = d.cuda()
-            # d = torch.nn.functional.interpolate(d, size=224)
             l = target_model(d).argmax(axis=1, keepdim=False)
             l = l.detach().cpu().tolist()
             for ii, jj in enumerate(ind0):
@@ -317,7 +343,6 @@ def create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlab
     with torch.no_grad():
         for d,l,ind0 in tqdm(val_loader):
             d = d.cuda()
-            # d = torch.nn.functional.interpolate(d, size=224)
             l = target_model(d).argmax(axis=1, keepdim=False)
             l = l.detach().cpu().tolist()
             # print(l)
