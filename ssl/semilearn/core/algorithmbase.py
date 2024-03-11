@@ -384,7 +384,7 @@ class AlgorithmBase:
                 num_batch = y.shape[0]
                 total_num += num_batch
 
-                logits = self.model(x)[out_key]
+                logits = self.model(x)
                 
                 loss = F.cross_entropy(logits, y, reduction='mean', ignore_index=-1)
                 y_true.extend(y.cpu().tolist())
@@ -444,7 +444,8 @@ class AlgorithmBase:
                 trues_unmasked.extend(preds_victim.tolist())
 
                 # anchor model's pred
-                logits_anchor = self.anchor_model(x)[out_key]
+                logits_anchor = self.anchor_model(x)
+
                 preds_anchor = logits_anchor.argmax(axis=1, keepdim=False).detach().cpu()
                 # unmasked samples
                 pl_anchor_unmasked.extend(preds_anchor.tolist())
@@ -456,7 +457,7 @@ class AlgorithmBase:
                 num_labels_anchor += len(pl_anchor)
 
                 # student model's pred
-                logits_student = self.model(x)[out_key]
+                logits_student = self.model(x)
                 preds_student = logits_student.argmax(axis=1, keepdim=False).detach().cpu()
                 # unmasked samples
                 pl_student_unmasked.extend(preds_student.tolist())

@@ -1,0 +1,47 @@
+[2024-03-06 16:37:52,870 INFO] Use GPU: None for training
+[2024-03-06 16:37:52,870 INFO] 
+
+[2024-03-06 16:37:53,943 INFO] Total params: 109.04M
+[2024-03-06 16:38:04,352 INFO] acc: 0.90
+[2024-03-06 16:38:04,362 INFO] Victim model accuracy = 0.9016, spec = 0.90, sens = 0.93
+[2024-03-06 16:38:04,362 INFO] Loading thief dataset ...
+[2024-03-06 16:38:04,368 INFO] 
+Initializing thief model ...
+
+
+Loaded supervised labeled set of length  900
+Labeled set expanded to length  3600 , unique indices  900
+dataset root /home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared
+Num of videos 64 frames 15800
+15800
+15800
+Num of videos 64 frames 15800
+  0%|          | 0/29 [00:00<?, ?it/s]  0%|          | 0/29 [00:03<?, ?it/s]
+Traceback (most recent call last):
+  File "train_proposed.py", line 465, in <module>
+    main(args)
+  File "train_proposed.py", line 233, in main
+    main_worker(args.gpu, ngpus_per_node, args)
+  File "train_proposed.py", line 328, in main_worker
+    model = get_algorithm(args, _net_builder, tb_log, logger,  
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/algorithms/__init__.py", line 9, in get_algorithm
+    alg = ALGORITHMS[args.algorithm]( # name2alg[args.algorithm](
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/algorithms/selfkd/selfkd.py", line 38, in __init__
+    super().__init__(args, net_builder, tb_log, logger,
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/core/algorithmbase.py", line 93, in __init__
+    self.dataset_dict = self.set_dataset()
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/core/algorithmbase.py", line 132, in set_dataset
+    dataset_dict = get_dataset(self.args, self.algorithm, self.args.dataset, self.args.num_labels, self.args.num_classes, 
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/core/utils/build.py", line 123, in get_dataset
+    lb_dset, ulb_dset, eval_dset = get_gbvideodataset(args, algorithm, victim_model, num_labels, num_classes, 
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/datasets/medical_datasets/gbusv.py", line 106, in get_gbvideodataset
+    thief_data_lb = GBVideoDataset(alg, dataset_root, labeled_set, target_model,  
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/datasets/medical_datasets/gbusv.py", line 148, in __init__
+    l = victim_model(d).argmax(axis=1, keepdim=False)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/ankita/scratch/MSA_Medical/RadFormer/models/radformer.py", line 80, in forward
+    local_inp, local_im, box = self.attention(x, g_attn)
+  File "/home/ankita/scratch/MSA_Medical/RadFormer/models/radformer.py", line 157, in attention
+    inp = x[i].cpu().numpy().reshape(self.size_upsample[0], self.size_upsample[1], self.depth)
+ValueError: cannot reshape array of size 268203 into shape (224,224,3)

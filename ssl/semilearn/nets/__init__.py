@@ -15,3 +15,4 @@ from .gbcnet import GbcNet
 from .radformer.radformer import radformer
 from .deit import deit_base_patch16_224
 from .visiontransformer import vit_b_16
+from torchvision.models import inception_v3

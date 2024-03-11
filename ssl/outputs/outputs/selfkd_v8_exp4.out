@@ -1,0 +1,41 @@
+[2024-03-01 09:22:23,586 INFO] Use GPU: None for training
+[2024-03-01 09:22:23,587 INFO] 
+
+[2024-03-01 09:22:24,508 INFO] Total params: 109.04M
+[2024-03-01 09:22:31,164 INFO] acc: 0.90
+[2024-03-01 09:22:31,174 INFO] Victim model accuracy = 0.9016, spec = 0.90, sens = 0.93
+[2024-03-01 09:22:31,174 INFO] Loading thief dataset ...
+[2024-03-01 09:22:31,175 INFO] 
+Initializing thief model ...
+
+
+Loaded supervised labeled set of length  900
+Labeled set expanded to length  900 , unique indices  900
+dataset root /home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared
+Num of videos 64 frames 15800
+15800
+15800
+Num of videos 64 frames 15800
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:06<00:43,  6.14s/it] 25%|██▌       | 2/8 [00:07<00:20,  3.40s/it] 38%|███▊      | 3/8 [00:09<00:12,  2.51s/it] 50%|█████     | 4/8 [00:10<00:08,  2.07s/it] 62%|██████▎   | 5/8 [00:11<00:05,  1.84s/it] 75%|███████▌  | 6/8 [00:13<00:03,  1.75s/it] 88%|████████▊ | 7/8 [00:14<00:01,  1.64s/it]100%|██████████| 8/8 [00:16<00:00,  1.61s/it]100%|██████████| 8/8 [00:16<00:00,  2.07s/it]
+Num of videos 64 frames 15800
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:04<00:00,  4.41s/it]100%|██████████| 1/1 [00:04<00:00,  4.53s/it]
+[2024-03-01 09:22:52,342 INFO] unlabeled data number: 15800, labeled data number 900
+[2024-03-01 09:22:52,342 INFO] Create train and test data loaders
+[2024-03-01 09:22:52,342 INFO] [!] data loader keys: dict_keys(['train_lb', 'train_ulb', 'eval', 'test'])
+Num of videos 64 frames 15800
+Traceback (most recent call last):
+  File "train_proposed.py", line 464, in <module>
+    main(args)
+  File "train_proposed.py", line 232, in main
+    main_worker(args.gpu, ngpus_per_node, args)
+  File "train_proposed.py", line 327, in main_worker
+    model = get_algorithm(args, _net_builder, tb_log, logger,  
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/algorithms/__init__.py", line 9, in get_algorithm
+    alg = ALGORITHMS[args.algorithm]( # name2alg[args.algorithm](
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/algorithms/selfkd/selfkd.py", line 38, in __init__
+    super().__init__(args, net_builder, tb_log, logger,
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/core/algorithmbase.py", line 99, in __init__
+    self.model = self.set_model()
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/core/algorithmbase.py", line 225, in set_model
+    model = self.net_builder(num_classes=self.num_classes, pretrained=False)
+TypeError: 'module' object is not callable

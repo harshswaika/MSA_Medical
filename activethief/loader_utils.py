@@ -106,6 +106,9 @@ def load_thief_model(cfg, arch, n_classes, pretrained_path, load_pretrained=True
 
     elif arch == 'vit':
         thief_model = vit_b_16(num_classes=n_classes)
+    elif arch == 'inception_v3':
+        from torchvision.models import inception_v3
+        thief_model = inception_v3(num_classes=n_classes)
 
     # elif arch == 'resnet50_usucl':
         # thief_model.net = resnet50(num_classes=3) 
@@ -267,6 +270,7 @@ def create_thief_loaders(thief_data, thief_data_aug, labeled_set, val_set, unlab
     with torch.no_grad():
         for d, l0, ind0 in tqdm(train_loader):
             d = d.cuda()
+            # print(d.size())
             l = target_model(d).argmax(axis=1, keepdim=False)
             l = l.detach().cpu().tolist()
             for ii, jj in enumerate(ind0):

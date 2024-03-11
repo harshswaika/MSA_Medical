@@ -55,17 +55,20 @@ def get_gbvideodataset(args, alg, target_model, num_labels, num_classes,
         transforms1 = transforms.Compose([transforms.Resize((img_size, img_size)),
                                         transforms.ToTensor(), 
                                         normalize])
-        # weak_transform = transforms.Compose([transforms.Resize((img_size, img_size)),
-        #                                 transforms.ToTensor(), 
-        #                                 normalize])
-        weak_transform = transforms.Compose([
-                                transforms.Resize((int(math.floor(img_size / crop_ratio)), int(math.floor(img_size / crop_ratio)))),
-                                transforms.RandomCrop((img_size, img_size)),
-                                transforms.ColorJitter(0.1, 0.1, 0.1, 0),                                
-                                transforms.RandomHorizontalFlip(),
-                                transforms.ToTensor(),
-                                normalize
-                            ])
+        # weak_transform = transforms.Compose([
+        #                         transforms.Resize((int(math.floor(img_size / crop_ratio)), int(math.floor(img_size / crop_ratio)))),
+        #                         transforms.RandomCrop((img_size, img_size)),
+        #                         transforms.ColorJitter(0.1, 0.1, 0.1, 0),                                
+        #                         transforms.RandomHorizontalFlip(),
+        #                         transforms.ToTensor(),
+        #                         normalize
+        #                     ])
+        weak_transform = transforms.Compose([transforms.Resize((299,299)),
+                                            transforms.RandomHorizontalFlip(),
+                                            transforms.RandAugment(),
+                                            transforms.ToTensor(),
+                                            normalize
+                                            ])
     
     # weak_transform = transforms1
     val_transform = transforms1

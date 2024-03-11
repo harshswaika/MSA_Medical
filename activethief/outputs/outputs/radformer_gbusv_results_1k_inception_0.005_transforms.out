@@ -1,0 +1,104 @@
+[24/03/05 14:11:18] [conf.py:  298]: PyTorch Version: torch=1.11.0, cuda=11.3, cudnn=8200
+[24/03/05 14:11:18] [conf.py:  300]: ACTIVE:
+  ADDENDUM: 0
+  ALPHA: 0.2
+  AUGMENT: None
+  BETA: 1.0
+  BUDGET: 1000
+  CUTMIX_PROB: 0.0
+  CYCLES: 1
+  INITIAL: 900
+  LA: False
+  METHOD: random
+  PRETRAINED_PATH: /home/deepankar/scratch/MSA_Medical/activethief/pretrained/inception_v3_google-0cc3c7bd.pth
+  TEMP: 1.0
+  TRO: 1.0
+  USE_PRETRAINED: True
+  VAL: 100
+AM:
+  SGR: 1000
+  THRESHOLD: 0.5
+CUDNN_BENCHMARK: True
+DS_SEED: 123
+EDM:
+  HASH: /home/harsh_s/scratch/msacopy/exp/hash/alpha.pt
+  NUM_MODELS: 5
+  PATH1: /home/harsh_s/scratch/msacopy/exp/cifar10/alpha/T0.pt
+  PATH2: /home/harsh_s/scratch/msacopy/exp/cifar10/alpha/T1.pt
+  PATH3: /home/harsh_s/scratch/msacopy/exp/cifar10/alpha/T2.pt
+  PATH4: /home/harsh_s/scratch/msacopy/exp/cifar10/alpha/T3.pt
+  PATH5: /home/harsh_s/scratch/msacopy/exp/cifar10/alpha/T4.pt
+GR:
+  EPSILON: 0.1
+  SUR_PATH: /home/harsh_s/scratch/msacopy/GRAD2/batch_training/outputs/trained_models/imagenet_cifar10_to_cifar10_surrogate_10epochs.pt
+LOG_DEST: radformer_inception_gbusv_240305_141117.txt
+LOG_TIME: 240305_141117
+METHOD_NAME: v1
+OUT_DIR: /home/deepankar/mnt/vision1_outputs/t/
+PL:
+  CLASS_BLNC: 10
+  ITERATIONS: 20
+  KAPPA_N: 0.005
+  KAPPA_P: 0.05
+  NO_PROGRESS: False
+  NO_UNCERTAINTY: False
+  TAU_N: 0.05
+  TAU_P: 0.7
+  TEMP_NL: 2.0
+RNG_SEED: 5
+SAVE_DIR: /home/deepankar/mnt/vision1_outputs/t//gbusg_radformer/GBUSV_inception_v3/SGD/1000_val100/random_v1
+THIEF:
+  ARCH: inception_v3
+  DATASET: GBUSV
+  DATA_ROOT: /home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared
+  HARD_LABELS: True
+  NUM_TRAIN: 1281167
+  SUBSET: 128116
+TRAIN:
+  BATCH: 16
+  EPOCH: 100
+  GAMMA: 0.1
+  LR: 0.005
+  MILESTONES: [20, 40, 60, 80]
+  MOMENTUM: 0.9
+  OPTIMIZER: SGD
+  WDECAY: 0.0005
+VICTIM:
+  ARCH: radformer
+  DATASET: gbusg
+  DATA_ROOT: /home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBCU-Shared
+  HEIGHT: 299
+  PATH: /home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/radformer/radformer.pkl
+  PATHIN: /home/harsh_s/scratch/msacopy/ckpts/cifar10-resnet32-inaccurate/checkpoint.pth.tar
+  WIDTH: 299
+Loaded target dataset of size 122 with 3 classes
+target model keys:  695
+checkpoint keys:  695
+specificity = 72/80
+sensitivity = 39/42
+
+Target model acc = 0.9016393442622951
+Val-Acc: 0.9016 Val-Spec: 0.9000 Val-Sens: 0.9286
+/home/deepankar/scratch/MSA_Medical/all_names.pkl
+Num of videos 64 frames 15800
+/home/deepankar/scratch/MSA_Medical/all_names.pkl
+Num of videos 64 frames 15800
+replacing labeled set labels with victim labels
+  0%|          | 0/57 [00:00<?, ?it/s]  0%|          | 0/57 [00:00<?, ?it/s]
+torch.Size([16, 3, 299, 299])
+Traceback (most recent call last):
+  File "activethief_gbc.py", line 76, in <module>
+    train_loader, val_loader, unlabeled_loader, list1 = create_thief_loaders(thief_data, thief_data_aug, labeled_set, 
+  File "/nvme/scratch/deepankar/MSA_Medical/activethief/loader_utils.py", line 274, in create_thief_loaders
+    l = target_model(d).argmax(axis=1, keepdim=False)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/nvme/scratch/deepankar/MSA_Medical/activethief/loader_utils.py", line 44, in forward
+    out = self.model(x)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/deepankar/scratch/MSA_Medical/RadFormer/models/radformer.py", line 80, in forward
+    local_inp, local_im, box = self.attention(x, g_attn)
+  File "/home/deepankar/scratch/MSA_Medical/RadFormer/models/radformer.py", line 157, in attention
+    inp = x[i].cpu().numpy().reshape(self.size_upsample[0], self.size_upsample[1], self.depth)
+ValueError: cannot reshape array of size 268203 into shape (224,224,3)

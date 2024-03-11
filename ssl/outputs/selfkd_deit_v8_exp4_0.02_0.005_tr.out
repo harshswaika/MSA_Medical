@@ -1,0 +1,79 @@
+[2024-03-02 23:52:43,663 INFO] Use GPU: None for training
+[2024-03-02 23:52:43,663 INFO] 
+
+[2024-03-02 23:52:44,587 INFO] Total params: 109.04M
+[2024-03-02 23:52:51,141 INFO] acc: 0.90
+[2024-03-02 23:52:51,151 INFO] Victim model accuracy = 0.9016, spec = 0.90, sens = 0.93
+[2024-03-02 23:52:51,151 INFO] Loading thief dataset ...
+[2024-03-02 23:52:51,156 INFO] 
+Initializing thief model ...
+
+
+Loaded supervised labeled set of length  900
+Labeled set expanded to length  3600 , unique indices  900
+dataset root /home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared
+Num of videos 64 frames 15800
+15800
+15800
+Num of videos 64 frames 15800
+  0%|          | 0/29 [00:00<?, ?it/s]  3%|▎         | 1/29 [00:06<02:52,  6.15s/it]  7%|▋         | 2/29 [00:07<01:34,  3.50s/it] 10%|█         | 3/29 [00:09<01:07,  2.60s/it] 14%|█▍        | 4/29 [00:11<00:57,  2.30s/it] 17%|█▋        | 5/29 [00:12<00:49,  2.05s/it] 21%|██        | 6/29 [00:14<00:43,  1.89s/it] 24%|██▍       | 7/29 [00:16<00:41,  1.87s/it] 28%|██▊       | 8/29 [00:17<00:36,  1.75s/it] 31%|███       | 9/29 [00:19<00:33,  1.66s/it] 34%|███▍      | 10/29 [00:20<00:30,  1.61s/it] 38%|███▊      | 11/29 [00:22<00:28,  1.58s/it] 41%|████▏     | 12/29 [00:24<00:28,  1.68s/it] 45%|████▍     | 13/29 [00:25<00:28,  1.75s/it] 48%|████▊     | 14/29 [00:27<00:26,  1.80s/it] 52%|█████▏    | 15/29 [00:29<00:25,  1.84s/it] 55%|█████▌    | 16/29 [00:31<00:24,  1.85s/it] 59%|█████▊    | 17/29 [00:33<00:20,  1.75s/it] 62%|██████▏   | 18/29 [00:34<00:18,  1.68s/it] 66%|██████▌   | 19/29 [00:36<00:16,  1.65s/it] 69%|██████▉   | 20/29 [00:37<00:14,  1.59s/it] 72%|███████▏  | 21/29 [00:39<00:12,  1.52s/it] 76%|███████▌  | 22/29 [00:40<00:10,  1.50s/it] 79%|███████▉  | 23/29 [00:42<00:09,  1.52s/it] 83%|████████▎ | 24/29 [00:43<00:07,  1.54s/it] 86%|████████▌ | 25/29 [00:45<00:06,  1.59s/it] 90%|████████▉ | 26/29 [00:46<00:04,  1.58s/it] 93%|█████████▎| 27/29 [00:48<00:03,  1.54s/it] 97%|█████████▋| 28/29 [00:49<00:01,  1.52s/it]100%|██████████| 29/29 [00:51<00:00,  1.52s/it]100%|██████████| 29/29 [00:51<00:00,  1.78s/it]
+Num of videos 64 frames 15800
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:04<00:00,  4.60s/it]100%|██████████| 1/1 [00:04<00:00,  4.68s/it]
+[2024-03-02 23:53:47,406 INFO] unlabeled data number: 15800, labeled data number 3600
+[2024-03-02 23:53:47,406 INFO] Create train and test data loaders
+[2024-03-02 23:53:47,406 INFO] [!] data loader keys: dict_keys(['train_lb', 'train_ulb', 'eval', 'test'])
+[2024-03-02 23:53:49,689 INFO] Create optimizer and scheduler
+[2024-03-02 23:53:49,693 INFO] Number of Trainable Params: 85800963
+Num of videos 64 frames 15800
+Load pretrained model for initializing the thief from  /home/deepankar/scratch/MSA_Medical/activethief/pretrained/deit_base_patch16_224-b5f2ef4d.pth
+key not found head.weight
+key not found head.bias
+Common keys pretrained model:  150
+Load anchor model /home/deepankar/mnt/vision1_outputs/gbusg_radformer/GBUSV_deit/SGD/1000_val100/random_v1_transforms/trial_1_cycle_1_best.pth
+thief state:  ['cls_token', 'pos_embed', 'patch_embed.proj.weight', 'patch_embed.proj.bias', 'blocks.0.norm1.weight']
+pretrained state:  ['cls_token', 'pos_embed', 'patch_embed.proj.weight', 'patch_embed.proj.bias', 'blocks.0.norm1.weight']
+Common keys anchor model:  152
+[2024-03-02 23:53:58,066 INFO] Anchor model on target dataset: acc = 0.6393, spec = 0.56, sens = 0.93
+[2024-03-02 23:53:58,490 INFO] Arguments: Namespace(T=0.5, algorithm='selfkd', amp=False, batch_size=16, c='configs/gbc/selfkd_deit.yaml', clip=0.0, clip_grad=0, crop_ratio=0.875, data_dir='./data', dataset='GBUSV', device=device(type='cuda'), dist_backend='nccl', dist_url='tcp://127.0.0.1:19898', distributed=False, ds_seed=123, ema_m=0.999, epoch=100, eval_batch_size=16, eval_step=234, expand_labels=True, gpu=None, hard_label=True, imb_algorithm=None, img_size=224, include_lb_to_ulb=True, kd_alpha=0.4, kd_alpha_ulb=0.5, kd_temp=1.5, kd_temp_ulb=1.5, la=False, labeled_set_path='/home/deepankar/mnt/vision1_outputs/gbusg_radformer/GBUSV_deit/SGD/1000_val100/random_v1_transforms/X_trial_1_cycle_1_labeled_set.npy', layer_decay=0.5, lb_dest_len=3600, lb_imb_ratio=1, load_labeled_set=True, load_path=None, local_rank=-1, lr=0.02, max_length=512, max_length_seconds=4.0, momentum=0.9, multiprocessing_distributed=False, net='deit_base_patch16_224', net_from_name=False, no_progress=True, num_classes=3, num_eval_iter=234, num_labels=1000, num_log_iter=234, num_train_iter=900000, num_warmup_iter=5120, num_workers=4, optim='SGD', overwrite=True, p_cutoff=0.95, pretrain_path='', pretrained_dir='/home/deepankar/scratch/MSA_Medical/activethief/pretrained/deit_base_patch16_224-b5f2ef4d.pth', rank=0, resume=False, sample_rate=16000, save_dir='saved_models/radformer', save_name='selfkd_deit_v8_exp4_tr', scheduler_type='cosine', seed=5, subset=128116, thief_root='/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared', train_sampler='RandomSampler', tro=1, ulb_dest_len=15800, ulb_imb_ratio=1, ulb_loss_ratio=1.0, ulb_num_labels=None, uratio=1, use_aim=False, use_cat=True, use_pretrain=True, use_tensorboard=True, use_wandb=True, val_set_path='/home/deepankar/mnt/vision1_outputs/gbusg_radformer/GBUSV_deit/SGD/1000_val100/random_v1_transforms/X_trial_1_cycle_1_val_set.npy', victim_arch='radformer', victim_data_root='/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBCU-Shared', victim_dataset='gbusg', victim_model_path='/home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/radformer/radformer.pkl', warmstart=False, warmstart_dir='/home/deepankar/mnt/vision1_outputs/gbusg_radformer/GBUSV_deit/SGD/1000_val100/random_v1_transforms/trial_1_cycle_1_best.pth', warmup=0, warmup_epoch=10, weight_decay=0.005, world_size=1)
+[2024-03-02 23:53:58,491 INFO] Validation set distribution: 
+anchor model temp =  1.0
+Number of samples  100
+[2024-03-02 23:53:59,410 INFO] {0: 9, 1: 18, 2: 73}
+[2024-03-02 23:53:59,410 INFO] Labeled set distribution: 
+Number of samples  3600
+[2024-03-02 23:54:05,416 INFO] {0: 444, 1: 800, 2: 2356}
+[2024-03-02 23:54:09,390 INFO] Initial model on target dataset (without EMA): acc = 0.3934, agreement = 0.3689, spec = 0.74, sens = 0.31
+[2024-03-02 23:54:09,390 INFO] Resume load path None does not exist
+[2024-03-02 23:54:09,390 INFO] 
+Model training
+wandb: Currently logged in as: satwikdpshrit. Use `wandb login --relogin` to force relogin
+wandb: - Waiting for wandb.init()...wandb: \ Waiting for wandb.init()...wandb: Tracking run with wandb version 0.16.3
+wandb: Run data is saved locally in saved_models/radformer/wandb/selfkd_deit_v8_exp4_tr/wandb/run-20240302_235411-aa7p2ic4
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run selfkd_deit_v8_exp4_tr
+wandb: ⭐️ View project at https://wandb.ai/satwikdpshrit/radformer
+wandb: 🚀 View run at https://wandb.ai/satwikdpshrit/radformer/runs/aa7p2ic4
+[2024-03-02 23:54:14,883 INFO] 
+
+epoch 0
+[2024-03-02 23:56:45,460 INFO] validating...
+[2024-03-02 23:56:51,188 INFO] model saved: saved_models/radformer/selfkd_deit_v8_exp4_tr/latest_model.pth
+[2024-03-02 23:56:53,332 INFO] model saved: saved_models/radformer/selfkd_deit_v8_exp4_tr/model_best.pth
+[2024-03-02 23:56:53,333 INFO] 226 iteration, USE_EMA: True, train/sup_loss: 1.52837, train/unsup_loss: 0.96326, train/total_loss: 2.49164, train/util_ratio: 0.81250, train/run_time: 0.63537, lr: 0.00000, train/prefecth_time: 0.00651, eval/loss: 1.13899, eval/top-1-acc: 0.25000, eval/balanced_acc: 0.35591, eval/precision: 0.40786, eval/recall: 0.35591, eval/F1: 0.21297, eval/spec: 0.96296, eval/sens: 0.12329, test/loss: 1.04015, test/top-1-acc: 0.39344, test/balanced_acc: 0.34522, test/precision: 0.42590, test/recall: 0.34522, test/F1: 0.30214, test/spec: 0.73750, test/sens: 0.30952 BEST_EVAL_ACC: 0.2500, at 226 iters BEST_TEST_ACC: 0.3934, at 226 iters
+[2024-03-02 23:56:53,337 INFO] 
+
+epoch 1
+[2024-03-02 23:59:23,718 INFO] validating...
+[2024-03-02 23:59:29,187 INFO] model saved: saved_models/radformer/selfkd_deit_v8_exp4_tr/latest_model.pth
+[2024-03-02 23:59:31,298 INFO] model saved: saved_models/radformer/selfkd_deit_v8_exp4_tr/model_best.pth
+[2024-03-02 23:59:31,298 INFO] 451 iteration, USE_EMA: True, train/sup_loss: 0.54237, train/unsup_loss: 0.23185, train/total_loss: 0.77421, train/util_ratio: 0.68750, train/run_time: 0.63558, lr: 0.00200, train/prefecth_time: 0.00665, eval/loss: 0.63515, eval/top-1-acc: 0.73000, eval/balanced_acc: 0.33333, eval/precision: 0.24333, eval/recall: 0.33333, eval/F1: 0.28131, eval/spec: 0.00000, eval/sens: 1.00000, test/loss: 1.42124, test/top-1-acc: 0.34426, test/balanced_acc: 0.33333, test/precision: 0.11475, test/recall: 0.33333, test/F1: 0.17073, test/spec: 0.00000, test/sens: 1.00000 BEST_EVAL_ACC: 0.7300, at 451 iters BEST_TEST_ACC: 0.3443, at 451 iters
+[2024-03-02 23:59:31,302 INFO] 
+
+epoch 2
+[2024-03-03 00:02:02,171 INFO] validating...
+[2024-03-03 00:02:07,800 INFO] model saved: saved_models/radformer/selfkd_deit_v8_exp4_tr/latest_model.pth
+[2024-03-03 00:02:10,044 INFO] model saved: saved_models/radformer/selfkd_deit_v8_exp4_tr/model_best.pth
+[2024-03-03 00:02:10,045 INFO] 676 iteration, USE_EMA: True, train/sup_loss: 0.46707, train/unsup_loss: 0.26604, train/total_loss: 0.73311, train/util_ratio: 0.81250, train/run_time: 0.63656, lr: 0.00400, train/prefecth_time: 0.00686, eval/loss: 0.56622, eval/top-1-acc: 0.75000, eval/balanced_acc: 0.40741, eval/precision: 0.47308, eval/recall: 0.40741, eval/F1: 0.39739, eval/spec: 0.11111, eval/sens: 1.00000, test/loss: 1.35443, test/top-1-acc: 0.34426, test/balanced_acc: 0.33333, test/precision: 0.11475, test/recall: 0.33333, test/F1: 0.17073, test/spec: 0.00000, test/sens: 1.00000 BEST_EVAL_ACC: 0.7500, at 676 iters BEST_TEST_ACC: 0.3443, at 676 iters
+[2024-03-03 00:02:10,048 INFO] 
+
+epoch 3

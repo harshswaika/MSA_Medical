@@ -11,17 +11,17 @@ net: 'radformer'
 net_from_name: False
 thief_root: '/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared'
 
-use_pretrain: True
+use_pretrain: False
 pretrained_dir: '/home/deepankar/mnt/vision3_ckpts/vit_b_16-imagenet1k.pth'
 load_labeled_set: True
 
 warmstart: False
-warmstart_dir: '/home/deepankar/scratch/MSA_Medical/results_1k/gbusg_radformer/GBUSV_radformer/SGD/1000_val100/random_v1/trial_1_cycle_1_best.pth'
-labeled_set_path: '/home/deepankar/scratch/MSA_Medical/results_1k/gbusg_radformer/GBUSV_radformer/SGD/1000_val100/random_v1/X_trial_1_cycle_1_labeled_set.npy'
-val_set_path: '/home/deepankar/scratch/MSA_Medical/results_1k/gbusg_radformer/GBUSV_radformer/SGD/1000_val100/random_v1/X_trial_1_cycle_1_val_set.npy'
+warmstart_dir: '//home/deepankar/mnt/vision1_outputs/gbusg_radformer/GBUSV_radformer/SGD/1000_val100/random_v1/trial_1_cycle_1_best.pth'
+labeled_set_path: '/home/deepankar/mnt/vision1_outputs/gbusg_radformer/GBUSV_radformer/SGD/1000_val100/random_v1/X_trial_1_cycle_1_labeled_set.npy'
+val_set_path: '/home/deepankar/mnt/vision1_outputs/gbusg_radformer/GBUSV_radformer/SGD/1000_val100/random_v1/X_trial_1_cycle_1_val_set.npy'
 save_dir: 'saved_models/radformer'
 
-save_name: 'selfkd_radformer_v8'
+save_name: 'selfkd_radformer_v8_exp4_0.0005_tr_1_la'
 
 scheduler_type: 'cosine'
 epoch: 100  
@@ -36,7 +36,7 @@ kd_temp_ulb: 1.5
 ulb_loss_ratio: 1.0  #10.0
 ema_m: 0.999  #0.999
 
-lr: 0.02 #0.0005  # for coldstart
+lr: 0.01 #0.0005  # for coldstart
 weight_decay: 0.0005 #0.00005
 
 algorithm: selfkd
@@ -44,7 +44,7 @@ no_progress: True
 expand_labels: True
 eval_step: 234
 local_rank: -1
-num_labels: 5000
+num_labels: 1000
 warmup: 0
 crop_ratio: 0.875
 
@@ -56,10 +56,10 @@ use_tensorboard: True
 num_train_iter: 900000
 num_eval_iter: 234
 num_log_iter: 234
-batch_size: 8 #32
+batch_size: 16 #32
 eval_batch_size: 16
 num_warmup_iter: 5120
-uratio: 3  #7
+uratio: 1
 hard_label: True
 p_cutoff: 0.95
 optim: SGD

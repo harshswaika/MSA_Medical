@@ -1,0 +1,100 @@
+[2024-03-01 14:59:32,989 INFO] Use GPU: None for training
+[2024-03-01 14:59:32,989 INFO] 
+
+[2024-03-01 14:59:34,059 INFO] Total params: 109.04M
+[2024-03-01 14:59:42,883 INFO] acc: 0.90
+[2024-03-01 14:59:42,895 INFO] Victim model accuracy = 0.9016, spec = 0.90, sens = 0.93
+[2024-03-01 14:59:42,895 INFO] Loading thief dataset ...
+[2024-03-01 14:59:42,896 INFO] 
+Initializing thief model ...
+
+
+Loaded supervised labeled set of length  900
+Labeled set expanded to length  900 , unique indices  900
+dataset root /home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared
+Num of videos 64 frames 15800
+15800
+15800
+Num of videos 64 frames 15800
+  0%|          | 0/8 [00:00<?, ?it/s] 12%|█▎        | 1/8 [00:07<00:53,  7.70s/it] 25%|██▌       | 2/8 [00:09<00:25,  4.26s/it] 38%|███▊      | 3/8 [00:11<00:14,  2.98s/it] 50%|█████     | 4/8 [00:12<00:09,  2.40s/it] 62%|██████▎   | 5/8 [00:14<00:06,  2.07s/it] 75%|███████▌  | 6/8 [00:15<00:03,  1.87s/it] 88%|████████▊ | 7/8 [00:16<00:01,  1.74s/it]100%|██████████| 8/8 [00:18<00:00,  1.65s/it]100%|██████████| 8/8 [00:18<00:00,  2.31s/it]
+Num of videos 64 frames 15800
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:04<00:00,  4.92s/it]100%|██████████| 1/1 [00:05<00:00,  5.03s/it]
+[2024-03-01 15:00:06,480 INFO] unlabeled data number: 15800, labeled data number 900
+[2024-03-01 15:00:06,480 INFO] Create train and test data loaders
+[2024-03-01 15:00:06,480 INFO] [!] data loader keys: dict_keys(['train_lb', 'train_ulb', 'eval', 'test'])
+[2024-03-01 15:00:09,225 INFO] Create optimizer and scheduler
+[2024-03-01 15:00:09,229 INFO] Number of Trainable Params: 85800963
+Num of videos 64 frames 15800
+Load pretrained model for initializing the thief from  /home/deepankar/scratch/MSA_Medical/activethief/pretrained/deit_base_patch16_224-b5f2ef4d.pth
+key not found head.weight
+key not found head.bias
+Common keys pretrained model:  150
+Load anchor model /home/deepankar/scratch/MSA_Medical/results_1k/gbusg_radformer/GBUSV_deit/SGD/1000_val100/random_v1_transforms/trial_1_cycle_1_best.pth
+thief state:  ['cls_token', 'pos_embed', 'patch_embed.proj.weight', 'patch_embed.proj.bias', 'blocks.0.norm1.weight']
+pretrained state:  ['cls_token', 'pos_embed', 'patch_embed.proj.weight', 'patch_embed.proj.bias', 'blocks.0.norm1.weight']
+Common keys anchor model:  152
+[2024-03-01 15:00:18,446 INFO] Anchor model on target dataset: acc = 0.6393, spec = 0.56, sens = 0.93
+[2024-03-01 15:00:18,866 INFO] Arguments: Namespace(T=0.5, algorithm='selfkd', amp=False, batch_size=16, c='configs/gbc/selfkd_deit.yaml', clip=0.0, clip_grad=0, crop_ratio=0.875, data_dir='./data', dataset='GBUSV', device=device(type='cuda'), dist_backend='nccl', dist_url='tcp://127.0.0.1:18968', distributed=False, ds_seed=123, ema_m=0.999, epoch=100, eval_batch_size=16, eval_step=234, expand_labels=True, gpu=None, hard_label=True, imb_algorithm=None, img_size=224, include_lb_to_ulb=True, kd_alpha=0.4, kd_alpha_ulb=0.5, kd_temp=1.5, kd_temp_ulb=1.5, la=False, labeled_set_path='/home/deepankar/scratch/MSA_Medical/results_1k/gbusg_radformer/GBUSV_deit/SGD/1000_val100/random_v1_transforms/X_trial_1_cycle_1_labeled_set.npy', layer_decay=0.5, lb_dest_len=900, lb_imb_ratio=1, load_labeled_set=True, load_path=None, local_rank=-1, lr=0.02, max_length=512, max_length_seconds=4.0, momentum=0.9, multiprocessing_distributed=False, net='deit_base_patch16_224', net_from_name=False, no_progress=True, num_classes=3, num_eval_iter=234, num_labels=5000, num_log_iter=234, num_train_iter=900000, num_warmup_iter=5120, num_workers=4, optim='SGD', overwrite=True, p_cutoff=0.95, pretrain_path='', pretrained_dir='/home/deepankar/scratch/MSA_Medical/activethief/pretrained/deit_base_patch16_224-b5f2ef4d.pth', rank=0, resume=False, sample_rate=16000, save_dir='saved_models/radformer', save_name='selfkd_deit_v8', scheduler_type='cosine', seed=5, subset=128116, thief_root='/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBUSV-Shared', train_sampler='RandomSampler', tro=1, ulb_dest_len=15800, ulb_imb_ratio=1, ulb_loss_ratio=1.0, ulb_num_labels=None, uratio=7, use_aim=False, use_cat=True, use_pretrain=True, use_tensorboard=True, use_wandb=True, val_set_path='/home/deepankar/scratch/MSA_Medical/results_1k/gbusg_radformer/GBUSV_deit/SGD/1000_val100/random_v1_transforms/X_trial_1_cycle_1_val_set.npy', victim_arch='radformer', victim_data_root='/home/deepankar/mnt/vision3_data_ckpts_msa_medical/GBCU-Shared', victim_dataset='gbusg', victim_model_path='/home/deepankar/mnt/vision3_data_ckpts_msa_medical/victim_models/radformer/radformer.pkl', warmstart=False, warmstart_dir='/home/deepankar/scratch/MSA_Medical/results_1k/gbusg_radformer/GBUSV_deit/SGD/1000_val100/random_v1_transforms/trial_1_cycle_1_best.pth', warmup=0, warmup_epoch=10, weight_decay=0.0005, world_size=1)
+[2024-03-01 15:00:18,867 INFO] Validation set distribution: 
+anchor model temp =  1.0
+Number of samples  100
+[2024-03-01 15:00:19,809 INFO] {0: 9, 1: 18, 2: 73}
+[2024-03-01 15:00:19,810 INFO] Labeled set distribution: 
+Number of samples  900
+[2024-03-01 15:00:22,382 INFO] {0: 111, 1: 199, 2: 586}
+[2024-03-01 15:00:26,982 INFO] Initial model on target dataset (without EMA): acc = 0.3934, agreement = 0.3689, spec = 0.74, sens = 0.31
+[2024-03-01 15:00:26,983 INFO] Resume load path None does not exist
+[2024-03-01 15:00:26,983 INFO] 
+Model training
+wandb: Currently logged in as: satwikdpshrit. Use `wandb login --relogin` to force relogin
+wandb: - Waiting for wandb.init()...wandb: \ Waiting for wandb.init()...wandb: Tracking run with wandb version 0.16.3
+wandb: Run data is saved locally in saved_models/radformer/wandb/selfkd_deit_v8/wandb/run-20240301_150029-lm14hlao
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run selfkd_deit_v8
+wandb: ⭐️ View project at https://wandb.ai/satwikdpshrit/radformer
+wandb: 🚀 View run at https://wandb.ai/satwikdpshrit/radformer/runs/lm14hlao
+[2024-03-01 15:00:32,835 INFO] 
+
+epoch 0
+wandb: - 0.009 MB of 0.009 MB uploadedwandb: \ 0.009 MB of 0.009 MB uploadedwandb: | 0.009 MB of 0.009 MB uploadedwandb: / 0.009 MB of 0.009 MB uploadedwandb: - 0.009 MB of 0.009 MB uploadedwandb: \ 0.009 MB of 0.009 MB uploadedwandb: | 0.009 MB of 0.009 MB uploadedwandb: / 0.019 MB of 0.035 MB uploaded (0.002 MB deduped)wandb: - 0.035 MB of 0.035 MB uploaded (0.002 MB deduped)wandb: \ 0.035 MB of 0.035 MB uploaded (0.002 MB deduped)wandb: 🚀 View run selfkd_deit_v8 at: https://wandb.ai/satwikdpshrit/radformer/runs/lm14hlao
+wandb: ️⚡ View job at https://wandb.ai/satwikdpshrit/radformer/jobs/QXJ0aWZhY3RDb2xsZWN0aW9uOjE0Mzc3ODU5NQ==/version_details/v2
+wandb: Synced 6 W&B file(s), 0 media file(s), 2 artifact file(s) and 0 other file(s)
+wandb: Find logs at: saved_models/radformer/wandb/selfkd_deit_v8/wandb/run-20240301_150029-lm14hlao/logs
+Traceback (most recent call last):
+  File "train_proposed.py", line 465, in <module>
+    main(args)
+  File "train_proposed.py", line 233, in main
+    main_worker(args.gpu, ngpus_per_node, args)
+  File "train_proposed.py", line 443, in main_worker
+    model.train()
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/core/algorithmbase.py", line 346, in train
+    self.out_dict, self.log_dict = self.train_step(**self.process_batch(**data_lb, **data_ulb))
+  File "/nvme/scratch/deepankar/MSA_Medical/ssl/semilearn/algorithms/selfkd/selfkd.py", line 118, in train_step
+    outputs = self.model(inputs)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/parallel/data_parallel.py", line 166, in forward
+    return self.module(*inputs[0], **kwargs[0])
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/timm/models/vision_transformer.py", line 549, in forward
+    x = self.forward_features(x)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/timm/models/vision_transformer.py", line 538, in forward_features
+    x = self.blocks(x)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/container.py", line 141, in forward
+    input = module(input)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/timm/models/vision_transformer.py", line 269, in forward
+    x = x + self.drop_path2(self.ls2(self.mlp(self.norm2(x))))
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/timm/models/layers/mlp.py", line 28, in forward
+    x = self.act(x)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1110, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/deepankar/scratch/miniconda3/envs/msa_medical/lib/python3.8/site-packages/torch/nn/modules/activation.py", line 670, in forward
+    return F.gelu(input)
+RuntimeError: CUDA out of memory. Tried to allocate 556.00 MiB (GPU 0; 31.74 GiB total capacity; 23.12 GiB already allocated; 89.38 MiB free; 23.58 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
